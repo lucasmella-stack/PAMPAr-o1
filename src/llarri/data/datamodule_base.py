@@ -1,9 +1,10 @@
 import json
 from pathlib import Path
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Callable
 import pytorch_lightning as pl
 from torch.utils.data import DataLoader, Dataset
 from PIL import Image
+import torch
 import os
 
 from llarri.data.transforms import get_transforms
@@ -48,6 +49,60 @@ class JSONLDataset(Dataset):
             "text": item.get('text', "")
         }
 
+def collate_fn_with_tokenizer(tokenizer, max_length: int = 128):
+    """
+    Create a collate function that tokenizes text and prepares batches.
+    
+    Args:
+        tokenizer: HuggingFace tokenizer for text encoding
+        max_length: Maximum sequence length for labels
+    
+    Returns:
+        Collate function for DataLoader
+    """
+    def collate(batch: List[Dict[str, Any]]) -> Dict[str, torch.Tensor]:
+        """
+        Collate function that processes a batch of samples.
+        
+        Args:
+            batch: List of dictionaries with keys: id, image, text
+        
+        Returns:
+            Dictionary with:
+                - pixel_values: Tensor (B, C, H, W)
+                - labels: Tensor (B, seq_len) - tokenized text
+                - ids: List of sample IDs
+                - texts: List of original texts
+        """
+        ids = [item["id"] for item in batch]
+        images = [item["image"] for item in batch]
+        texts = [item["text"] for item in batch]
+        
+        # Stack images into batch
+        pixel_values = torch.stack(images, dim=0)
+        
+        # Tokenize texts
+        encoded = tokenizer(
+            texts,
+            padding="max_length",
+            max_length=max_length,
+            truncation=True,
+            return_tensors="pt"
+        )
+        
+        labels = encoded["input_ids"]
+        # Replace padding token id's with -100 so they are ignored by loss
+        labels[labels == tokenizer.pad_token_id] = -100
+        
+        return {
+            "pixel_values": pixel_values,
+            "labels": labels,
+            "ids": ids,
+            "texts": texts
+        }
+    
+    return collate
+
 class LlarriDataModule(pl.LightningDataModule):
     def __init__(
         self, 
@@ -56,7 +111,11 @@ class LlarriDataModule(pl.LightningDataModule):
         batch_size: int = 32, 
         num_workers: int = 4, 
         data_root: Optional[str] = None,
-        config: Optional[Dict] = None
+        config: Optional[Dict] = None,
+        tokenizer: Optional[Any] = None,
+        max_length: int = 128,
+        img_height: int = 128,
+        img_width: int = 512,
     ):
         super().__init__()
         self.train_path = train_path
@@ -65,9 +124,14 @@ class LlarriDataModule(pl.LightningDataModule):
         self.num_workers = num_workers
         self.data_root = data_root
         self.config = config or {}
+        self.tokenizer = tokenizer
+        self.max_length = max_length
+        self.img_height = img_height
+        self.img_width = img_width
         
         self.train_dataset: Optional[Dataset] = None
         self.val_dataset: Optional[Dataset] = None
+        self.collate_fn: Optional[Callable] = None
 
     def prepare_data(self):
         # Check if files exist
@@ -78,8 +142,16 @@ class LlarriDataModule(pl.LightningDataModule):
 
     def setup(self, stage: Optional[str] = None):
         if stage == "fit" or stage is None:
-            train_transforms = get_transforms("train")
-            val_transforms = get_transforms("val")
+            train_transforms = get_transforms(
+                "train", 
+                img_height=self.img_height,
+                img_width=self.img_width
+            )
+            val_transforms = get_transforms(
+                "val",
+                img_height=self.img_height,
+                img_width=self.img_width
+            )
             
             if os.path.exists(self.train_path):
                 self.train_dataset = JSONLDataset(
@@ -94,6 +166,13 @@ class LlarriDataModule(pl.LightningDataModule):
                     transform=val_transforms, 
                     root_dir=self.data_root
                 )
+            
+            # Setup collate function if tokenizer is provided
+            if self.tokenizer is not None:
+                self.collate_fn = collate_fn_with_tokenizer(
+                    self.tokenizer, 
+                    max_length=self.max_length
+                )
 
     def train_dataloader(self):
         if self.train_dataset:
@@ -102,7 +181,8 @@ class LlarriDataModule(pl.LightningDataModule):
                 batch_size=self.batch_size, 
                 shuffle=True, 
                 num_workers=self.num_workers,
-                pin_memory=True
+                pin_memory=True,
+                collate_fn=self.collate_fn  # Use custom collate function
             )
         return None
 
@@ -113,7 +193,8 @@ class LlarriDataModule(pl.LightningDataModule):
                 batch_size=self.batch_size, 
                 shuffle=False, 
                 num_workers=self.num_workers,
-                pin_memory=True
+                pin_memory=True,
+                collate_fn=self.collate_fn  # Use custom collate function
             )
         return None
 
@@ -124,6 +205,7 @@ class LlarriDataModule(pl.LightningDataModule):
                 self.val_dataset, 
                 batch_size=self.batch_size, 
                 shuffle=False, 
-                num_workers=self.num_workers
+                num_workers=self.num_workers,
+                collate_fn=self.collate_fn  # Use custom collate function
             )
         return None

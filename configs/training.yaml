@@ -1,6 +1,104 @@
+# =============================================================================
+# CONFIGURACIÓN DE ENTRENAMIENTO - LlarriOCR
+# =============================================================================
+# Este archivo contiene todos los hiperparámetros de entrenamiento.
+# Puedes override cualquier valor desde la línea de comandos.
+
+# -----------------------------------------------------------------------------
+# HIPERPARÁMETROS DE ENTRENAMIENTO
+# -----------------------------------------------------------------------------
 training:
-  batch_size: 32
-  learning_rate: 0.0001
-  epochs: 10
+  # Número de épocas
+  epochs: 50
+  
+  # Tamaño del batch (ajustar según memoria GPU disponible)
+  # - GPU 8GB: batch_size 4-8
+  # - GPU 12GB: batch_size 8-16
+  # - GPU 24GB: batch_size 16-32
+  batch_size: 8
+  
+  # Learning rate inicial
+  # Recomendado: 5e-5 para fine-tuning, 1e-4 para training from scratch
+  learning_rate: 0.00005
+  
+  # Optimizador: "adamw" | "adam" | "sgd"
   optimizer: "adamw"
-  scheduler: "cosine"
+  
+  # Weight decay para regularización
+  weight_decay: 0.01
+  
+  # Scheduler: "cosine" | "linear" | "plateau" | "none"
+  scheduler: "plateau"
+  
+  # Parámetros del scheduler
+  scheduler_params:
+    # Para ReduceLROnPlateau
+    factor: 0.5
+    patience: 3
+    # Para CosineAnnealing
+    T_max: 50
+    eta_min: 1e-7
+  
+  # Gradient clipping (previene exploding gradients)
+  gradient_clip_val: 1.0
+  
+  # Gradient accumulation (simula batch más grande)
+  # effective_batch_size = batch_size * accumulate_grad_batches
+  accumulate_grad_batches: 1
+  
+  # Precisión de entrenamiento
+  # "32" - FP32 (más preciso, más lento)
+  # "16-mixed" - Mixed precision (recomendado para GPUs modernas)
+  # "bf16-mixed" - BFloat16 (mejor para A100, H100)
+  precision: "16-mixed"
+  
+  # Hardware
+  accelerator: "auto"  # "auto" | "cpu" | "gpu" | "tpu" | "mps"
+  devices: 1
+  
+  # Validación
+  val_check_interval: 1.0  # 1.0 = cada época, 0.5 = cada media época
+  
+  # Logging
+  log_every_n_steps: 10
+  
+  # Reproducibilidad
+  deterministic: false
+  seed: 42
+
+# -----------------------------------------------------------------------------
+# CALLBACKS
+# -----------------------------------------------------------------------------
+callbacks:
+  # Guardar mejores checkpoints
+  save_top_k: 3
+  
+  # Early Stopping
+  early_stopping:
+    enabled: true
+    monitor: "val_loss"
+    patience: 10
+    mode: "min"
+  
+  # Logging de estadísticas de dispositivo (debug)
+  log_device_stats: false
+
+# -----------------------------------------------------------------------------
+# LOGGING
+# -----------------------------------------------------------------------------
+logging:
+  # Logger: "tensorboard" | "wandb" | "none"
+  logger: "tensorboard"
+  
+  # Configuración de WandB (si se usa)
+  wandb_project: "llarri-ocr"
+  wandb_entity: null  # Tu usuario/organización de WandB
+  
+  # Nombre del experimento (null = auto-generado)
+  experiment_name: null
+
+# -----------------------------------------------------------------------------
+# OUTPUT
+# -----------------------------------------------------------------------------
+output_dir: "outputs"
+

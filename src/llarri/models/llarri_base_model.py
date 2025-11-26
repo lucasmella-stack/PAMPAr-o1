@@ -2,12 +2,13 @@ import pytorch_lightning as pl
 import torch
 import torch.nn as nn
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
+from transformers import TrOCRProcessor, AutoTokenizer
 
 from .encoder_vit import ViTEncoder, ViTEncoderConfig
 from .decoder_trocr import TrOCRDecoder, TrOCRDecoderConfig
 
-# Simple character-level vocabulary
+# Simple character-level vocabulary (backup, but we'll use HuggingFace tokenizer)
 VOCAB = (
     list("abcdefghijklmnopqrstuvwxyz")
     + list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -36,13 +37,35 @@ class LlarriBaseModel(pl.LightningModule):
         encoder_cfg: Optional[ViTEncoderConfig] = None,
         decoder_cfg: Optional[TrOCRDecoderConfig] = None,
         vocab: Optional[List[str]] = None,
+        learning_rate: float = 1e-4,
+        use_custom_vocab: bool = False,
     ):
         super().__init__()
+        self.save_hyperparameters()
         self.encoder_cfg = encoder_cfg or ViTEncoderConfig()
         self.decoder_cfg = decoder_cfg or TrOCRDecoderConfig()
+        self.learning_rate = learning_rate
+        self.use_custom_vocab = use_custom_vocab
+        
+        # Initialize encoder and decoder
         self.encoder = ViTEncoder(self.encoder_cfg)
         self.decoder = TrOCRDecoder(self.decoder_cfg)
-        # Vocabulary handling
+        
+        # Initialize processor and tokenizer
+        # Using TrOCR's pretrained processor for proper tokenization
+        try:
+            self.processor = TrOCRProcessor.from_pretrained(
+                self.decoder_cfg.pretrained_model_name
+            )
+            self.tokenizer = self.processor.tokenizer
+        except:
+            # Fallback to standalone tokenizer
+            self.tokenizer = AutoTokenizer.from_pretrained(
+                self.decoder_cfg.pretrained_model_name
+            )
+            self.processor = None
+        
+        # Vocabulary handling (keep for compatibility, but prefer HuggingFace tokenizer)
         if vocab is not None:
             self.vocab = vocab
             self.char2id = {c: i for i, c in enumerate(vocab)}
@@ -52,56 +75,145 @@ class LlarriBaseModel(pl.LightningModule):
             self.char2id = CHAR2ID
             self.id2char = ID2CHAR
 
-    def forward(self, images: torch.Tensor, labels: Optional[torch.Tensor] = None):
+    def forward(
+        self, 
+        pixel_values: torch.Tensor, 
+        labels: Optional[torch.Tensor] = None,
+        decoder_input_ids: Optional[torch.Tensor] = None,
+    ):
         """Run encoder and decoder.
-        ``images``: (B, C, H, W)
-        ``labels``: optional token IDs for teacher forcing.
+        
+        Args:
+            pixel_values: Images tensor (B, C, H, W) - preprocessed by ViT
+            labels: Optional token IDs for teacher forcing and loss computation
+            decoder_input_ids: Optional decoder input for custom decoding
+        
+        Returns:
+            Decoder output with loss if labels provided
         """
-        encoder_hidden = self.encoder(images)
-        decoder_output = self.decoder(encoder_hidden, labels=labels)
+        # Encode images
+        encoder_hidden = self.encoder(pixel_values)
+        
+        # Decode with labels for training
+        decoder_output = self.decoder(
+            encoder_hidden_states=encoder_hidden, 
+            labels=labels
+        )
         return decoder_output
 
-    def generate(self, images: torch.Tensor, max_length: int = 128, **gen_kwargs):
-        """Auto‑regressive generation.
-        Returns a list of decoded strings (one per batch element).
+    def generate(
+        self, 
+        pixel_values: torch.Tensor, 
+        max_length: int = 128, 
+        num_beams: int = 4,
+        **gen_kwargs
+    ):
+        """Auto-regressive generation.
+        
+        Args:
+            pixel_values: Images tensor (B, C, H, W)
+            max_length: Maximum sequence length
+            num_beams: Number of beams for beam search
+            **gen_kwargs: Additional generation arguments
+        
+        Returns:
+            List of decoded strings (one per batch element)
         """
-        encoder_hidden = self.encoder(images)
+        encoder_hidden = self.encoder(pixel_values)
         generated_ids = self.decoder.generate(
-            encoder_hidden_states=encoder_hidden, max_length=max_length, **gen_kwargs
+            encoder_hidden_states=encoder_hidden, 
+            max_length=max_length,
+            num_beams=num_beams,
+            **gen_kwargs
         )
-        # generated_ids shape: (B, seq_len)
-        return [detokenize(ids.tolist()) for ids in generated_ids]
+        
+        # Decode using tokenizer
+        if self.tokenizer:
+            return self.tokenizer.batch_decode(generated_ids, skip_special_tokens=True)
+        else:
+            # Fallback to custom detokenize
+            return [detokenize(ids.tolist()) for ids in generated_ids]
+
+    def training_step(self, batch: Dict[str, Any], batch_idx: int):
+        """Training step - works with dictionary batches from DataModule."""
+        # Extract from batch dictionary
+        pixel_values = batch["pixel_values"]  # (B, C, H, W)
+        labels = batch["labels"]  # (B, seq_len) - tokenized text
+        
+        # Forward pass
+        output = self(pixel_values, labels=labels)
+        loss = output.loss if hasattr(output, "loss") else output["loss"]
+        
+        # Log metrics
+        self.log("train_loss", loss, on_step=True, on_epoch=True, prog_bar=True)
+        return loss
+
+    def validation_step(self, batch: Dict[str, Any], batch_idx: int):
+        """Validation step - works with dictionary batches from DataModule."""
+        # Extract from batch dictionary
+        pixel_values = batch["pixel_values"]
+        labels = batch["labels"]
+        
+        # Forward pass
+        output = self(pixel_values, labels=labels)
+        loss = output.loss if hasattr(output, "loss") else output["loss"]
+        
+        # Log metrics
+        self.log("val_loss", loss, on_step=False, on_epoch=True, prog_bar=True)
+        
+        # Optional: Generate predictions and compute metrics
+        if batch_idx % 10 == 0:  # Sample every 10 batches
+            with torch.no_grad():
+                predictions = self.generate(pixel_values, max_length=64)
+                # Could compute CER/WER here if needed
+        
+        return loss
+
+    def configure_optimizers(self):
+        """Configure optimizer and learning rate scheduler."""
+        optimizer = torch.optim.AdamW(
+            self.parameters(), 
+            lr=self.learning_rate,
+            weight_decay=0.01
+        )
+        
+        # Optional: Add learning rate scheduler
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            optimizer,
+            mode='min',
+            factor=0.5,
+            patience=3,
+            verbose=True
+        )
+        
+        return {
+            "optimizer": optimizer,
+            "lr_scheduler": {
+                "scheduler": scheduler,
+                "monitor": "val_loss",
+            },
+        }
 
     def export_onnx(self, sample_image: torch.Tensor, onnx_path: str):
         """Export the full model (encoder + decoder) to ONNX.
-        ``sample_image`` should be a single image tensor (C, H, W).
+        
+        Args:
+            sample_image: Single image tensor (C, H, W)
+            onnx_path: Path to save ONNX model
         """
         self.eval()
         dummy_input = sample_image.unsqueeze(0)  # (1, C, H, W)
+        
         torch.onnx.export(
             self,
             dummy_input,
             onnx_path,
-            input_names=["image"],
+            input_names=["pixel_values"],
             output_names=["logits"],
-            dynamic_axes={"image": {0: "batch"}, "logits": {0: "batch"}},
+            dynamic_axes={
+                "pixel_values": {0: "batch"}, 
+                "logits": {0: "batch", 1: "sequence"}
+            },
             opset_version=14,
         )
-
-    # Placeholder Lightning methods – users can extend as needed
-    def training_step(self, batch, batch_idx):
-        images, targets = batch
-        output = self(images, labels=targets)
-        loss = output.loss if hasattr(output, "loss") else torch.tensor(0.0)
-        self.log("train_loss", loss)
-        return loss
-
-    def validation_step(self, batch, batch_idx):
-        images, targets = batch
-        output = self(images, labels=targets)
-        loss = output.loss if hasattr(output, "loss") else torch.tensor(0.0)
-        self.log("val_loss", loss)
-        return loss
-
-    def configure_optimizers(self):
-        return torch.optim.Adam(self.parameters(), lr=1e-4)
+        print(f"Model exported to {onnx_path}")
