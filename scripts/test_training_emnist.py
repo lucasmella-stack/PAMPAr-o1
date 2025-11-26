@@ -18,6 +18,7 @@ from pathlib import Path
 
 import numpy as np
 import torch
+import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 from PIL import Image
 from torchvision import datasets, transforms
@@ -142,6 +143,8 @@ class SyntheticWordDataset(Dataset):
 
 def collate_fn(batch):
     """Función de collate para manejar imágenes de diferente ancho."""
+    from transformers import TrOCRProcessor
+    
     images = [item["image"] for item in batch]
     texts = [item["text"] for item in batch]
     
@@ -157,9 +160,25 @@ def collate_fn(batch):
             img = torch.cat([img, padding], dim=2)
         padded_images.append(img)
     
+    # Stack images
+    pixel_values = torch.stack(padded_images)
+    
+    # Resize a 224x224 para ViT
+    pixel_values = F.interpolate(pixel_values, size=(224, 224), mode='bilinear', align_corners=False)
+    
+    # Tokenizar textos
+    processor = TrOCRProcessor.from_pretrained("microsoft/trocr-base-handwritten")
+    labels = processor.tokenizer(
+        texts,
+        padding="max_length",
+        max_length=32,
+        truncation=True,
+        return_tensors="pt"
+    ).input_ids
+    
     return {
-        "image": torch.stack(padded_images),
-        "text": texts,
+        "pixel_values": pixel_values,
+        "labels": labels,
     }
 
 

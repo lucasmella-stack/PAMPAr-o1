@@ -178,12 +178,12 @@ class LlarriBaseModel(pl.LightningModule):
         )
         
         # Optional: Add learning rate scheduler
+        # Note: 'verbose' argument removed in PyTorch 2.x
         scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
             optimizer,
             mode='min',
             factor=0.5,
-            patience=3,
-            verbose=True
+            patience=3
         )
         
         return {
