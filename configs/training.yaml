@@ -3,6 +3,9 @@
 # =============================================================================
 # Este archivo contiene todos los hiperparámetros de entrenamiento.
 # Puedes override cualquier valor desde la línea de comandos.
+#
+# CONFIGURACIÓN OPTIMIZADA PARA GTX 1060 (6GB VRAM)
+# =============================================================================
 
 # -----------------------------------------------------------------------------
 # HIPERPARÁMETROS DE ENTRENAMIENTO
@@ -11,11 +14,9 @@ training:
   # Número de épocas
   epochs: 50
   
-  # Tamaño del batch (ajustar según memoria GPU disponible)
-  # - GPU 8GB: batch_size 4-8
-  # - GPU 12GB: batch_size 8-16
-  # - GPU 24GB: batch_size 16-32
-  batch_size: 8
+  # Tamaño del batch - REDUCIDO para GTX 1060 (6GB)
+  # El effective batch = batch_size * accumulate_grad_batches = 4 * 8 = 32
+  batch_size: 4
   
   # Learning rate inicial
   # Recomendado: 5e-5 para fine-tuning, 1e-4 para training from scratch
@@ -42,19 +43,22 @@ training:
   # Gradient clipping (previene exploding gradients)
   gradient_clip_val: 1.0
   
-  # Gradient accumulation (simula batch más grande)
-  # effective_batch_size = batch_size * accumulate_grad_batches
-  accumulate_grad_batches: 1
+  # Gradient accumulation - AUMENTADO para compensar batch pequeño
+  # effective_batch_size = batch_size * accumulate_grad_batches = 4 * 8 = 32
+  accumulate_grad_batches: 8
   
-  # Precisión de entrenamiento
-  # "32" - FP32 (más preciso, más lento)
-  # "16-mixed" - Mixed precision (recomendado para GPUs modernas)
-  # "bf16-mixed" - BFloat16 (mejor para A100, H100)
+  # Precisión de entrenamiento - Mixed precision para ahorrar VRAM
+  # "32" - FP32 (más preciso, más lento, más VRAM)
+  # "16-mixed" - Mixed precision (recomendado para GTX 1060)
+  # "bf16-mixed" - BFloat16 (solo para Ampere+: RTX 30xx, 40xx)
   precision: "16-mixed"
   
   # Hardware
   accelerator: "auto"  # "auto" | "cpu" | "gpu" | "tpu" | "mps"
   devices: 1
+  
+  # Workers para DataLoader - ajustar según CPU
+  num_workers: 4
   
   # Validación
   val_check_interval: 1.0  # 1.0 = cada época, 0.5 = cada media época
