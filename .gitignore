@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.DS_Store
+.env
+venv/
+.idea/
+.vscode/
+data/external/
+data/processed/
+models/checkpoints/

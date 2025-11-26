@@ -1,0 +1,5 @@
+expert:
+  name: "expert_latam_jovenes"
+  base_model: "configs/base_model.yaml"
+  specialization: "young_latam_handwriting"
+  language: "es-419"

@@ -1,0 +1,5 @@
+expert:
+  name: "expert_es_mayores"
+  base_model: "configs/base_model.yaml"
+  specialization: "elderly_handwriting"
+  language: "es"

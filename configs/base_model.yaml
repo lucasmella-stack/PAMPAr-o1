@@ -1,0 +1,6 @@
+model:
+  name: "trocr-base"
+  encoder: "vit"
+  decoder: "trocr"
+  hidden_size: 768
+  vocab_size: 50000

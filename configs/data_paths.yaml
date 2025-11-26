@@ -1,0 +1,5 @@
+paths:
+  raw_data: "data/external"
+  processed_data: "data/processed"
+  user_samples: "data/user_samples"
+  splits: "data/splits"
