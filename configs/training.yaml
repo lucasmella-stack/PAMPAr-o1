@@ -4,7 +4,7 @@
 # Este archivo contiene todos los hiperparámetros de entrenamiento.
 # Puedes override cualquier valor desde la línea de comandos.
 #
-# CONFIGURACIÓN OPTIMIZADA PARA GTX 1060 (6GB VRAM)
+# CONFIGURACIÓN OPTIMIZADA PARA GTX 1650 (4GB VRAM)
 # =============================================================================
 
 # -----------------------------------------------------------------------------
@@ -14,9 +14,9 @@ training:
   # Número de épocas
   epochs: 50
   
-  # Tamaño del batch - REDUCIDO para GTX 1060 (6GB)
-  # El effective batch = batch_size * accumulate_grad_batches = 4 * 8 = 32
-  batch_size: 4
+  # Tamaño del batch - MUY REDUCIDO para GTX 1650 (4GB)
+  # El effective batch = batch_size * accumulate_grad_batches = 2 * 16 = 32
+  batch_size: 2
   
   # Learning rate inicial
   # Recomendado: 5e-5 para fine-tuning, 1e-4 para training from scratch
@@ -43,14 +43,13 @@ training:
   # Gradient clipping (previene exploding gradients)
   gradient_clip_val: 1.0
   
-  # Gradient accumulation - AUMENTADO para compensar batch pequeño
-  # effective_batch_size = batch_size * accumulate_grad_batches = 4 * 8 = 32
-  accumulate_grad_batches: 8
+  # Gradient accumulation - MUY AUMENTADO para compensar batch pequeño
+  # effective_batch_size = batch_size * accumulate_grad_batches = 2 * 16 = 32
+  accumulate_grad_batches: 16
   
-  # Precisión de entrenamiento - Mixed precision para ahorrar VRAM
-  # "32" - FP32 (más preciso, más lento, más VRAM)
-  # "16-mixed" - Mixed precision (recomendado para GTX 1060)
-  # "bf16-mixed" - BFloat16 (solo para Ampere+: RTX 30xx, 40xx)
+  # Precisión de entrenamiento - Mixed precision OBLIGATORIO para 4GB
+  # "32" - FP32 (más preciso, más lento, más VRAM) - NO USAR
+  # "16-mixed" - Mixed precision (OBLIGATORIO para GTX 1650)
   precision: "16-mixed"
   
   # Hardware
