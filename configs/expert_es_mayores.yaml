@@ -1,5 +1,160 @@
+# =============================================================================
+# EXPERTO: Español - Letra de Personas Mayores
+# =============================================================================
+# Configuración para fine-tuning de experto especializado en escritura
+# manuscrita de personas mayores de habla hispana.
+#
+# Características del dominio:
+# - Letra más temblorosa o irregular
+# - Tamaño de letra variable
+# - Menos presión en el trazo
+# - Uso de vocabulario formal/tradicional
+# - Acentuación y puntuación correcta
+
+# -----------------------------------------------------------------------------
+# CONFIGURACIÓN DEL EXPERTO
+# -----------------------------------------------------------------------------
 expert:
   name: "expert_es_mayores"
-  base_model: "configs/base_model.yaml"
+  description: "Experto en escritura manuscrita de personas mayores (español)"
+  version: "1.0.0"
+  
+  # Modelo base del que se deriva
+  base_model: "outputs/experiment_xxx/checkpoints/final_model.ckpt"
+  
+  # Especialización
   specialization: "elderly_handwriting"
   language: "es"
+  age_group: "60+"
+  region: "españa"
+  
+  # Tipo de expert head
+  # "adapter" - Más eficiente, ~1% parámetros (recomendado)
+  # "lora" - Muy eficiente, ~0.1-1% parámetros
+  # "full" - Fine-tuning completo, 100% parámetros
+  type: "adapter"
+  
+  # Congelar encoder (recomendado para fine-tuning de experto)
+  freeze_encoder: true
+  
+  # Parámetros específicos del tipo de expert
+  params:
+    # Para adapter
+    adapter_size: 64
+    num_adapter_layers: 6
+    
+    # Para lora (descomentar si type=lora)
+    # rank: 8
+    # alpha: 16.0
+    # target_modules: ["q_proj", "v_proj", "out_proj"]
+    
+    # Para full (descomentar si type=full)
+    # freeze_embeddings: true
+    # freeze_n_layers: 2
+  
+  # Ruta a datos específicos del experto
+  # Si no se especifica, usa data_paths.yaml
+  data_path: "data/splits/es_mayores"
+
+# -----------------------------------------------------------------------------
+# CARACTERÍSTICAS DEL DOMINIO
+# -----------------------------------------------------------------------------
+domain:
+  # Características de la escritura
+  handwriting_style:
+    - "irregular"
+    - "variable_size"
+    - "shaky_strokes"
+    - "low_pressure"
+  
+  # Vocabulario común
+  common_vocabulary:
+    - formal
+    - traditional_spanish
+    - proper_punctuation
+    - complete_sentences
+  
+  # Augmentations específicas para este dominio
+  augmentations:
+    # Más augmentations para simular temblor
+    rotation_degrees: 15  # Más rotación que el estándar
+    gaussian_noise_std: 0.08  # Más ruido
+    affine_shear: 12
+    
+    # Específico para letra de mayores
+    blur_probability: 0.3
+    contrast_reduction: 0.2
+
+# -----------------------------------------------------------------------------
+# ENTRENAMIENTO
+# -----------------------------------------------------------------------------
+training:
+  # Hiperparámetros de entrenamiento
+  epochs: 30
+  batch_size: 8
+  learning_rate: 0.0001  # Más bajo para fine-tuning
+  
+  # Early stopping
+  patience: 8
+  
+  # Precisión
+  precision: "16-mixed"
+  
+  # Gradient clipping
+  gradient_clip_val: 1.0
+
+# -----------------------------------------------------------------------------
+# DATOS
+# -----------------------------------------------------------------------------
+data:
+  # Fuentes de datos para este experto
+  sources:
+    - name: "iam_elderly"
+      weight: 1.0
+    - name: "custom_es_mayores"
+      weight: 2.0  # Mayor peso para datos específicos
+    - name: "rimes_elderly"
+      weight: 0.5
+  
+  # Dimensiones de imagen
+  img_height: 128
+  img_width: 512
+  
+  # Longitud de secuencia
+  max_length: 128
+  
+  # DataLoader
+  num_workers: 4
+
+# -----------------------------------------------------------------------------
+# EVALUACIÓN
+# -----------------------------------------------------------------------------
+evaluation:
+  # Métricas específicas
+  metrics:
+    - "cer"  # Character Error Rate
+    - "wer"  # Word Error Rate
+    - "accuracy"
+  
+  # Conjunto de validación específico
+  val_split: 0.15
+  
+  # Ejemplos para monitoring durante entrenamiento
+  monitor_examples: 10
+
+# -----------------------------------------------------------------------------
+# NOTAS DE USO
+# -----------------------------------------------------------------------------
+# Para entrenar este experto:
+#
+# 1. Entrenar modelo base primero:
+#    python -m llarri.training.train_base
+#
+# 2. Fine-tune el experto:
+#    python -m llarri.training.finetune_expert \
+#        --base-model outputs/experiment_xxx/checkpoints/final_model.ckpt \
+#        --config configs/expert_es_mayores.yaml
+#
+# 3. El experto se guardará en:
+#    outputs/experts/expert_es_mayores/
+
