@@ -8,3 +8,4 @@ venv/
 data/external/
 data/processed/
 models/checkpoints/
+outputs/
