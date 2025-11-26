@@ -203,8 +203,8 @@ def test_dataset():
     # Probar DataLoader
     loader = DataLoader(dataset, batch_size=4, collate_fn=collate_fn)
     batch = next(iter(loader))
-    print(f"\nBatch shape: {batch['image'].shape}")
-    print(f"Textos: {batch['text']}")
+    print(f"\nBatch pixel_values shape: {batch['pixel_values'].shape}")
+    print(f"Labels shape: {batch['labels'].shape}")
     
     return dataset
 
@@ -303,30 +303,37 @@ def run_mini_training():
     from pytorch_lightning.callbacks import ModelCheckpoint
     from llarri.models.llarri_base_model import LlarriBaseModel
     
-    # Dataset
-    train_dataset = SyntheticWordDataset(num_samples=50, train=True, seed=42)
-    val_dataset = SyntheticWordDataset(num_samples=20, train=False, seed=123)
+    # Dataset - menos muestras para test rápido
+    train_dataset = SyntheticWordDataset(num_samples=20, train=True, seed=42)
+    val_dataset = SyntheticWordDataset(num_samples=10, train=False, seed=123)
     
+    # Batch size 1 para GPU de 4GB
     train_loader = DataLoader(
-        train_dataset, batch_size=2, shuffle=True, 
+        train_dataset, batch_size=1, shuffle=True, 
         collate_fn=collate_fn, num_workers=0
     )
     val_loader = DataLoader(
-        val_dataset, batch_size=2, shuffle=False,
+        val_dataset, batch_size=1, shuffle=False,
         collate_fn=collate_fn, num_workers=0
     )
     
-    # Modelo
+    # Modelo con gradient checkpointing habilitado
     model = LlarriBaseModel(
         learning_rate=1e-4,
     )
     
-    # Trainer
+    # Habilitar gradient checkpointing para ahorrar memoria
+    model.encoder.vit.gradient_checkpointing_enable()
+    model.decoder.decoder.model.gradient_checkpointing_enable()
+    
+    # Trainer con accumulate_grad_batches para simular batch más grande
     trainer = pl.Trainer(
         max_epochs=3,
         accelerator="auto",
         devices=1,
         precision="16-mixed",
+        accumulate_grad_batches=8,  # Efectivamente batch=8
+        gradient_clip_val=1.0,
         enable_progress_bar=True,
         enable_model_summary=True,
         log_every_n_steps=1,
@@ -336,6 +343,7 @@ def run_mini_training():
     
     # Entrenar
     print("\nIniciando entrenamiento...")
+    print("(batch_size=1, accumulate_grad_batches=8, gradient_checkpointing=ON)")
     trainer.fit(model, train_loader, val_loader)
     
     print("\n✅ Mini-entrenamiento completado!")
