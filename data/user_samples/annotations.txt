@@ -1,0 +1,4 @@
+# Archivo de anotaciones para fine-tuning
+# Formato: nombre_imagen<TAB>texto
+# Ejemplo:
+# imagen1.png	Este es el texto de la imagen
