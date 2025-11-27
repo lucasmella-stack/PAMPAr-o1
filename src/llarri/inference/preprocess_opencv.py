@@ -2,12 +2,22 @@
 preprocess_opencv.py - Preprocesamiento de imágenes con OpenCV
 
 Pipeline completo de preprocesamiento para optimizar la calidad
-de reconocimiento OCR:
-- Conversión a escala de grises
-- Binarización (Otsu + adaptativa)
-- Corrección de inclinación (deskew)
-- Limpieza de ruido
-- Normalización de tamaño
+de reconocimiento OCR. Equivalente al imageprocessor.js del frontend.
+
+Funciones principales:
+- preprocess_for_ocr(): Pipeline completo
+- preprocess_simple(): Versión ligera sin OpenCV (usa Pillow)
+
+Pipeline:
+1. Conversión a escala de grises
+2. Aumento de contraste
+3. Normalización de brillo
+4. Sharpening (mejora bordes)
+5. Upscaling (mínimo 1000px ancho)
+6. Binarización adaptativa
+7. Corrección de inclinación (deskew)
+8. Limpieza de ruido
+9. Padding para mejor OCR
 
 Uso:
     from llarri.inference.preprocess_opencv import preprocess_for_ocr
@@ -15,6 +25,9 @@ Uso:
     tensor = preprocess_for_ocr("image.jpg")
     # o
     tensor = preprocess_for_ocr(pil_image)
+    
+    # Versión simple sin OpenCV:
+    tensor = preprocess_simple(pil_image)
 """
 
 import numpy as np
@@ -28,7 +41,7 @@ try:
 except ImportError:
     HAS_CV2 = False
 
-from PIL import Image
+from PIL import Image, ImageFilter, ImageEnhance, ImageOps
 
 
 def _ensure_cv2():
@@ -486,15 +499,139 @@ def preprocess_batch(
     return np.stack(processed, axis=0)
 
 
-# Función de conveniencia para PyTorch
-def preprocess_to_tensor(
+# =============================================================================
+# VERSIÓN SIMPLE (sin OpenCV) - Equivalente al imageprocessor.js
+# =============================================================================
+
+def preprocess_simple(
+    image_input: Union[str, Path, Image.Image, np.ndarray],
+    min_width: int = 1000,
+    threshold: int = 128,
+    contrast_factor: float = 1.3,
+    add_padding: bool = True,
+    padding_size: int = 20,
+) -> Image.Image:
+    """
+    Preprocesamiento simple usando solo Pillow.
+    Equivalente a la función preprocessImage() de imageprocessor.js
+    
+    Pipeline:
+    1. Convertir a escala de grises
+    2. Aumentar contraste
+    3. Normalizar (autocontrast)
+    4. Sharpening (mejora bordes de texto)
+    5. Escalar si es muy pequeña (mínimo 1000px ancho)
+    6. Binarización (threshold)
+    7. Padding blanco alrededor
+    
+    Args:
+        image_input: Imagen de entrada (path, PIL, numpy)
+        min_width: Ancho mínimo (escalará si es menor)
+        threshold: Valor para binarización (0-255)
+        contrast_factor: Factor de contraste (>1 = más contraste)
+        add_padding: Agregar borde blanco
+        padding_size: Tamaño del padding en píxeles
+        
+    Returns:
+        PIL Image procesada
+    """
+    # Cargar imagen
+    if isinstance(image_input, (str, Path)):
+        image = Image.open(image_input)
+    elif isinstance(image_input, np.ndarray):
+        image = Image.fromarray(image_input)
+    elif isinstance(image_input, Image.Image):
+        image = image_input.copy()
+    else:
+        raise TypeError(f"Tipo no soportado: {type(image_input)}")
+    
+    # Asegurar RGB
+    if image.mode != 'RGB':
+        image = image.convert('RGB')
+    
+    # 1. Convertir a escala de grises
+    image = image.convert('L')
+    
+    # 2. Aumentar contraste
+    enhancer = ImageEnhance.Contrast(image)
+    image = enhancer.enhance(contrast_factor)
+    
+    # 3. Normalizar (autocontrast)
+    image = ImageOps.autocontrast(image)
+    
+    # 4. Sharpening - kernel equivalente al JS: [0,-1,0],[-1,5,-1],[0,-1,0]
+    image = image.filter(ImageFilter.SHARPEN)
+    
+    # 5. Escalar si es muy pequeña
+    if image.width < min_width:
+        scale = min_width / image.width
+        new_size = (int(image.width * scale), int(image.height * scale))
+        image = image.resize(new_size, Image.Resampling.LANCZOS)
+    
+    # 6. Binarización (threshold)
+    image = image.point(lambda x: 255 if x > threshold else 0, mode='L')
+    
+    # 7. Padding blanco alrededor (mejora OCR)
+    if add_padding:
+        new_size = (image.width + padding_size * 2, image.height + padding_size * 2)
+        padded = Image.new('L', new_size, 255)  # Fondo blanco
+        padded.paste(image, (padding_size, padding_size))
+        image = padded
+    
+    # Convertir a RGB para el modelo
+    image = image.convert('RGB')
+    
+    return image
+
+
+def preprocess_simple_to_tensor(
     image_input: Union[str, Path, Image.Image, np.ndarray],
     target_size: Tuple[int, int] = (224, 224),
     device: str = 'cpu',
     **kwargs,
 ):
     """
+    Preprocesa con método simple y convierte a tensor PyTorch.
+    
+    Returns:
+        torch.Tensor con shape [1, C, H, W]
+    """
+    try:
+        import torch
+    except ImportError:
+        raise ImportError("PyTorch no instalado")
+    
+    # Preprocesar
+    image = preprocess_simple(image_input, **kwargs)
+    
+    # Resize al tamaño del modelo
+    image = image.resize((target_size[1], target_size[0]), Image.Resampling.LANCZOS)
+    
+    # Convertir a numpy y normalizar
+    arr = np.array(image).astype(np.float32) / 255.0
+    
+    # HWC -> CHW
+    arr = np.transpose(arr, (2, 0, 1))
+    
+    # A tensor
+    tensor = torch.from_numpy(arr).unsqueeze(0)
+    
+    return tensor.to(device)
+
+
+# Función de conveniencia para PyTorch
+def preprocess_to_tensor(
+    image_input: Union[str, Path, Image.Image, np.ndarray],
+    target_size: Tuple[int, int] = (224, 224),
+    device: str = 'cpu',
+    use_opencv: bool = True,
+    **kwargs,
+):
+    """
     Preprocesa y convierte directamente a tensor PyTorch.
+    
+    Args:
+        use_opencv: Si True usa OpenCV (mejor), si False usa Pillow (más compatible)
     
     Returns:
         torch.Tensor con shape [1, C, H, W]
@@ -504,8 +641,12 @@ def preprocess_to_tensor(
     except ImportError:
         raise ImportError("PyTorch no instalado. Usa preprocess_for_ocr() para numpy.")
     
-    numpy_tensor = preprocess_for_ocr(image_input, target_size, **kwargs)
-    tensor = torch.from_numpy(numpy_tensor).unsqueeze(0)
+    if use_opencv and HAS_CV2:
+        numpy_tensor = preprocess_for_ocr(image_input, target_size, **kwargs)
+        tensor = torch.from_numpy(numpy_tensor).unsqueeze(0)
+    else:
+        # Fallback a versión simple
+        return preprocess_simple_to_tensor(image_input, target_size, device, **kwargs)
     
     return tensor.to(device)
 

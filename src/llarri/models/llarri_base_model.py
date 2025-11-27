@@ -1,6 +1,7 @@
 import pytorch_lightning as pl
 import torch
 import torch.nn as nn
+import numpy as np
 from dataclasses import dataclass
 from typing import List, Optional, Dict, Any
 from transformers import TrOCRProcessor, AutoTokenizer
@@ -193,6 +194,111 @@ class LlarriBaseModel(pl.LightningModule):
                 "monitor": "val_loss",
             },
         }
+
+    def predict(
+        self,
+        image,
+        preprocess: bool = True,
+        use_opencv: bool = True,
+        max_length: int = 128,
+        num_beams: int = 4,
+    ) -> str:
+        """
+        Predice texto desde una imagen con preprocesamiento automático.
+        
+        Este método integra el preprocesador (equivalente a imageprocessor.js)
+        para garantizar que cualquier imagen sea optimizada antes del OCR.
+        
+        Args:
+            image: Puede ser:
+                - str/Path: ruta a imagen
+                - PIL.Image: imagen PIL
+                - np.ndarray: array numpy (H, W, C) o (H, W)
+                - torch.Tensor: tensor ya preprocesado (C, H, W) o (B, C, H, W)
+            preprocess: Si aplicar preprocesamiento automático
+            use_opencv: Usar OpenCV (mejor) o Pillow (más compatible)
+            max_length: Longitud máxima del texto generado
+            num_beams: Beams para beam search
+            
+        Returns:
+            Texto reconocido
+        """
+        from ..inference.preprocess_opencv import preprocess_to_tensor, preprocess_simple_to_tensor
+        
+        self.eval()
+        device = next(self.parameters()).device
+        
+        # Si ya es un tensor preprocesado
+        if isinstance(image, torch.Tensor):
+            if image.dim() == 3:
+                image = image.unsqueeze(0)  # (C,H,W) -> (1,C,H,W)
+            pixel_values = image.to(device)
+        else:
+            # Preprocesar imagen
+            if preprocess:
+                if use_opencv:
+                    try:
+                        pixel_values = preprocess_to_tensor(
+                            image,
+                            target_size=(224, 224),
+                            device=str(device),
+                            use_opencv=True
+                        )
+                    except:
+                        # Fallback a versión simple
+                        pixel_values = preprocess_simple_to_tensor(
+                            image,
+                            target_size=(224, 224),
+                            device=str(device)
+                        )
+                else:
+                    pixel_values = preprocess_simple_to_tensor(
+                        image,
+                        target_size=(224, 224),
+                        device=str(device)
+                    )
+            else:
+                # Sin preprocesamiento, usar processor de HuggingFace
+                from PIL import Image as PILImage
+                if isinstance(image, str):
+                    image = PILImage.open(image).convert("RGB")
+                elif isinstance(image, np.ndarray):
+                    image = PILImage.fromarray(image).convert("RGB")
+                
+                pixel_values = self.processor(image, return_tensors="pt").pixel_values
+                pixel_values = pixel_values.to(device)
+        
+        # Generar texto
+        with torch.no_grad():
+            results = self.generate(
+                pixel_values,
+                max_length=max_length,
+                num_beams=num_beams
+            )
+        
+        # Retornar primer resultado (o lista si batch)
+        if len(results) == 1:
+            return results[0]
+        return results
+
+    def predict_batch(
+        self,
+        images: list,
+        preprocess: bool = True,
+        **kwargs
+    ) -> list:
+        """
+        Predice texto para múltiples imágenes.
+        
+        Args:
+            images: Lista de imágenes (paths, PIL, numpy, etc.)
+            preprocess: Si aplicar preprocesamiento
+            **kwargs: Argumentos adicionales para predict
+            
+        Returns:
+            Lista de textos reconocidos
+        """
+        return [self.predict(img, preprocess=preprocess, **kwargs) for img in images]
 
     def export_onnx(self, sample_image: torch.Tensor, onnx_path: str):
         """Export the full model (encoder + decoder) to ONNX.
