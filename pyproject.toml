@@ -24,12 +24,24 @@ pillow = "*"
 scikit-learn = "*"
 numpy = "*"
 pandas = "*"
+# Language Model dependencies
+wordfreq = "*"
+symspellpy = "*"
+python-Levenshtein = "*"
 
 [tool.poetry.group.dev.dependencies]
 black = "*"
 ruff = "*"
 mypy = "*"
 pytest = "*"
+
+# Dependencias opcionales para MiniCPM-V
+[tool.poetry.extras]
+minicpm = [
+    "accelerate",
+    "bitsandbytes",
+    "requests",
+]
 
 [build-system]
 requires = ["poetry-core"]

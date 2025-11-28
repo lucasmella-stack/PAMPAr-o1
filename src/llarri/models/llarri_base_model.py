@@ -200,14 +200,30 @@ class LlarriBaseModel(pl.LightningModule):
         image,
         preprocess: bool = True,
         use_opencv: bool = True,
+        use_language_model: bool = True,
+        use_ensemble: bool = False,
+        ensemble_strategy: str = "verify_if_low_conf",
+        return_metadata: bool = False,
         max_length: int = 128,
         num_beams: int = 4,
-    ) -> str:
+    ):
         """
         Predice texto desde una imagen con preprocesamiento automático.
         
-        Este método integra el preprocesador (equivalente a imageprocessor.js)
-        para garantizar que cualquier imagen sea optimizada antes del OCR.
+        Este método integra:
+        1. Preprocesador (equivalente a imageprocessor.js)
+        2. Modelo de lenguaje (cadenas de Markov + reglas fonéticas + spellcheck)
+        3. Ensemble con MiniCPM-V (opcional, para máxima precisión)
+        
+        El modelo de lenguaje mejora la precisión aplicando:
+        - N-gramas de caracteres para detectar secuencias improbables
+        - Reglas fonéticas del español (Q siempre con U, etc.)
+        - Corrector ortográfico con diccionario español
+        
+        El ensemble (si está activado) combina:
+        - LLARRI (TrOCR especializado)
+        - MiniCPM-V (modelo multimodal poderoso)
+        - SpanishLanguageModel (post-procesamiento)
         
         Args:
             image: Puede ser:
@@ -217,12 +233,30 @@ class LlarriBaseModel(pl.LightningModule):
                 - torch.Tensor: tensor ya preprocesado (C, H, W) o (B, C, H, W)
             preprocess: Si aplicar preprocesamiento automático
             use_opencv: Usar OpenCV (mejor) o Pillow (más compatible)
+            use_language_model: Si aplicar modelo de lenguaje para corregir
+            use_ensemble: Si usar ensemble con MiniCPM-V (más lento pero más preciso)
+            ensemble_strategy: Estrategia de ensemble:
+                - "verify_if_low_conf": Solo verifica si LLARRI tiene baja confianza
+                - "always_verify": Siempre verifica con MiniCPM
+                - "consensus": Acepta si múltiples modelos coinciden
+                - "rerank": Genera candidatos y re-rankea con LM
+                - "llarri_only": Solo LLARRI + LM
+                - "minicpm_only": Solo MiniCPM + LM
+            return_metadata: Si retornar metadata adicional (confianza, timing, etc.)
             max_length: Longitud máxima del texto generado
             num_beams: Beams para beam search
             
         Returns:
-            Texto reconocido
+            str: Texto reconocido (si return_metadata=False)
+            tuple: (texto, metadata) si return_metadata=True
         """
+        # Si ensemble está activo, delegar al EnsembleOCR
+        if use_ensemble:
+            return self._predict_with_ensemble(
+                image,
+                strategy=ensemble_strategy,
+                return_metadata=return_metadata,
+            )
         from ..inference.preprocess_opencv import preprocess_to_tensor, preprocess_simple_to_tensor
         
         self.eval()
@@ -276,15 +310,62 @@ class LlarriBaseModel(pl.LightningModule):
                 num_beams=num_beams
             )
         
+        # Aplicar modelo de lenguaje para corregir
+        if use_language_model:
+            try:
+                from ..inference.language_model import get_language_model
+                lm = get_language_model()
+                results = [lm.correct_text(r) for r in results]
+            except ImportError:
+                pass  # Si no están las dependencias, continuar sin LM
+        
         # Retornar primer resultado (o lista si batch)
         if len(results) == 1:
             return results[0]
         return results
 
+    def _predict_with_ensemble(
+        self,
+        image,
+        strategy: str = "verify_if_low_conf",
+        return_metadata: bool = False,
+    ):
+        """
+        Predicción usando el ensemble completo.
+        
+        Args:
+            image: Imagen a procesar
+            strategy: Estrategia de ensemble
+            return_metadata: Si retornar metadata
+            
+        Returns:
+            str o tuple(str, dict) según return_metadata
+        """
+        from ..inference.ensemble_ocr import EnsembleOCR, EnsembleStrategy, EnsembleConfig
+        
+        # Crear ensemble con este modelo como LLARRI
+        config = EnsembleConfig(
+            strategy=EnsembleStrategy(strategy),
+            use_language_model=True,
+        )
+        
+        ensemble = EnsembleOCR(
+            llarri_model=self,
+            config=config,
+        )
+        
+        # Predecir
+        result = ensemble.predict(image)
+        
+        if return_metadata:
+            return result.text, result.to_dict()
+        return result.text
+
     def predict_batch(
         self,
         images: list,
         preprocess: bool = True,
+        use_language_model: bool = True,
         **kwargs
     ) -> list:
         """
@@ -293,12 +374,21 @@ class LlarriBaseModel(pl.LightningModule):
         Args:
             images: Lista de imágenes (paths, PIL, numpy, etc.)
             preprocess: Si aplicar preprocesamiento
+            use_language_model: Si aplicar modelo de lenguaje
             **kwargs: Argumentos adicionales para predict
             
         Returns:
             Lista de textos reconocidos
         """
-        return [self.predict(img, preprocess=preprocess, **kwargs) for img in images]
+        return [
+            self.predict(
+                img, 
+                preprocess=preprocess, 
+                use_language_model=use_language_model,
+                **kwargs
+            ) 
+            for img in images
+        ]
 
     def export_onnx(self, sample_image: torch.Tensor, onnx_path: str):
         """Export the full model (encoder + decoder) to ONNX.
