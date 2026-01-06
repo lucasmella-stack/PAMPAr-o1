@@ -1,0 +1,118 @@
+# =============================================================================
+# CONFIGURACIÓN DEL MODELO BASE - LlarriOCR
+# =============================================================================
+# Arquitectura: ViT Encoder + TrOCR Decoder
+# Este archivo define la configuración del modelo para entrenamiento e inferencia.
+
+# -----------------------------------------------------------------------------
+# CONFIGURACIÓN GENERAL DEL MODELO
+# -----------------------------------------------------------------------------
+model:
+  name: "llarri-base-ocr"
+  version: "0.1.0"
+  
+  # -----------------------------------------------------------------------------
+  # ENCODER - Vision Transformer (ViT)
+  # -----------------------------------------------------------------------------
+  # Opciones de modelos preentrenados:
+  # - "google/vit-base-patch16-224-in21k" (recomendado, balance calidad/velocidad)
+  # - "google/vit-large-patch16-224-in21k" (más preciso, más lento)
+  # - "google/vit-base-patch32-224-in21k" (más rápido, menos preciso)
+  # - "microsoft/swin-base-patch4-window7-224" (alternativa Swin Transformer)
+  encoder_pretrained: "google/vit-base-patch16-224-in21k"
+  
+  # Congelar encoder durante entrenamiento (transfer learning)
+  # true = solo entrenar decoder (más rápido, menos adaptación)
+  # false = entrenar todo el modelo (más lento, mejor adaptación)
+  freeze_encoder: false
+  
+  # Configuración de encoder (si no se usa pretrained)
+  encoder:
+    hidden_size: 768
+    num_hidden_layers: 12
+    num_attention_heads: 12
+    intermediate_size: 3072
+    patch_size: 16
+    image_size: 224
+  
+  # -----------------------------------------------------------------------------
+  # DECODER - TrOCR
+  # -----------------------------------------------------------------------------
+  # Opciones de modelos preentrenados:
+  # - "microsoft/trocr-base-handwritten" (recomendado para manuscrito)
+  # - "microsoft/trocr-large-handwritten" (más preciso, más lento)
+  # - "microsoft/trocr-base-printed" (para texto impreso)
+  # - "microsoft/trocr-small-handwritten" (más rápido, menos preciso)
+  decoder_pretrained: "microsoft/trocr-base-handwritten"
+  
+  # Congelar decoder durante entrenamiento
+  freeze_decoder: false
+  
+  # Configuración de decoder
+  decoder:
+    hidden_size: 768
+    num_hidden_layers: 6
+    num_attention_heads: 12
+    intermediate_size: 3072
+    max_position_embeddings: 512
+  
+  # -----------------------------------------------------------------------------
+  # VOCABULARIO Y TOKENIZACIÓN
+  # -----------------------------------------------------------------------------
+  # Usar tokenizer de HuggingFace (recomendado)
+  use_hf_tokenizer: true
+  
+  # Longitud máxima de secuencia
+  max_seq_length: 128
+  
+  # Vocabulario personalizado (solo si use_hf_tokenizer = false)
+  custom_vocab:
+    # Caracteres soportados
+    lowercase: "abcdefghijklmnopqrstuvwxyz"
+    uppercase: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    digits: "0123456789"
+    punctuation: ".,!?:;\"'()-"
+    special: "áéíóúñüÁÉÍÓÚÑÜ¿¡"  # Caracteres especiales español
+    
+    # Tokens especiales
+    pad_token: "<pad>"
+    sos_token: "<sos>"
+    eos_token: "<eos>"
+    unk_token: "<unk>"
+
+# -----------------------------------------------------------------------------
+# CONFIGURACIÓN DE INFERENCIA
+# -----------------------------------------------------------------------------
+inference:
+  # Método de decodificación
+  # "greedy" - Más rápido, menos preciso
+  # "beam_search" - Más lento, más preciso
+  decoding_method: "beam_search"
+  
+  # Parámetros de beam search
+  num_beams: 4
+  
+  # Longitud máxima de generación
+  max_length: 128
+  
+  # Parámetros de sampling (si se usa)
+  temperature: 1.0
+  top_k: 50
+  top_p: 0.95
+  
+  # Repetition penalty
+  repetition_penalty: 1.0
+
+# -----------------------------------------------------------------------------
+# REGULARIZACIÓN
+# -----------------------------------------------------------------------------
+regularization:
+  # Dropout en encoder
+  encoder_dropout: 0.1
+  
+  # Dropout en decoder
+  decoder_dropout: 0.1
+  
+  # Label smoothing para cross-entropy loss
+  label_smoothing: 0.1
+

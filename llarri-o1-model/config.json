@@ -1,0 +1,38 @@
+{
+  "model_type": "llarri-o1",
+  "variants": {
+    "llarri-o1-small": {
+      "params": 195642,
+      "dim": 128,
+      "size_mb": 0.75
+    },
+    "llarri-o1-100m": {
+      "params": 58134184,
+      "dim": 1024,
+      "size_gb": 0.21656671166419983
+    },
+    "llarri-o1-500m": {
+      "params": 295938408,
+      "dim": 2048,
+      "size_gb": 1.1024564802646637
+    },
+    "llarri-o1-1b": {
+      "params": 564488552,
+      "dim": 2048,
+      "size_gb": 2.1028837263584137
+    }
+  },
+  "current_variant": "llarri-o1-100m",
+  "architecture": "Trinity Fractal Scaled",
+  "author": "Lucas Mella",
+  "license": "lucas-mella-proprietary",
+  "created": "2026-01-06T20:57:35.098609",
+  "dim_entrada": 768,
+  "dim_oculta": 1024,
+  "dim_salida": 1000,
+  "profundidad_fractal": 4,
+  "n_capas_extra": 6,
+  "total_params": 58134184,
+  "size_gb": 0.21656671166419983,
+  "description": "LLARRI-O1 100M - Vectores fractales x3 - La Sant\u00edsima Trinidad de la IA"
+}

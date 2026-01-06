@@ -1,0 +1,173 @@
+# =============================================================================
+# CONFIGURACIÓN DE DATOS Y RUTAS - LlarriOCR
+# =============================================================================
+# Define las rutas de datos y configuración de datasets para entrenamiento.
+
+# -----------------------------------------------------------------------------
+# RUTAS DE DIRECTORIOS
+# -----------------------------------------------------------------------------
+paths:
+  # Datos externos (datasets originales descargados)
+  raw_data: "data/external"
+  
+  # Datos procesados (imágenes normalizadas, recortadas)
+  processed_data: "data/processed"
+  
+  # Subdirectorios de datos procesados
+  processed_lines: "data/processed/lines"
+  processed_chars: "data/processed/chars"
+  
+  # Muestras de usuario para active learning
+  user_samples: "data/user_samples"
+  
+  # Archivos de split (train/val/test en formato JSONL)
+  splits: "data/splits"
+  
+  # Checkpoints y modelos guardados
+  checkpoints: "outputs/checkpoints"
+  
+  # Logs de entrenamiento
+  logs: "outputs/logs"
+
+# -----------------------------------------------------------------------------
+# CONFIGURACIÓN DE DATASETS
+# -----------------------------------------------------------------------------
+datasets:
+  # Lista de datasets a usar (en orden de prioridad)
+  enabled:
+    - "iam"
+    - "rimes"
+    - "bentham"
+    # - "mnist"      # Descomenta para incluir
+    # - "emnist"     # Descomenta para incluir
+    # - "tuh"        # Descomenta para incluir
+    # - "custom_es"  # Dataset personalizado español
+  
+  # Configuración por dataset
+  iam:
+    path: "data/external/iam"
+    language: "en"
+    type: "handwritten"
+    weight: 1.0  # Peso en el sampling
+  
+  rimes:
+    path: "data/external/rimes"
+    language: "fr"
+    type: "handwritten"
+    weight: 0.5
+  
+  bentham:
+    path: "data/external/bentham"
+    language: "en"
+    type: "historical"
+    weight: 0.3
+  
+  mnist:
+    path: "data/external/mnist"
+    language: "digits"
+    type: "digits"
+    weight: 0.1
+  
+  emnist:
+    path: "data/external/emnist"
+    language: "en"
+    type: "characters"
+    weight: 0.1
+  
+  tuh:
+    path: "data/external/tuh"
+    language: "en"
+    type: "handwritten"
+    weight: 0.2
+  
+  custom_es:
+    path: "data/external/custom_es"
+    language: "es"
+    type: "handwritten"
+    weight: 1.5  # Mayor peso para español
+
+# -----------------------------------------------------------------------------
+# CONFIGURACIÓN DE PROCESAMIENTO DE DATOS
+# -----------------------------------------------------------------------------
+data:
+  # Dimensiones de imagen para entrenamiento
+  img_height: 128
+  img_width: 512
+  
+  # Longitud máxima de secuencia (caracteres)
+  max_length: 128
+  
+  # Número de workers para DataLoader
+  num_workers: 4
+  
+  # Prefetch factor para DataLoader
+  prefetch_factor: 2
+  
+  # Usar pinned memory (más rápido en GPU)
+  pin_memory: true
+  
+  # Split de datos (si no existe train/val/test.jsonl)
+  split_ratios:
+    train: 0.8
+    val: 0.1
+    test: 0.1
+  
+  # Seed para reproducibilidad de splits
+  split_seed: 42
+
+# -----------------------------------------------------------------------------
+# AUGMENTATIONS
+# -----------------------------------------------------------------------------
+augmentations:
+  # Activar/desactivar augmentations
+  enabled: true
+  
+  # Augmentations para training
+  train:
+    # Rotación aleatoria
+    rotation:
+      enabled: true
+      degrees: 10
+    
+    # Transformación affine
+    affine:
+      enabled: true
+      translate: [0.05, 0.05]
+      scale: [0.9, 1.1]
+      shear: 10
+    
+    # Ruido gaussiano
+    gaussian_noise:
+      enabled: true
+      mean: 0.0
+      std: 0.05
+    
+    # Cambios de brillo/contraste
+    color_jitter:
+      enabled: true
+      brightness: 0.3
+      contrast: 0.3
+    
+    # Normalización (ImageNet por defecto)
+    normalize:
+      enabled: true
+      mean: [0.485, 0.456, 0.406]
+      std: [0.229, 0.224, 0.225]
+  
+  # Augmentations para validación (solo normalización)
+  val:
+    normalize:
+      enabled: true
+      mean: [0.485, 0.456, 0.406]
+      std: [0.229, 0.224, 0.225]
+
+# -----------------------------------------------------------------------------
+# FORMATO DE ARCHIVOS JSONL
+# -----------------------------------------------------------------------------
+# Cada línea del archivo JSONL debe tener el formato:
+# {"id": "unique_id", "image_path": "relative/path/to/image.png", "text": "transcription text"}
+#
+# Ejemplo:
+# {"id": "iam_001", "image_path": "lines/a01-000u-00.png", "text": "A MOVE to stop Mr. Gaitskell from"}
+# {"id": "iam_002", "image_path": "lines/a01-000u-01.png", "text": "nominating any more Labour Life Peers"}
+

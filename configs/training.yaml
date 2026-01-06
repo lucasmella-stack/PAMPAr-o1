@@ -1,0 +1,107 @@
+# =============================================================================
+# CONFIGURACIÓN DE ENTRENAMIENTO - LlarriOCR
+# =============================================================================
+# Este archivo contiene todos los hiperparámetros de entrenamiento.
+# Puedes override cualquier valor desde la línea de comandos.
+#
+# CONFIGURACIÓN OPTIMIZADA PARA GTX 1650 (4GB VRAM)
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# HIPERPARÁMETROS DE ENTRENAMIENTO
+# -----------------------------------------------------------------------------
+training:
+  # Número de épocas
+  epochs: 50
+  
+  # Tamaño del batch - MUY REDUCIDO para GTX 1650 (4GB)
+  # El effective batch = batch_size * accumulate_grad_batches = 2 * 16 = 32
+  batch_size: 2
+  
+  # Learning rate inicial
+  # Recomendado: 5e-5 para fine-tuning, 1e-4 para training from scratch
+  learning_rate: 0.00005
+  
+  # Optimizador: "adamw" | "adam" | "sgd"
+  optimizer: "adamw"
+  
+  # Weight decay para regularización
+  weight_decay: 0.01
+  
+  # Scheduler: "cosine" | "linear" | "plateau" | "none"
+  scheduler: "plateau"
+  
+  # Parámetros del scheduler
+  scheduler_params:
+    # Para ReduceLROnPlateau
+    factor: 0.5
+    patience: 3
+    # Para CosineAnnealing
+    T_max: 50
+    eta_min: 1e-7
+  
+  # Gradient clipping (previene exploding gradients)
+  gradient_clip_val: 1.0
+  
+  # Gradient accumulation - MUY AUMENTADO para compensar batch pequeño
+  # effective_batch_size = batch_size * accumulate_grad_batches = 2 * 16 = 32
+  accumulate_grad_batches: 16
+  
+  # Precisión de entrenamiento - Mixed precision OBLIGATORIO para 4GB
+  # "32" - FP32 (más preciso, más lento, más VRAM) - NO USAR
+  # "16-mixed" - Mixed precision (OBLIGATORIO para GTX 1650)
+  precision: "16-mixed"
+  
+  # Hardware
+  accelerator: "auto"  # "auto" | "cpu" | "gpu" | "tpu" | "mps"
+  devices: 1
+  
+  # Workers para DataLoader - ajustar según CPU
+  num_workers: 4
+  
+  # Validación
+  val_check_interval: 1.0  # 1.0 = cada época, 0.5 = cada media época
+  
+  # Logging
+  log_every_n_steps: 10
+  
+  # Reproducibilidad
+  deterministic: false
+  seed: 42
+
+# -----------------------------------------------------------------------------
+# CALLBACKS
+# -----------------------------------------------------------------------------
+callbacks:
+  # Guardar mejores checkpoints
+  save_top_k: 3
+  
+  # Early Stopping
+  early_stopping:
+    enabled: true
+    monitor: "val_loss"
+    patience: 10
+    mode: "min"
+  
+  # Logging de estadísticas de dispositivo (debug)
+  log_device_stats: false
+
+# -----------------------------------------------------------------------------
+# LOGGING
+# -----------------------------------------------------------------------------
+logging:
+  # Logger: "tensorboard" | "wandb" | "none"
+  logger: "tensorboard"
+  
+  # Configuración de WandB (si se usa)
+  wandb_project: "llarri-ocr"
+  wandb_entity: null  # Tu usuario/organización de WandB
+  
+  # Nombre del experimento (null = auto-generado)
+  experiment_name: null
+
+# -----------------------------------------------------------------------------
+# OUTPUT
+# -----------------------------------------------------------------------------
+output_dir: "outputs"
+

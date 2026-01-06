@@ -1,0 +1,124 @@
+# =============================================================================
+# Dockerfile.api - Imagen Docker para la API de llarri-01
+# =============================================================================
+# Multi-stage build para optimizar tamaño final
+# 
+# Build:
+#   docker build -f deploy/Dockerfile.api -t llarri-api:latest ..
+#
+# Run (CPU):
+#   docker run -p 8000:8000 -v $(pwd)/models:/app/models llarri-api:latest
+#
+# Run (GPU):
+#   docker run --gpus all -p 8000:8000 -v $(pwd)/models:/app/models llarri-api:latest
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Stage 1: Builder - instalar dependencias
+# -----------------------------------------------------------------------------
+FROM python:3.10-slim as builder
+
+WORKDIR /app
+
+# Instalar dependencias del sistema para compilación
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copiar archivos de configuración de dependencias
+COPY pyproject.toml README.md ./
+
+# Crear virtual environment
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Instalar dependencias
+# Nota: Usamos CPU-only torch por defecto. Para GPU, usar imagen nvidia/cuda
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir \
+    torch==2.0.1+cpu \
+    torchvision==0.15.2+cpu \
+    -f https://download.pytorch.org/whl/torch_stable.html
+
+# Instalar resto de dependencias
+RUN pip install --no-cache-dir \
+    transformers>=4.30.0 \
+    pytorch-lightning>=2.0.0 \
+    pillow>=9.0.0 \
+    fastapi>=0.100.0 \
+    uvicorn[standard]>=0.23.0 \
+    python-multipart>=0.0.6 \
+    pyyaml>=6.0 \
+    pydantic>=2.0.0 \
+    numpy>=1.24.0 \
+    opencv-python-headless>=4.7.0 \
+    tqdm>=4.65.0
+
+# -----------------------------------------------------------------------------
+# Stage 2: Runtime - imagen final optimizada
+# -----------------------------------------------------------------------------
+FROM python:3.10-slim as runtime
+
+WORKDIR /app
+
+# Instalar dependencias mínimas de runtime
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgl1-mesa-glx \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Copiar virtual environment del builder
+COPY --from=builder /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Copiar código fuente
+COPY src/ src/
+
+# Copiar configuraciones
+COPY configs/ configs/
+
+# Variables de entorno
+ENV PYTHONPATH=/app/src
+ENV PYTHONUNBUFFERED=1
+ENV LLARRI_CONFIG_PATH=/app/configs/api.yaml
+ENV MODEL_PATH=/app/models
+
+# Puerto de la API
+EXPOSE 8000
+
+# Crear usuario no-root para seguridad
+RUN useradd -m -u 1000 llarri && \
+    chown -R llarri:llarri /app
+USER llarri
+
+# Crear directorio de modelos
+RUN mkdir -p /app/models
+
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD python -c "import requests; requests.get('http://localhost:8000/health')" || exit 1
+
+# Comando de inicio
+CMD ["uvicorn", "llarri.api.main:app", \
+     "--host", "0.0.0.0", \
+     "--port", "8000", \
+     "--workers", "1", \
+     "--timeout-keep-alive", "120"]
+
+
+# =============================================================================
+# Dockerfile.api.gpu - Variante con soporte GPU (comentado)
+# =============================================================================
+# Para usar GPU, crear un Dockerfile.api.gpu basado en nvidia/cuda:
+#
+# FROM nvidia/cuda:11.8-cudnn8-runtime-ubuntu22.04 as runtime
+# 
+# RUN apt-get update && apt-get install -y python3.10 python3-pip ...
+#
+# pip install torch==2.0.1+cu118 -f https://download.pytorch.org/whl/torch_stable.html
+# =============================================================================

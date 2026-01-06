@@ -1,73 +1,11 @@
-# Archivos grandes de modelo
-*.bin
-*.safetensors
-*.pt
-*.pth
-*.onnx
-*.h5
-
-# Checkpoints
-checkpoints/
-*.ckpt
-
-# Datos
-data/
-*.csv
-*.json
-!configs/*.yaml
-!configs/*.json
-
-# Python
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# Entornos virtuales
-venv/
-ENV/
-env/
-.venv/
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS
+*.pyc
 .DS_Store
-Thumbs.db
-
-# Jupyter
-.ipynb_checkpoints/
-
-# Logs
-*.log
-logs/
+.env
+venv/
+.idea/
+.vscode/
+data/external/
+data/processed/
+models/checkpoints/
 outputs/
-
-# Temporal
-tmp/
-temp/
-*.tmp
-
-# HuggingFace cache
-.cache/
-llarri-01/

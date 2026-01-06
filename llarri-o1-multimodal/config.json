@@ -1,0 +1,33 @@
+{
+  "model_type": "llarri-o1-multimodal",
+  "architecture": "Trinity Fractal Multimodal",
+  "author": "Lucas Mella",
+  "license": "lucas-mella-proprietary",
+  "created": "2026-01-06T21:02:24.190896",
+  "total_params": 132459512,
+  "size_gb": 0.4934501349925995,
+  "embed_dim": 768,
+  "modalities": {
+    "vision": {
+      "img_size": 224,
+      "patch_size": 16
+    },
+    "text": {
+      "vocab_size": 50000,
+      "max_len": 512
+    },
+    "audio": {
+      "n_mels": 80,
+      "max_frames": 1000
+    }
+  },
+  "capabilities": [
+    "image_classification",
+    "text_classification",
+    "text_generation",
+    "image_text_matching",
+    "multimodal_fusion",
+    "visual_question_answering"
+  ],
+  "description": "La Sant\u00edsima Trinidad de las Modalidades - Mundos dentro de mundos"
+}
