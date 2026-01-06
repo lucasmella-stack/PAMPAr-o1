@@ -9,3 +9,5 @@ data/external/
 data/processed/
 models/checkpoints/
 outputs/
+llarri-o1-model/*.bin
+*.bin
