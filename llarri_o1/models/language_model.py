@@ -9,7 +9,7 @@ Integra todos los componentes desarrollados en el roadmap:
 1. TokenizadorFractal - tokenización jerárquica
 2. EmbeddingComposicional - embeddings eficientes (24x menos memoria)
 3. EmbeddingPosicionalFractal - posición sinusoidal + jerárquica
-4. AttentionFractalProgresivo - attention con early exit (chico→grande)
+4. BloqueFractal - 6 cajas (mezcla → procesa → evalúa → output)
 5. Causal Mask - máscara autoregresiva
 6. LMHeadFractal - predicción con tied embeddings
 """
@@ -27,9 +27,10 @@ from llarri_o1.modules.tokenizer import (
     EmbeddingComposicional,
     EmbeddingPosicionalFractal,
 )
-from llarri_o1.modules.attention import (
-    AttentionFractalProgresivo,
-    AttentionConfig,
+from llarri_o1.modules.bloque_fractal import (
+    BloqueFractal,
+    BloqueFractalConfig,
+    BloqueFractalMultinivel,
 )
 from llarri_o1.modules.lm_head import (
     LMHeadFractal,
@@ -49,11 +50,11 @@ class LLARRIConfig:
     # Niveles fractales
     niveles: List[int] = field(default_factory=lambda: [2, 4, 8, 16, 32, 64, 128, 256])
     
-    # Attention
-    num_heads: int = 8
-    umbral_match: float = 0.7
-    attention_dropout: float = 0.1
-    causal: bool = True
+    # Bloque Fractal (6 cajas)
+    num_heads: int = 4
+    ffn_expansion: float = 2.0
+    num_vecinos: int = 3  # Cajas que procesan (2, 3, 4)
+    umbral_confianza: float = 0.7
     
     # LM Head
     tie_embeddings: bool = True
@@ -72,17 +73,23 @@ class LLARRILanguageModel(nn.Module):
     """
     LLARRI Language Model - Modelo de Lenguaje Fractal.
     
-    Arquitectura:
+    Arquitectura con 6 Cajas:
     ```
-    Texto → Tokenizer → Embedding → +Posición → Attention → LMHead → Logits
-           fractal    composicional  fractal    progresivo   tied
+    Texto → Tokenizer → Embedding → +Posición → BloqueFractal → LMHead → Logits
+           fractal    composicional  fractal     6 cajas        tied
     ```
+    
+    BloqueFractal (6 cajas):
+    - Caja 1: MEZCLA (Attention)
+    - Cajas 2,3,4: PROCESAN (FFN distribuido, de cerca a lejos)
+    - Caja 5: EVALÚA (early exit)
+    - Caja 6: OUTPUT
     
     Características únicas:
     - Tokenización multinivel (bytes → pares → quads → ...)
     - Embeddings composicionales (24x menos memoria)
-    - Attention con early exit (consulta chica primero)
-    - Predicción fractal (puede generar tokens compuestos)
+    - Procesamiento distribuido (mezcla → procesa cercano → lejano)
+    - Early exit (para cuando es suficiente)
     """
     
     def __init__(self, config: LLARRIConfig = None):
@@ -90,7 +97,7 @@ class LLARRILanguageModel(nn.Module):
         self.config = config or LLARRIConfig()
         
         print("="*60)
-        print("INICIALIZANDO LLARRI LANGUAGE MODEL")
+        print("INICIALIZANDO LLARRI LANGUAGE MODEL v2")
         print("="*60)
         
         # 1. Tokenizer Fractal
@@ -116,17 +123,18 @@ class LLARRILanguageModel(nn.Module):
         )
         print(f"✓ EmbeddingPosicionalFractal: max_len={self.config.max_length}")
         
-        # 4. Attention Fractal Progresivo
-        attention_config = AttentionConfig(
-            embed_dim=self.config.base_dim,  # Usamos base_dim para nivel 2
+        # 4. Bloque Fractal (6 Cajas) - REEMPLAZA AttentionFractalProgresivo
+        bloque_config = BloqueFractalConfig(
+            embed_dim=self.config.base_dim,
             num_heads=self.config.num_heads,
-            umbral_match=self.config.umbral_match,
-            dropout=self.config.attention_dropout,
-            niveles=self.config.niveles[:4],  # Solo primeros 4 niveles para attention
-            causal=self.config.causal
+            dropout=self.config.dropout,
+            ffn_expansion=self.config.ffn_expansion,
+            num_vecinos=self.config.num_vecinos,
+            niveles=self.config.niveles[:4],
+            umbral_confianza=self.config.umbral_confianza
         )
-        self.attention = AttentionFractalProgresivo(attention_config)
-        print(f"✓ AttentionFractalProgresivo: {self.config.num_heads} heads, causal={self.config.causal}")
+        self.bloque_fractal = BloqueFractal(bloque_config)
+        print(f"✓ BloqueFractal: 6 cajas, {self.config.num_vecinos} vecinos, umbral={self.config.umbral_confianza}")
         
         # 5. LM Head Fractal (con tied embeddings)
         lm_head_config = LMHeadConfig(
@@ -144,11 +152,7 @@ class LLARRILanguageModel(nn.Module):
         print(f"✓ LMHeadFractal: tied={self.config.tie_embeddings}")
         
         # Proyección para ajustar dimensiones si es necesario
-        # (embedding puede dar dims variables, attention espera fijo)
         self.embed_proj = nn.Linear(self.config.base_dim, self.config.base_dim)
-        
-        # Layer norm final
-        self.final_norm = nn.LayerNorm(self.config.base_dim)
         
         print("="*60)
     
@@ -260,18 +264,15 @@ class LLARRILanguageModel(nn.Module):
         # Proyectar a dimensión fija
         x = self.embed_proj(embeddings)
         
-        # Attention fractal progresivo
-        x, attention_info = self.attention(x)
-        
-        # Normalización final
-        x = self.final_norm(x)
+        # Bloque Fractal (6 cajas: mezcla → procesa → evalúa → output)
+        x, bloque_info = self.bloque_fractal(x)
         
         # LM Head → logits
         logits = self.lm_head(x, nivel=nivel)
         
         output = {
             'logits': logits,
-            'attention_info': attention_info,
+            'bloque_info': bloque_info,
             'hidden_states': x
         }
         
@@ -392,16 +393,14 @@ class LLARRILanguageModel(nn.Module):
         memoria['pos_embedding'] = sum(
             p.numel() * p.element_size() for p in self.pos_embedding.parameters()
         )
-        memoria['attention'] = sum(
-            p.numel() * p.element_size() for p in self.attention.parameters()
+        memoria['bloque_fractal'] = sum(
+            p.numel() * p.element_size() for p in self.bloque_fractal.parameters()
         )
         memoria['lm_head'] = sum(
             p.numel() * p.element_size() for p in self.lm_head.parameters()
         )
         memoria['otros'] = sum(
             p.numel() * p.element_size() for p in self.embed_proj.parameters()
-        ) + sum(
-            p.numel() * p.element_size() for p in self.final_norm.parameters()
         )
         
         memoria['total'] = sum(memoria.values())
@@ -411,7 +410,7 @@ class LLARRILanguageModel(nn.Module):
     def print_arquitectura(self):
         """Imprime resumen de la arquitectura."""
         print("\n" + "="*70)
-        print("LLARRI LANGUAGE MODEL - ARQUITECTURA")
+        print("LLARRI LANGUAGE MODEL v2 - ARQUITECTURA")
         print("="*70)
         
         print(f"\n📊 CONFIGURACIÓN:")
@@ -419,14 +418,13 @@ class LLARRILanguageModel(nn.Module):
         print(f"  Embed dim: {self.config.base_dim} → {self.config.max_dim}")
         print(f"  Vocab size: {self.config.vocab_size} (bytes)")
         print(f"  Max length: {self.config.max_length}")
-        print(f"  Causal: {self.config.causal}")
         
         print(f"\n🔧 COMPONENTES:")
         print(f"  1. TokenizadorFractal: {len(self.config.niveles)} niveles jerárquicos")
         print(f"  2. EmbeddingComposicional: 256 base + MLPs (24x menos memoria)")
         print(f"  3. EmbeddingPosicionalFractal: sinusoidal + jerárquico")
-        print(f"  4. AttentionFractalProgresivo: early exit (chico→grande)")
-        print(f"  5. LMHeadFractal: tied embeddings ({0 if self.config.tie_embeddings else 'no'} params extra)")
+        print(f"  4. BloqueFractal: 6 cajas (mezcla→procesa→evalúa→output)")
+        print(f"  5. LMHeadFractal: tied embeddings")
         
         print(f"\n📈 PARÁMETROS:")
         total = self.get_num_params()
@@ -442,7 +440,7 @@ class LLARRILanguageModel(nn.Module):
         print(f"  TOTAL: {memoria['total'] / 1024 / 1024:.2f} MB")
         
         print("\n" + "="*70)
-        print("FLUJO DE DATOS:")
+        print("FLUJO DE DATOS (6 CAJAS):")
         print("="*70)
         print("""
   Texto ─────────────────────────────────────────────────────────────┐
@@ -450,31 +448,51 @@ class LLARRILanguageModel(nn.Module):
          ▼                                                           │
   ┌─────────────────┐                                                │
   │ TokenizadorFractal │  "Hola" → [72,111,108,97] (bytes)          │
-  └────────┬────────┘   o → [18285, 27745] (pares nivel 4)          │
+  └────────┬────────┘                                                │
            │                                                         │
            ▼                                                         │
   ┌─────────────────────┐                                            │
-  │ EmbeddingComposicional │  tokens → vectors (64 dims base)       │
-  └────────┬────────────┘   Solo 256 embeddings + MLPs!             │
+  │ EmbeddingComposicional │  tokens → vectors (64 dims)            │
+  └────────┬────────────┘                                            │
            │                                                         │
            ▼                                                         │
   ┌──────────────────────────┐                                       │
-  │ EmbeddingPosicionalFractal │  + posición (sinusoidal+jerárquica)│
+  │ EmbeddingPosicionalFractal │  + posición                        │
   └────────┬─────────────────┘                                       │
            │                                                         │
            ▼                                                         │
-  ┌──────────────────────────┐                                       │
-  │ AttentionFractalProgresivo │  Nivel 2 → 4 → 8 (early exit)     │
-  └────────┬─────────────────┘   ¡Para cuando matchea!              │
-           │                                                         │
-           ▼                                                         │
+  ┌────────────────────────────────────────────────────────────────┐ │
+  │                    BLOQUE FRACTAL (6 CAJAS)                    │ │
+  │ ┌────────────────┐                                             │ │
+  │ │ Caja 1: MEZCLA │ Attention - ¿qué es relevante?              │ │
+  │ └───────┬────────┘                                             │ │
+  │         ▼                                                      │ │
+  │ ┌────────────────┐                                             │ │
+  │ │ Caja 2: PROCESA│ FFN cercano (0.5x)                          │ │
+  │ └───────┬────────┘                                             │ │
+  │         ├──► Caja 5: EVALÚA ──► ¿Suficiente? ──► SALIR        │ │
+  │         ▼                                                      │ │
+  │ ┌────────────────┐                                             │ │
+  │ │ Caja 3: PROCESA│ FFN medio (0.75x)                           │ │
+  │ └───────┬────────┘                                             │ │
+  │         ├──► Caja 5: EVALÚA ──► ¿Suficiente? ──► SALIR        │ │
+  │         ▼                                                      │ │
+  │ ┌────────────────┐                                             │ │
+  │ │ Caja 4: PROCESA│ FFN lejano (1.0x)                           │ │
+  │ └───────┬────────┘                                             │ │
+  │         ▼                                                      │ │
+  │ ┌────────────────┐                                             │ │
+  │ │ Caja 6: OUTPUT │ Preparar resultado                          │ │
+  │ └───────┬────────┘                                             │ │
+  └─────────┼──────────────────────────────────────────────────────┘ │
+            │                                                         │
+            ▼                                                         │
   ┌─────────────────┐                                                │
   │  LMHeadFractal  │  hidden → logits (256 vocab)                  │
-  └────────┬────────┘   Tied: reutiliza embeddings                   │
+  └────────┬────────┘                                                │
            │                                                         │
            ▼                                                         │
       Siguiente Token ◄──────────────────────────────────────────────┘
-        (generación autoregressiva)
 """)
         print("="*70)
 
@@ -482,7 +500,7 @@ class LLARRILanguageModel(nn.Module):
 # Test
 if __name__ == "__main__":
     print("\n" + "="*70)
-    print("TEST LLARRI LANGUAGE MODEL")
+    print("TEST LLARRI LANGUAGE MODEL v2 (con BloqueFractal)")
     print("="*70 + "\n")
     
     # Crear modelo con config pequeño para test
@@ -492,6 +510,9 @@ if __name__ == "__main__":
         max_dim=128,
         niveles=[2, 4, 8, 16],
         num_heads=4,
+        ffn_expansion=2.0,
+        num_vecinos=3,
+        umbral_confianza=0.5,  # Bajo para ver early exits
         max_length=256
     )
     
@@ -516,8 +537,10 @@ if __name__ == "__main__":
     
     output = model.forward(text="Hola mundo", nivel=2)
     print(f"\nLogits shape: {tuple(output['logits'].shape)}")
-    print(f"Early exit: {output['attention_info']['early_exit']}")
-    print(f"Nivel salida: {output['attention_info']['nivel_salida']}")
+    print(f"Cajas ejecutadas: {output['bloque_info']['cajas_ejecutadas']}")
+    print(f"Early exit: {output['bloque_info']['early_exit']}")
+    print(f"Caja salida: {output['bloque_info']['caja_salida']}")
+    print(f"Contribuciones: {output['bloque_info']['contribuciones']}")
     
     # Test forward con loss
     print("\n" + "-"*40)
@@ -559,6 +582,17 @@ if __name__ == "__main__":
         do_sample=False
     )
     print(f"Generado (greedy): '{generated_greedy}'")
+    
+    # Estadísticas del bloque fractal
+    print("\n" + "-"*40)
+    print("ESTADÍSTICAS BLOQUE FRACTAL:")
+    print("-"*40)
+    
+    # Simular varias llamadas para ver early exit
+    for _ in range(50):
+        model.forward(text="Prueba de texto", nivel=2)
+    
+    model.bloque_fractal.print_stats()
     
     print("\n" + "="*70)
     print("✓ LLARRI LANGUAGE MODEL FUNCIONANDO")
