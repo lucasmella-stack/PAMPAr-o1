@@ -31,6 +31,7 @@ Ideas clave:
 - Paquete: [llarri_o1/](../../llarri_o1/)
   - Config: [llarri_o1/config.py](../../llarri_o1/config.py)
   - Modelo: [llarri_o1/model.py](../../llarri_o1/model.py)
+  - Language Model (v2): [LLARRI_LANGUAGE_MODEL_V2.es.md](LLARRI_LANGUAGE_MODEL_V2.es.md)
   - Módulos: [llarri_o1/modules/](../../llarri_o1/modules/) (cache, niveles, relaciones, cajas, flujo)
   - Entrenamiento: [llarri_o1/training/trainer.py](../../llarri_o1/training/trainer.py)
   - Visualización: [llarri_o1/visualization/diagrams.py](../../llarri_o1/visualization/diagrams.py)
