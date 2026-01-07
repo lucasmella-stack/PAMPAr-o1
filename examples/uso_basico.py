@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """
 Ejemplo: Uso Básico de LLARRI-O1 v3.0
 ======================================

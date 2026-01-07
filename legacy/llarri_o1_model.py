@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """
 🔺 LLARRI-O1: La Santísima Trinidad Fractal
 ============================================
@@ -6,8 +7,6 @@ Arquitectura original de Lucas Mella
 Vectores que forman vectores que forman vectores × 3
 Mundos dentro de mundos dentro de mundos
 Todo conectado. Todo calculando. Todo vivo.
-
-Licencia: Propiedad de Lucas Mella
 """
 
 import torch
