@@ -13,85 +13,128 @@ tags:
 - parameter-sharing
 - early-exit
 - efficient-transformers
+- adaptive-compute
+- hierarchical-tokenization
 pipeline_tag: text-generation
 ---
 
-# LLARRI-O1 — Model Card
+# 🧠 LLARRI-O1 — Fractal Language Model
 
-**Spanish version:** [MODEL_CARD.es.md](MODEL_CARD.es.md)
+<div align="center">
 
-## Model Description
+*"Mix first, process with neighbors — from small to large"*
 
-LLARRI-O1 is an experimental language model that reimagines neural network processing through a **6-box architecture** inspired by CPU cache hierarchies (L1/L2/L3).
+[![License](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-orange.svg)](https://pytorch.org)
 
-### Core Philosophy: "Mix First, Process with Neighbors"
+**[Español](MODEL_CARD.es.md)** | **[GitHub](https://github.com/lucasmella-stack/llarri-o1)** | **[Full Documentation](https://github.com/lucasmella-stack/llarri-o1/blob/main/docs/INNOVATIONS.md)**
+
+</div>
+
+---
+
+## What is LLARRI-O1?
+
+LLARRI-O1 is an **experimental language model** that reimagines neural network processing through a **6-box architecture** inspired by CPU cache hierarchies (L1/L2/L3).
 
 Instead of the traditional Transformer pattern (attention → full FFN → repeat), LLARRI:
-1. **Mixes globally** (attention)
-2. **Processes with nearby neighbors first** (small FFN)
-3. **Expands only if needed** (progressive FFN)
-4. **Exits early when confident** (saves compute)
 
-## Architecture Overview
+1. 🔀 **Mixes globally** (attention to see what's relevant)
+2. 📍 **Processes nearby first** (small/cheap compute)
+3. 📈 **Expands only if needed** (progressive compute)
+4. 🚀 **Exits early when confident** (saves resources)
+
+---
+
+## Traditional vs LLARRI
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    LLARRI-O1 (6 BOXES)                      │
+│              TRADITIONAL TRANSFORMER                        │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
+│   Input ──► [Attention] ──► [FFN 4x] ──► Output            │
+│                                                             │
+│   • Fixed compute per layer                                 │
+│   • No early exit                                           │
+│   • Same cost for ALL tokens                                │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│              LLARRI-O1 (6 BOXES)                            │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│   Input ──► [MIX] ──► [PROCESS] ──► [EVALUATE] ──► Output  │
+│                        0.5x→1.0x      early exit?           │
+│                                                             │
 │   Box 1: MIX (Attention) ─────────────────────────────────► │
-│                                                             │
-│   Box 2: PROCESS nearby (0.5x FFN) ──► Box 5: EVALUATE ──► │
-│          ▲                               │                  │
-│          │                               ▼                  │
-│   Box 3: PROCESS medium (0.75x FFN) ◄── Continue?          │
-│          │                               │                  │
-│          ▼                               ▼                  │
+│   Box 2: PROCESS nearby (0.5x FFN) ──► EXIT? ──────────────►│
+│   Box 3: PROCESS medium (0.75x FFN) ──► EXIT? ─────────────►│
 │   Box 4: PROCESS far (1.0x FFN) ───────────────────────────►│
-│                                                             │
 │   Box 6: OUTPUT ◄──────────────────────────────────────────►│
+│                                                             │
+│   • Adaptive compute (easy inputs exit early)               │
+│   • Progressive cost (0.5x → 0.75x → 1.0x)                  │
+│   • Like CPU cache: L1 (fast) → L2 → L3 (slow)              │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## Key Innovations
+---
 
-| Name | Description |
-|------|-------------|
-| **Transmutative Tokenization (TT)** | Hierarchical byte groupings (2→4→8→16), multi-granularity at runtime |
-| **Compositional Level Embeddings (ECN)** | Base + MLP per level, 24x memory reduction |
-| **Fractal Hybrid Positions (PFH)** | Position encoding aware of fractal level |
-| **Mix → Process Nearby (MPC)** | Core philosophy: global attention, progressive local processing |
-| **Distance-Progressive FFN (FPD)** | 0.5x → 0.75x → 1.0x expansion by "neighbor distance" |
-| **Multi-stage Early Exit (EEM)** | Exit at box level AND fractal level |
-| **Gated Box Contributions (CGC)** | Each processing box controls its influence |
-| **Evolutionary Binary Cache (CEB)** | L1/L2/L3-like cache for frequent operations |
+## 8 Key Innovations
 
-*Names proposed by the founder, Lucas Ricardo Mella Chillemi.*
+| Acronym | Name | What it does |
+|---------|------|--------------|
+| **TT** | Transmutative Tokenization | Multi-granularity bytes (2→4→8→16) |
+| **ECN** | Compositional Level Embeddings | 24x memory reduction |
+| **PFH** | Fractal Hybrid Positions | Position + level awareness |
+| **MPC** | Mix → Process Nearby | Core architecture philosophy |
+| **FPD** | Distance-Progressive FFN | 0.5x → 0.75x → 1.0x expansion |
+| **EEM** | Multi-stage Early Exit | Exit at box AND fractal level |
+| **CGC** | Gated Box Contributions | Learned contribution control |
+| **CEB** | Evolutionary Binary Cache | L1/L2/L3 cache hierarchy |
 
-## Traditional vs LLARRI
+*Names proposed by founder Lucas Ricardo Mella Chillemi*
 
-| Aspect | Traditional Transformer | LLARRI-O1 |
-|--------|------------------------|-----------|
-| FFN size | Always 4x | 0.5x → 0.75x → 1.0x |
-| Early exit | Rare | Built-in per box |
-| Compute | Fixed | Adaptive |
-| Embeddings | O(vocab × dim) | O(vocab × dim / 24) |
-| Position encoding | Sin/cos only | Sin/cos + level awareness |
+📖 **[See full diagrams and comparisons →](https://github.com/lucasmella-stack/llarri-o1/blob/main/docs/INNOVATIONS.md)**
+
+---
+
+## Comparison Table
+
+| Aspect | Traditional | LLARRI-O1 |
+|--------|-------------|-----------|
+| **Tokenization** | BPE (fixed vocab) | Bytes + hierarchical levels |
+| **Embeddings** | 50K × 768 = 38M | 256 × 64 + MLPs = ~400K |
+| **FFN size** | Always 4x | 0.5x → 0.75x → 1.0x |
+| **Early exit** | Rare/none | Built-in per box |
+| **Compute** | Fixed | Adaptive |
+| **Memory** | ~500 MB | ~3.8 MB |
+
+---
 
 ## Model Details
 
-- **Author:** Lucas Ricardo Mella Chillemi (Segunda Cabeza)
-- **Coordinator:** Alvaro (Segunda Cabeza)
-- **License:** AGPL-3.0-or-later
-- **Parameters:** ~544K (Language Model v2)
-- **Memory:** ~3.8 MB
+| Property | Value |
+|----------|-------|
+| **Author** | Lucas Ricardo Mella Chillemi |
+| **Organization** | Segunda Cabeza |
+| **Coordinator** | Alvaro |
+| **License** | AGPL-3.0-or-later |
+| **Parameters** | ~544K |
+| **Memory** | ~3.8 MB |
+| **Version** | 2.0.0 |
+
+---
 
 ## Quick Start
 
 ```python
-from llarri_o1.models.language_model import LLARRILanguageModel, LLARRIConfig
+from llarri_o1 import LLARRILanguageModel, LLARRIConfig
 
+# Create model
 config = LLARRIConfig(
     embed_dim=64,
     niveles=[2, 4, 8, 16],
@@ -107,32 +150,38 @@ model = LLARRILanguageModel(config)
 output = model.generate(
     prompt="Hello",
     max_new_tokens=50,
-    temperatura=0.8
+    temperatura=0.8,
+    top_k=40
 )
+print(output)
 ```
 
-## Intended Use
-
-- Research and experimentation on efficient transformer architectures
-- Exploring adaptive compute and early exit mechanisms
-- Educational purposes for understanding alternative LLM designs
-
-## Limitations
-
-- **Currently untrained** — generates random output
-- Experimental architecture, interfaces may change
-- Not production-ready
+---
 
 ## Current Status
 
 | Component | Status |
 |-----------|--------|
-| Transmutative Tokenizer | ✅ Complete |
-| Compositional Embeddings | ✅ Complete |
-| 6-Box Block | ✅ Complete |
-| Early Exit | ✅ Complete |
+| Transmutative Tokenizer (TT) | ✅ Complete |
+| Compositional Embeddings (ECN) | ✅ Complete |
+| Fractal Positions (PFH) | ✅ Complete |
+| 6-Box Block (MPC + FPD) | ✅ Complete |
+| Early Exit (EEM) | ✅ Complete |
+| Gated Contributions (CGC) | ✅ Complete |
+| Binary Cache (CEB) | ✅ Complete |
 | End-to-end generation | ✅ Working |
 | Training | 🔄 In progress |
+
+---
+
+## Intended Use
+
+- ✅ Research on efficient transformer architectures
+- ✅ Exploring adaptive compute mechanisms
+- ✅ Educational purposes
+- ⚠️ Not production-ready (untrained)
+
+---
 
 ## Citation
 
@@ -146,12 +195,28 @@ output = model.generate(
 }
 ```
 
+---
+
+## Links
+
+- 📂 **GitHub:** [lucasmella-stack/llarri-o1](https://github.com/lucasmella-stack/llarri-o1)
+- 📖 **Innovations:** [Full documentation with diagrams](https://github.com/lucasmella-stack/llarri-o1/blob/main/docs/INNOVATIONS.md)
+- 🏗️ **Architecture:** [Technical details](https://github.com/lucasmella-stack/llarri-o1/blob/main/docs/architecture/ARCHITECTURE.md)
+
+---
+
 ## Contact
 
 - **Lucas Ricardo Mella Chillemi** — lucas@segundacabeza.com
 - **Alvaro (Coordinator)** — alvaro@segundacabeza.com
-- **Organization:** Segunda Cabeza
+- **Web:** [segundacabeza.com](https://segundacabeza.com)
 
-## License
+---
 
-AGPL-3.0-or-later — Commercial use allowed, modified network services must share source code.
+<div align="center">
+
+**Made with 💜 by Segunda Cabeza**
+
+*"Mix first, process with neighbors — from small to large"*
+
+</div>
