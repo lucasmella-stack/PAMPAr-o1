@@ -25,7 +25,7 @@ tags:
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://python.org)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-orange.svg)](https://pytorch.org)
 
-**[Español](README.es.md)** | **[Architecture](docs/architecture/ARCHITECTURE.md)** | **[Innovations](docs/architecture/LLARRI_LANGUAGE_MODEL_V2.es.md)**
+**[Español](README.es.md)** | **[Architecture](docs/architecture/ARCHITECTURE.md)** | **[Innovations](docs/INNOVATIONS.md)**
 
 *"Mix first, process with neighbors — from small to large"*
 

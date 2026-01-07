@@ -25,7 +25,7 @@ tags:
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://python.org)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-orange.svg)](https://pytorch.org)
 
-**[English](README.md)** | **[Arquitectura](docs/architecture/ARCHITECTURE.es.md)** | **[Innovaciones](docs/architecture/LLARRI_LANGUAGE_MODEL_V2.es.md)**
+**[English](README.md)** | **[Arquitectura](docs/architecture/ARCHITECTURE.es.md)** | **[Innovaciones](docs/INNOVATIONS.es.md)**
 
 *"Mezcla primero, procesa con cercanos — de menos a más"*
 
