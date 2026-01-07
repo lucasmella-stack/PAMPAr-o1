@@ -1,35 +1,68 @@
-# 🔷 LLARRI-O1 v4.0 - HyperComprimido
+## LLARRI-O1 — Fractal Parameter-Sharing Architecture
 
-<div align="center">
+Spanish version: [README.es.md](README.es.md)
 
-![LLARRI-O1 Banner](diagrams/arquitectura_v4.png)
+![LLARRI-O1 v4 diagrams](diagrams/v4-current/03_avanzado_tecnico.png)
 
-**Arquitectura revolucionaria: 6 Cajas + 8 Niveles Fractales + Cache RAM Binario**
+[![License: AGPL-3.0-or-later](https://img.shields.io/badge/License-AGPLv3%2B-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://python.org)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-orange.svg)](https://pytorch.org)
 
-*"Como si entrara 1TB en 1GB"*
+LLARRI-O1 is an experimental neural architecture exploring **quadrant-based processing**, **sequential fractal levels**, and **box-to-box connections** to increase expressivity while reusing parameters.
 
-[![License: Proprietary](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
-[![Python 3.8+](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-orange.svg)](https://pytorch.org)
-[![HuggingFace](https://img.shields.io/badge/🤗-HuggingFace-yellow.svg)](https://huggingface.co/lucas-mella/llarri-o1)
+Current development target: **v4.0 HyperComprimido** (6 boxes, 8 fractal levels, binary cache, and internal self-calculations in secondary boxes).
 
-</div>
+## Quickstart
+Install dependencies:
 
----
+```bash
+pip install -r requirements.txt
+```
 
-## 📖 Tabla de Contenidos
+Smoke-test forward pass (no training):
 
-- [¿Qué es LLARRI-O1?](#-qué-es-llarri-o1)
-- [Versiones](#-versiones)
-- [v4.0 HyperComprimido](#-v40-hypercomprimido)
-- [Arquitectura de 6 Cajas](#-arquitectura-de-6-cajas)
-- [8 Niveles Fractales](#-8-niveles-fractales)
-- [Cache RAM Binario](#-cache-ram-binario)
-- [Instalación](#-instalación)
-- [Uso](#-uso)
-- [Resultados](#-resultados)
-- [Créditos](#-créditos)
-- [Licencia](#-licencia)
+```bash
+python -c "import torch; import sys; from pathlib import Path; sys.path.insert(0, str(Path('src').resolve())); from llarri_o1_hypercomprimido import LlarriO1_HyperComprimido; m=LlarriO1_HyperComprimido(); x=torch.randn(2,784); y=m(x); print(y.shape)"
+```
+
+Train v4.0 (run as a script):
+
+```bash
+python src/llarri_o1_hypercomprimido.py
+```
+
+Generate v4 diagrams:
+
+```bash
+python src/generar_diagramas_v4_visuales.py
+```
+
+## Diagrams
+- Current version (v4): [diagrams/v4-current](diagrams/v4-current)
+- Older versions: [diagrams/v3-legacy](diagrams/v3-legacy)
+
+## Attribution / Citation
+**Preferred attribution string:**
+> “LLARRI-O1 — Lucas Ricardo Mella Chillemi (Segunda Cabeza).”
+
+**How to cite:**
+- See [CITATION.cff](CITATION.cff)
+- Preferred architecture name in publications: **LLARRI-O1 HyperComprimido (v4.0)**
+
+## License (AGPL)
+This repository is licensed under **GNU AGPLv3 or later (AGPL-3.0-or-later)**.
+
+### Why AGPL?
+- Commercial use is allowed.
+- If you run a modified version as a network service, you must provide the modified source code to users.
+
+## Documentation
+- Architecture: [docs/architecture/ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md)
+- Hugging Face model card: [docs/huggingface/MODEL_CARD.md](docs/huggingface/MODEL_CARD.md)
+
+## Contact
+- Lucas Ricardo Mella Chillemi — lucas@segundacabeza.com
+- Coordination: Alvaro — alvaro@segundacabeza.com
 
 ---
 

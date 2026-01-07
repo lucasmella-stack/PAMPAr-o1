@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "LLARRI-O1"
+type: software
+authors:
+  - family-names: "Mella Chillemi"
+    given-names: "Lucas Ricardo"
+    email: "lucas@segundacabeza.com"
+    affiliation: "Segunda Cabeza"
+repository-code: "https://github.com/lucasmella-stack/llarri-o1"
+license: "AGPL-3.0-or-later"
+date-released: "2026-01-07"
+keywords:
+  - neural networks
+  - fractal
+  - parameter sharing
+  - pytorch
