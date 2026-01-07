@@ -31,7 +31,17 @@ import sys
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from llarri_o1.models.language_model_v3 import LLARRIv3, LLARRIv3Config
-from llarri_o1.utils.device import get_device_info
+from llarri_o1.utils.device import get_device
+
+
+def get_device_info():
+    """Obtiene device y descripción."""
+    device = get_device()
+    if device.type == 'cuda':
+        name = torch.cuda.get_device_name(0)
+        mem = torch.cuda.get_device_properties(0).total_memory / 1e9
+        return device, f"{name} ({mem:.1f} GB)"
+    return device, "CPU"
 
 
 def clear_memory():
