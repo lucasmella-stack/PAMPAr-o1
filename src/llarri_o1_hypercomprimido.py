@@ -28,12 +28,12 @@ import os
 class ConfigHyperComprimido:
     """Configuración del modelo HyperComprimido."""
     input_dim: int = 784
-    hidden_dim: int = 256
+    hidden_dim: int = 1024  # Aumentado para soportar 8 niveles hasta 256
     output_dim: int = 10
     num_cajas_datos: int = 3
     num_cajas_calculos: int = 3
-    # 6 niveles: del más pequeño al más grande (optimizado)
-    niveles_fractales: List[int] = field(default_factory=lambda: [2, 4, 8, 16, 32, 64])
+    # 8 NIVELES COMPLETOS: del binario (2) hasta el máximo (256)
+    niveles_fractales: List[int] = field(default_factory=lambda: [2, 4, 8, 16, 32, 64, 128, 256])
     dropout: float = 0.1
 
 
@@ -412,8 +412,8 @@ class LlarriO1_HyperComprimido(nn.Module):
         return self.output(fusion)
 
 
-def entrenar_progresivo(epochs: int = 25, batch_size: int = 128):
-    """Entrena LLARRI-O1 v4.0 con flujo progresivo."""
+def entrenar_progresivo(epochs: int = 25, batch_size: int = 32, accum_steps: int = 4):
+    """Entrena LLARRI-O1 v4.0 con flujo progresivo y gradient accumulation."""
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
     print(f"\n{'='*70}")
@@ -421,8 +421,9 @@ def entrenar_progresivo(epochs: int = 25, batch_size: int = 128):
     print(f"{'='*70}")
     print(f"  Device: {device}")
     print(f"  Epochs: {epochs}")
-    print(f"  Batch size: {batch_size}")
-    print(f"  Flujo: 2 → 4 → 8 → 16 → 32 → 64")
+    print(f"  Batch size: {batch_size} (efectivo: {batch_size * accum_steps})")
+    print(f"  Gradient accumulation: {accum_steps} steps")
+    print(f"  Flujo: 2 → 4 → 8 → 16 → 32 → 64 → 128 → 256")
     print(f"{'='*70}\n")
     
     # Datos
