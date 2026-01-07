@@ -28,6 +28,15 @@ from llarri_o1.modules.lm_head import (
     LMHeadFractal,
     LMHeadConfig
 )
+from llarri_o1.modules.bloque_fractal import (
+    BloqueFractal,
+    BloqueFractalConfig,
+    BloqueFractalMultinivel,
+    CajaMezcla,
+    CajaProcesa,
+    CajaEvalua,
+    CajaOutput
+)
 
 __all__ = [
     "CacheBinario",
@@ -52,4 +61,11 @@ __all__ = [
     "crear_causal_mask_por_ventana",
     "LMHeadFractal",
     "LMHeadConfig",
+    "BloqueFractal",
+    "BloqueFractalConfig",
+    "BloqueFractalMultinivel",
+    "CajaMezcla",
+    "CajaProcesa",
+    "CajaEvalua",
+    "CajaOutput",
 ]
