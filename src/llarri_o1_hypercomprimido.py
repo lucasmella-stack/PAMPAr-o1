@@ -336,7 +336,7 @@ class CajaCalculos(nn.Module):
 
 
 class LlaveConexion(nn.Module):
-    """Conecta cajas entre sí."""
+    """Conecta cajas entre sí (unidireccional)."""
     def __init__(self, dim: int):
         super().__init__()
         self.llave = nn.Linear(dim, dim)
@@ -344,6 +344,119 @@ class LlaveConexion(nn.Module):
     
     def forward(self, origen: torch.Tensor, destino: torch.Tensor) -> torch.Tensor:
         return self.norm(destino + self.llave(origen) * 0.5)
+
+
+class LlaveBidireccional(nn.Module):
+    """
+    Llave BIDIRECCIONAL - intercambio mutuo entre dos cajas.
+    
+    A y B se comunican en ambas direcciones simultáneamente:
+    A' = A + info_de_B
+    B' = B + info_de_A
+    
+    Economiza memoria: usa UN solo set de pesos para ambas direcciones
+    con una transformación simétrica.
+    """
+    def __init__(self, dim: int):
+        super().__init__()
+        # Pesos compartidos para ambas direcciones (economía)
+        self.transform = nn.Linear(dim, dim)
+        self.gate = nn.Linear(dim * 2, 2)  # Gate para balancear
+        self.norm = nn.LayerNorm(dim)
+    
+    def forward(self, a: torch.Tensor, b: torch.Tensor) -> tuple:
+        """Retorna (a_actualizado, b_actualizado)."""
+        # Transformaciones
+        a_to_b = self.transform(a)
+        b_to_a = self.transform(b)
+        
+        # Gate adaptativo para balancear la mezcla
+        concat = torch.cat([a, b], dim=-1)
+        gates = torch.sigmoid(self.gate(concat))  # [batch, 2]
+        g_a, g_b = gates[..., 0:1], gates[..., 1:2]
+        
+        # Intercambio bidireccional
+        a_new = self.norm(a + b_to_a * g_a * 0.5)
+        b_new = self.norm(b + a_to_b * g_b * 0.5)
+        
+        return a_new, b_new
+
+
+class SistemaFlujoCompleto(nn.Module):
+    """
+    Sistema de flujo COMPLETO entre 6 cajas:
+    
+    FASE 1 - IDA:    A → B → C → D → E → F
+    FASE 2 - VUELTA: F → E → D → C → B → A  
+    FASE 3 - BIDI:   A↔B, B↔C, C↔D, D↔E, E↔F (simultáneo)
+    
+    Economiza memoria:
+    - Reutiliza pesos entre fases donde es posible
+    - Llaves bidireccionales con pesos compartidos
+    - Solo 1 LayerNorm por llave
+    """
+    def __init__(self, dim: int, num_cajas: int = 6):
+        super().__init__()
+        self.dim = dim
+        self.num_cajas = num_cajas
+        
+        # Llaves de IDA (compartidas con VUELTA para economizar)
+        # A→B, B→C, C→D, D→E, E→F = 5 llaves
+        self.llaves_ida = nn.ModuleList([
+            LlaveConexion(dim) for _ in range(num_cajas - 1)
+        ])
+        
+        # Llaves de VUELTA (F→E, E→D, D→C, C→B, B→A)
+        # Reutiliza estructura pero con pesos propios para aprender patrones inversos
+        self.llaves_vuelta = nn.ModuleList([
+            LlaveConexion(dim) for _ in range(num_cajas - 1)
+        ])
+        
+        # Llaves BIDIRECCIONALES (A↔B, B↔C, C↔D, D↔E, E↔F)
+        # Economiza: un solo módulo por par con pesos simétricos
+        self.llaves_bidi = nn.ModuleList([
+            LlaveBidireccional(dim) for _ in range(num_cajas - 1)
+        ])
+        
+        # Fusion final después de las 3 fases
+        self.fusion_fases = nn.Sequential(
+            nn.LayerNorm(dim),
+            nn.Linear(dim, dim),
+            nn.GELU(),
+        )
+    
+    def forward(self, cajas: list) -> list:
+        """
+        Procesa lista de 6 tensores [A, B, C, D, E, F].
+        Retorna lista actualizada después de las 3 fases de flujo.
+        """
+        assert len(cajas) == self.num_cajas, f"Esperaba {self.num_cajas} cajas"
+        
+        # Guardar residuales originales
+        residuales = [c.clone() for c in cajas]
+        
+        # ========== FASE 1: IDA (A → B → C → D → E → F) ==========
+        for i in range(self.num_cajas - 1):
+            cajas[i + 1] = self.llaves_ida[i](cajas[i], cajas[i + 1])
+        
+        # ========== FASE 2: VUELTA (F → E → D → C → B → A) ==========
+        for i in range(self.num_cajas - 1, 0, -1):
+            cajas[i - 1] = self.llaves_vuelta[self.num_cajas - 1 - i](cajas[i], cajas[i - 1])
+        
+        # ========== FASE 3: BIDIRECCIONAL (todos los pares simultáneo) ==========
+        nuevas = list(cajas)  # Copiar para actualizar simultáneamente
+        for i in range(self.num_cajas - 1):
+            a_new, b_new = self.llaves_bidi[i](cajas[i], cajas[i + 1])
+            nuevas[i] = a_new
+            nuevas[i + 1] = b_new
+        cajas = nuevas
+        
+        # ========== FUSION con residuales ==========
+        resultado = []
+        for i, (c, r) in enumerate(zip(cajas, residuales)):
+            resultado.append(self.fusion_fases(c + r * 0.3))
+        
+        return resultado
 
 
 class LlarriO1_HyperComprimido(nn.Module):
@@ -385,17 +498,14 @@ class LlarriO1_HyperComprimido(nn.Module):
         self.caja_calc_B = CajaCalculos(self.config, self.cuadrante_base)
         self.caja_calc_C = CajaCalculos(self.config, self.cuadrante_base)
         
-        # === LLAVES ===
-        self.llave_AB = LlaveConexion(dim)
-        self.llave_BC = LlaveConexion(dim)
-        self.llave_CA = LlaveConexion(dim)
+        # === SISTEMA DE FLUJO COMPLETO (IDA + VUELTA + BIDI) ===
+        # Un sistema para las 6 cajas: [D_A, D_B, D_C, C_A, C_B, C_C]
+        self.flujo_completo = SistemaFlujoCompleto(dim, num_cajas=6)
         
-        self.llave_calc_AB = LlaveConexion(dim)
-        self.llave_calc_BC = LlaveConexion(dim)
-        
-        self.llave_datos_calc_A = LlaveConexion(dim)
-        self.llave_datos_calc_B = LlaveConexion(dim)
-        self.llave_datos_calc_C = LlaveConexion(dim)
+        # === RETROALIMENTACIÓN cajas cálculo → cajas datos ===
+        self.retro_A = LlaveConexion(dim)
+        self.retro_B = LlaveConexion(dim)
+        self.retro_C = LlaveConexion(dim)
         
         # === SALIDA ===
         self.output = nn.Sequential(
@@ -414,7 +524,7 @@ class LlarriO1_HyperComprimido(nn.Module):
         comp = (1 - params/params_sin) * 100
         
         print(f"\n{'='*70}")
-        print(f"{'LLARRI-O1 v4.0 - HYPERCOMPRIMIDO (PROGRESIVO)':^70}")
+        print(f"{'LLARRI-O1 v4.0 - HYPERCOMPRIMIDO (FLUJO COMPLETO)':^70}")
         print(f"{'='*70}")
         print(f"  Autor: Lucas Mella (Segunda Cabeza)")
         print(f"  Coordinador: Alvaro (Segunda Cabeza)")
@@ -424,14 +534,14 @@ class LlarriO1_HyperComprimido(nn.Module):
         print(f"    • Cajas de cálculos: {self.config.num_cajas_calculos}")
         print(f"    • Total cajas: 6")
         print(f"    • Niveles fractales: {len(self.config.niveles_fractales)}")
-        print(f"    • Flujo: {' → '.join(map(str, self.config.niveles_fractales))}")
+        print(f"    • Flujo fractal: {' → '.join(map(str, self.config.niveles_fractales))}")
         print(f"    • Cache binario: ✓ Activado")
         print(f"{'='*70}")
-        print(f"  ENTRENAMIENTO PROGRESIVO:")
-        print(f"    • Empieza en nivel 2 (binario)")
-        print(f"    • Sube secuencialmente hasta 64")
-        print(f"    • Cuadrante por cuadrante")
-        print(f"    • Sin procesamiento paralelo pesado")
+        print(f"  FLUJO DE INFORMACIÓN (NUEVO):")
+        print(f"    • FASE 1 - IDA:    A → B → C → D → E → F")
+        print(f"    • FASE 2 - VUELTA: F → E → D → C → B → A")
+        print(f"    • FASE 3 - BIDI:   A↔B, B↔C, C↔D, D↔E, E↔F")
+        print(f"    • + Retroalimentación: Calc → Datos")
         print(f"{'='*70}")
         print(f"  PARÁMETROS:")
         print(f"    • Reales: {params:,}")
@@ -450,30 +560,36 @@ class LlarriO1_HyperComprimido(nn.Module):
         return self
     
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """Forward pass SECUENCIAL."""
-        # === CAPA DE DATOS ===
+        """
+        Forward pass con FLUJO COMPLETO:
+        1. Procesar cajas de datos
+        2. Procesar cajas de cálculos  
+        3. Flujo IDA + VUELTA + BIDI entre las 6 cajas
+        4. Retroalimentación
+        5. Fusión final
+        """
+        # === CAPA DE DATOS (procesan input) ===
         out_A = self.caja_datos_A(x)
         out_B = self.caja_datos_B(x)
-        out_B = self.llave_AB(out_A, out_B)
-        
         out_C = self.caja_datos_C(x)
-        out_C = self.llave_BC(out_B, out_C)
-        out_A = self.llave_CA(out_C, out_A)
         
-        # === CAPA DE CÁLCULOS ===
+        # === CAPA DE CÁLCULOS (combinan datos) ===
         calc_A = self.caja_calc_A(out_A, out_B, None)
         calc_B = self.caja_calc_B(out_B, out_C, calc_A)
-        calc_B = self.llave_calc_AB(calc_A, calc_B)
-        
         calc_C = self.caja_calc_C(out_C, out_A, calc_B)
-        calc_C = self.llave_calc_BC(calc_B, calc_C)
         
-        # === RETROALIMENTACIÓN ===
-        out_A = self.llave_datos_calc_A(calc_A, out_A)
-        out_B = self.llave_datos_calc_B(calc_B, out_B)
-        out_C = self.llave_datos_calc_C(calc_C, out_C)
+        # === FLUJO COMPLETO: IDA + VUELTA + BIDI ===
+        # Las 6 cajas intercambian información en las 3 fases
+        todas_cajas = [out_A, out_B, out_C, calc_A, calc_B, calc_C]
+        todas_cajas = self.flujo_completo(todas_cajas)
+        out_A, out_B, out_C, calc_A, calc_B, calc_C = todas_cajas
         
-        # === FUSIÓN ===
+        # === RETROALIMENTACIÓN (cálculos → datos) ===
+        out_A = self.retro_A(calc_A, out_A)
+        out_B = self.retro_B(calc_B, out_B)
+        out_C = self.retro_C(calc_C, out_C)
+        
+        # === FUSIÓN FINAL ===
         datos_final = out_A + out_B + out_C
         calc_final = calc_A + calc_B + calc_C
         
