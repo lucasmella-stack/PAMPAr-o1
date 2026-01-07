@@ -17,7 +17,7 @@ tags:
 
 Spanish version: [README.es.md](README.es.md)
 
-![LLARRI-O1 v4 diagrams](diagrams/v4-current/03_avanzado_tecnico.png)
+![LLARRI-O1 v4 Architecture](diagrams/v4-current/nivel3_avanzado.png)
 
 [![License: AGPL-3.0-or-later](https://img.shields.io/badge/License-AGPLv3%2B-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://python.org)

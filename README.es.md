@@ -2,6 +2,8 @@
 
 English: see [README.md](README.md)
 
+![LLARRI-O1 v4 Arquitectura](diagrams/v4-current/nivel3_avanzado.png)
+
 ## Resumen
 LLARRI-O1 es una arquitectura experimental de redes neuronales basada en **procesamiento por cuadrantes** + **niveles fractales** + **conexiones entre cajas** para lograr alta expresividad con reutilización de parámetros.
 
