@@ -1,3 +1,18 @@
+---
+language:
+- en
+- es
+license: agpl-3.0
+library_name: pytorch
+tags:
+- pytorch
+- mnist
+- research
+- experimental
+- fractal
+- parameter-sharing
+---
+
 ## LLARRI-O1 — Fractal Parameter-Sharing Architecture
 
 Spanish version: [README.es.md](README.es.md)
