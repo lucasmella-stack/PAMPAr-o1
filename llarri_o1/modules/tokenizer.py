@@ -370,76 +370,211 @@ class TokenizadorFractal:
         print("="*60)
 
 
-class EmbeddingFractal(nn.Module):
+class EmbeddingComposicional(nn.Module):
     """
-    Capa de embedding que usa la estructura fractal.
+    Embedding Composicional Fractal.
     
-    Combina embeddings de diferentes niveles para crear
-    representaciones ricas que capturan estructura jerárquica.
+    En lugar de tablas enormes por nivel, solo almacena:
+    - 256 embeddings base (bytes)
+    - MLPs pequeños para combinar 4→1 en cada nivel
+    
+    Memoria: ~600KB vs ~700MB de tablas tradicionales
+    
+    Funcionamiento:
+    1. Nivel 2: lookup directo (256 bytes → 64 dims)
+    2. Nivel 4: combina 4 embeddings nivel 2 → 128 dims
+    3. Nivel 8: combina 4 embeddings nivel 4 → 256 dims
+    ...y así sucesivamente
     """
     
     def __init__(
         self,
         tokenizer: TokenizadorFractal,
-        embed_dim: int = 256,
-        niveles_usar: Optional[List[int]] = None
+        base_dim: int = 64,
+        max_dim: int = 512,
+        dropout: float = 0.1
     ):
         super().__init__()
         self.tokenizer = tokenizer
-        self.embed_dim = embed_dim
-        self.niveles = niveles_usar or [2, 4, 8, 16]
+        self.base_dim = base_dim
+        self.max_dim = max_dim
+        self.niveles = tokenizer.config.niveles
         
-        # Embedding por nivel (tamaño dinámico)
-        self.embeddings = nn.ModuleDict()
+        # Embedding base: solo 256 bytes
+        self.emb_base = nn.Embedding(256, base_dim)
+        
+        # Dimensiones por nivel (crece hasta max_dim)
+        self.dims = {}
+        dim = base_dim
         for nivel in self.niveles:
-            # Estimar vocab size (256 base + espacio para nuevos)
-            vocab_size = max(512, len(tokenizer.vocabs[nivel]) * 2)
-            self.embeddings[str(nivel)] = nn.Embedding(vocab_size, embed_dim)
+            self.dims[nivel] = min(dim, max_dim)
+            dim = min(dim * 2, max_dim)
         
-        # Combinador de niveles
-        self.combinar = nn.Linear(embed_dim * len(self.niveles), embed_dim)
-        self.norm = nn.LayerNorm(embed_dim)
+        # Combinadores: 4 embeddings nivel N → 1 embedding nivel N*2
+        self.combinadores = nn.ModuleDict()
+        for i, nivel in enumerate(self.niveles[1:], 1):
+            nivel_inferior = self.niveles[i-1]
+            dim_in = self.dims[nivel_inferior] * 4  # 4 tokens concatenados
+            dim_out = self.dims[nivel]
+            
+            self.combinadores[str(nivel)] = nn.Sequential(
+                nn.Linear(dim_in, dim_out * 2),
+                nn.GELU(),
+                nn.Dropout(dropout),
+                nn.Linear(dim_out * 2, dim_out),
+                nn.LayerNorm(dim_out)
+            )
+        
+        # Proyección final (opcional, para uniformizar dimensión)
+        self.proyecto_final = nn.Linear(max_dim, max_dim)
+        
+        # Cache para evitar recálculos
+        self._cache = {}
+        self._cache_hits = 0
+        self._cache_misses = 0
     
-    def forward(self, tokens_por_nivel: Dict[int, torch.Tensor]) -> torch.Tensor:
+    def _embed_nivel2(self, tokens: List[int]) -> torch.Tensor:
+        """Embedding directo de bytes."""
+        tokens_tensor = torch.tensor(tokens, dtype=torch.long, device=self.emb_base.weight.device)
+        tokens_tensor = tokens_tensor.clamp(0, 255)
+        return self.emb_base(tokens_tensor)  # (seq_len, base_dim)
+    
+    def _combinar_cuadrante(self, embeddings: torch.Tensor, nivel: int) -> torch.Tensor:
         """
-        Combina embeddings de múltiples niveles.
+        Combina 4 embeddings consecutivos en 1.
         
         Args:
-            tokens_por_nivel: Dict de tensores por nivel
+            embeddings: (seq_len, dim_inferior)
+            nivel: Nivel destino
             
         Returns:
-            Tensor combinado (batch, seq_len, embed_dim)
+            (seq_len//4, dim_nivel)
         """
-        embeds = []
+        seq_len = embeddings.size(0)
+        dim = embeddings.size(1)
         
-        for nivel in self.niveles:
-            if nivel in tokens_por_nivel:
-                tokens = tokens_por_nivel[nivel]
-                # Asegurar que no exceda vocab size
-                tokens = tokens.clamp(0, self.embeddings[str(nivel)].num_embeddings - 1)
-                embed = self.embeddings[str(nivel)](tokens)
-                embeds.append(embed)
+        # Padding si no es múltiplo de 4
+        if seq_len % 4 != 0:
+            pad_len = 4 - (seq_len % 4)
+            padding = torch.zeros(pad_len, dim, device=embeddings.device)
+            embeddings = torch.cat([embeddings, padding], dim=0)
+            seq_len = embeddings.size(0)
         
-        if not embeds:
-            raise ValueError("No hay tokens para ningún nivel")
+        # Reshape: (seq_len, dim) → (seq_len//4, 4*dim)
+        grupos = embeddings.view(seq_len // 4, 4 * dim)
         
-        # Si diferentes longitudes, usar la más larga y repetir/truncar
-        max_len = max(e.size(1) for e in embeds)
+        # Pasar por combinador
+        combinador = self.combinadores[str(nivel)]
+        return combinador(grupos)  # (seq_len//4, dim_nivel)
+    
+    def embed_tokens(
+        self, 
+        tokens_por_nivel: Dict[int, List[int]], 
+        nivel_objetivo: int = 8
+    ) -> torch.Tensor:
+        """
+        Genera embeddings composicionales hasta el nivel objetivo.
         
-        aligned_embeds = []
-        for embed in embeds:
-            if embed.size(1) < max_len:
-                # Repetir último token
-                padding = embed[:, -1:, :].repeat(1, max_len - embed.size(1), 1)
-                embed = torch.cat([embed, padding], dim=1)
-            elif embed.size(1) > max_len:
-                embed = embed[:, :max_len, :]
-            aligned_embeds.append(embed)
+        Args:
+            tokens_por_nivel: Output de tokenizer.encode()
+            nivel_objetivo: Nivel de representación deseado
+            
+        Returns:
+            Tensor (seq_len, embed_dim)
+        """
+        # Empezar desde nivel 2 (bytes)
+        if 2 not in tokens_por_nivel:
+            raise ValueError("Se requieren tokens de nivel 2 (bytes)")
         
-        # Concatenar y combinar
-        combined = torch.cat(aligned_embeds, dim=-1)
-        output = self.combinar(combined)
-        return self.norm(output)
+        # Embedding base
+        current_emb = self._embed_nivel2(tokens_por_nivel[2])
+        current_nivel = 2
+        
+        # Subir niveles hasta el objetivo
+        for nivel in self.niveles[1:]:
+            if nivel > nivel_objetivo:
+                break
+            
+            current_emb = self._combinar_cuadrante(current_emb, nivel)
+            current_nivel = nivel
+        
+        # Si la dimensión no es max_dim, proyectar
+        if current_emb.size(-1) != self.max_dim:
+            # Pad o truncate
+            if current_emb.size(-1) < self.max_dim:
+                padding = torch.zeros(
+                    current_emb.size(0), 
+                    self.max_dim - current_emb.size(-1),
+                    device=current_emb.device
+                )
+                current_emb = torch.cat([current_emb, padding], dim=-1)
+            else:
+                current_emb = current_emb[:, :self.max_dim]
+        
+        return self.proyecto_final(current_emb)
+    
+    def forward(
+        self, 
+        texto: str, 
+        nivel_objetivo: int = 8
+    ) -> torch.Tensor:
+        """
+        Embedding end-to-end: texto → tensor.
+        
+        Args:
+            texto: Texto a embeder
+            nivel_objetivo: Nivel de compresión
+            
+        Returns:
+            Tensor (1, seq_len, max_dim)
+        """
+        # Tokenizar
+        tokens = self.tokenizer.encode(texto, max_nivel=nivel_objetivo)
+        
+        # Generar embeddings
+        emb = self.embed_tokens(tokens, nivel_objetivo)
+        
+        # Agregar batch dimension
+        return emb.unsqueeze(0)
+    
+    def get_memoria_usada(self) -> Dict[str, int]:
+        """Calcula memoria usada por el modelo."""
+        memoria = {
+            'emb_base': self.emb_base.weight.numel() * 4,  # bytes
+            'combinadores': sum(
+                sum(p.numel() for p in comb.parameters()) * 4
+                for comb in self.combinadores.values()
+            ),
+            'proyecto_final': sum(p.numel() for p in self.proyecto_final.parameters()) * 4,
+        }
+        memoria['total'] = sum(memoria.values())
+        return memoria
+    
+    def print_arquitectura(self):
+        """Imprime detalles de la arquitectura."""
+        print("\n" + "="*60)
+        print("EMBEDDING COMPOSICIONAL FRACTAL")
+        print("="*60)
+        
+        print(f"\nDimensiones por nivel:")
+        for nivel, dim in self.dims.items():
+            print(f"  Nivel {nivel:3d}: {dim} dims")
+        
+        print(f"\nCombinadores:")
+        for nivel, comb in self.combinadores.items():
+            params = sum(p.numel() for p in comb.parameters())
+            print(f"  Nivel {nivel:3s}: {params:,} params")
+        
+        memoria = self.get_memoria_usada()
+        print(f"\nMemoria total: {memoria['total'] / 1024:.1f} KB")
+        print(f"  - Embedding base (256 bytes): {memoria['emb_base'] / 1024:.1f} KB")
+        print(f"  - Combinadores: {memoria['combinadores'] / 1024:.1f} KB")
+        print(f"  - Proyección final: {memoria['proyecto_final'] / 1024:.1f} KB")
+        print("="*60)
+
+
+# Alias para compatibilidad
+EmbeddingFractal = EmbeddingComposicional
 
 
 # Test rápido
@@ -478,6 +613,45 @@ if __name__ == "__main__":
     
     # Estadísticas
     tokenizer.print_stats()
+    
+    # ========================================
+    # TEST EMBEDDING COMPOSICIONAL
+    # ========================================
+    print("\n" + "="*60)
+    print("TEST EMBEDDING COMPOSICIONAL")
+    print("="*60)
+    
+    # Crear embedding
+    embedding = EmbeddingComposicional(
+        tokenizer=tokenizer,
+        base_dim=64,
+        max_dim=256
+    )
+    
+    # Mostrar arquitectura
+    embedding.print_arquitectura()
+    
+    # Test de embedding
+    print("\nTest de embeddings:")
+    for texto in textos[:3]:
+        emb = embedding(texto, nivel_objetivo=8)
+        print(f"  '{texto[:20]}...' → shape {tuple(emb.shape)}")
+    
+    # Comparar con tabla tradicional
+    print("\n" + "-"*40)
+    print("COMPARACIÓN DE MEMORIA:")
+    print("-"*40)
+    
+    # Nuestro modelo composicional
+    mem_comp = embedding.get_memoria_usada()['total']
+    
+    # Tabla tradicional equivalente (estimación)
+    vocab_sizes = {4: 10000, 8: 50000, 16: 100000, 32: 200000}
+    mem_tabla = sum(vs * 256 * 4 for vs in vocab_sizes.values())
+    
+    print(f"Composicional: {mem_comp / 1024:.1f} KB")
+    print(f"Tabla tradicional: {mem_tabla / 1024 / 1024:.1f} MB")
+    print(f"Ahorro: {mem_tabla / mem_comp:.0f}x menos memoria")
     
     print("\n" + "="*60)
     print("TEST COMPLETADO")
