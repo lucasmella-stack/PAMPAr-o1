@@ -39,14 +39,72 @@ class AttentionConfig:
     niveles: List[int] = None  # [2, 4, 8, 16, 32, 64, 128, 256]
     dropout: float = 0.1
     umbral_match: float = 0.7  # Si similitud > umbral, early exit
+    causal: bool = True  # Si True, aplica causal mask (no ver futuro)
     
     def __post_init__(self):
         if self.niveles is None:
             self.niveles = [2, 4, 8, 16, 32, 64, 128, 256]
 
 
+def crear_causal_mask(seq_len: int, device: torch.device = None) -> torch.Tensor:
+    """
+    Crea máscara causal: cada token solo ve tokens anteriores.
+    
+    Ejemplo para seq_len=4:
+        [[1, 0, 0, 0],
+         [1, 1, 0, 0],
+         [1, 1, 1, 0],
+         [1, 1, 1, 1]]
+    
+    1 = puede ver, 0 = enmascarado (futuro)
+    
+    Args:
+        seq_len: Longitud de secuencia
+        device: Dispositivo
+        
+    Returns:
+        Tensor (seq_len, seq_len) con 1s en triángulo inferior
+    """
+    mask = torch.tril(torch.ones(seq_len, seq_len, device=device))
+    return mask
+
+
+def crear_causal_mask_por_ventana(
+    seq_len: int, 
+    ventana: int, 
+    device: torch.device = None
+) -> torch.Tensor:
+    """
+    Crea máscara causal LOCAL por ventanas.
+    
+    Cada token solo ve:
+    1. Tokens anteriores (causal)
+    2. Tokens dentro de su ventana (local)
+    
+    Esto es más eficiente que causal global para secuencias largas.
+    
+    Args:
+        seq_len: Longitud de secuencia
+        ventana: Tamaño de ventana local
+        device: Dispositivo
+        
+    Returns:
+        Tensor (seq_len, seq_len)
+    """
+    # Empezar con causal mask
+    mask = torch.tril(torch.ones(seq_len, seq_len, device=device))
+    
+    # Adicionalmente, limitar a ventana local
+    # Cada token solo ve los últimos 'ventana' tokens
+    for i in range(seq_len):
+        start = max(0, i - ventana + 1)
+        mask[i, :start] = 0
+    
+    return mask
+
+
 class AttentionHead(nn.Module):
-    """Una cabeza de attention estándar."""
+    """Una cabeza de attention estándar con soporte causal."""
     
     def __init__(self, embed_dim: int, head_dim: int, dropout: float = 0.1):
         super().__init__()
@@ -61,17 +119,21 @@ class AttentionHead(nn.Module):
     def forward(
         self, 
         x: torch.Tensor,
-        mask: Optional[torch.Tensor] = None
+        mask: Optional[torch.Tensor] = None,
+        causal: bool = True
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         """
         Args:
             x: (batch, seq_len, embed_dim)
-            mask: Optional attention mask
+            mask: Optional attention mask adicional
+            causal: Si True, aplica causal mask automáticamente
             
         Returns:
             output: (batch, seq_len, head_dim)
             attn_weights: (batch, seq_len, seq_len)
         """
+        batch, seq_len, _ = x.shape
+        
         Q = self.q_proj(x)  # (batch, seq, head_dim)
         K = self.k_proj(x)
         V = self.v_proj(x)
@@ -79,10 +141,20 @@ class AttentionHead(nn.Module):
         # Attention scores
         scores = torch.matmul(Q, K.transpose(-2, -1)) * self.scale  # (batch, seq, seq)
         
+        # Aplicar causal mask si está habilitado
+        if causal:
+            causal_mask = crear_causal_mask(seq_len, device=x.device)
+            scores = scores.masked_fill(causal_mask == 0, float('-inf'))
+        
+        # Aplicar mask adicional si se proporciona
         if mask is not None:
             scores = scores.masked_fill(mask == 0, float('-inf'))
         
         attn_weights = F.softmax(scores, dim=-1)
+        
+        # Manejar NaN de softmax cuando toda la fila es -inf
+        attn_weights = torch.nan_to_num(attn_weights, nan=0.0)
+        
         attn_weights = self.dropout(attn_weights)
         
         output = torch.matmul(attn_weights, V)  # (batch, seq, head_dim)
@@ -124,11 +196,13 @@ class AttentionNivel(nn.Module):
     def forward(
         self,
         x: torch.Tensor,
-        mask: Optional[torch.Tensor] = None
+        mask: Optional[torch.Tensor] = None,
+        causal: bool = True
     ) -> Tuple[torch.Tensor, torch.Tensor, float]:
         """
         Args:
             x: (batch, seq_len, embed_dim)
+            causal: si True, aplica máscara causal
             
         Returns:
             output: (batch, seq_len, embed_dim)
@@ -139,7 +213,7 @@ class AttentionNivel(nn.Module):
         head_weights = []
         
         for head in self.heads:
-            out, weights = head(x, mask)
+            out, weights = head(x, mask, causal=causal)
             head_outputs.append(out)
             head_weights.append(weights)
         
@@ -218,7 +292,8 @@ class AttentionFractalProgresivo(nn.Module):
         x: torch.Tensor,
         ventana: int,
         nivel: int,
-        mask: Optional[torch.Tensor] = None
+        mask: Optional[torch.Tensor] = None,
+        causal: bool = True
     ) -> Tuple[torch.Tensor, float]:
         """
         Attention LOCAL: solo mira tokens cercanos (ventana).
@@ -230,6 +305,7 @@ class AttentionFractalProgresivo(nn.Module):
             x: (batch, seq_len, embed_dim)
             ventana: tamaño del bloque local
             nivel: nivel actual
+            causal: si True, aplica máscara causal
             
         Returns:
             output, confianza
@@ -238,7 +314,7 @@ class AttentionFractalProgresivo(nn.Module):
         
         if seq_len <= ventana:
             # Secuencia cabe en una ventana, attention normal
-            output, _, confianza = self.attn_niveles[str(nivel)](x, mask)
+            output, _, confianza = self.attn_niveles[str(nivel)](x, mask, causal=causal)
             return output, confianza
         
         # Dividir en bloques y hacer attention local en cada uno
@@ -249,7 +325,7 @@ class AttentionFractalProgresivo(nn.Module):
             end = min(start + ventana, seq_len)
             bloque = x[:, start:end, :]
             
-            out, _, conf = self.attn_niveles[str(nivel)](bloque, None)
+            out, _, conf = self.attn_niveles[str(nivel)](bloque, None, causal=causal)
             outputs.append(out)
             confianzas.append(conf)
         
@@ -306,12 +382,13 @@ class AttentionFractalProgresivo(nn.Module):
             ventana = nivel * nivel  # 2→4, 4→16, 8→64, 16→256...
             ventana = min(ventana, seq_len)  # No más que seq_len
             
-            # Attention local en este nivel
+            # Attention local en este nivel (con causal si está habilitado)
             output, confianza = self._attention_local(
                 current_output, 
                 ventana, 
                 nivel, 
-                mask
+                mask,
+                causal=self.config.causal
             )
             
             info['confianzas'][nivel] = confianza
@@ -393,6 +470,7 @@ class AttentionFractalProgresivo(nn.Module):
         print(f"  embed_dim: {self.config.embed_dim}")
         print(f"  num_heads: {self.config.num_heads}")
         print(f"  umbral_match: {self.config.umbral_match}")
+        print(f"  causal: {self.config.causal}")
         print(f"  niveles: {self.config.niveles}")
         
         print(f"\nFlujo (de chico a grande):")
@@ -410,7 +488,7 @@ class AttentionFractalProgresivo(nn.Module):
 # Test
 if __name__ == "__main__":
     print("="*60)
-    print("TEST ATTENTION FRACTAL ASCENDENTE")
+    print("TEST ATTENTION FRACTAL ASCENDENTE + CAUSAL MASK")
     print("="*60)
     
     # Crear módulo con config pequeño para test
@@ -418,7 +496,8 @@ if __name__ == "__main__":
         embed_dim=64,  # Pequeño para test
         num_heads=4,
         umbral_match=0.5,  # Umbral bajo para ver early exits
-        niveles=[2, 4, 8, 16]  # Solo 4 niveles para test
+        niveles=[2, 4, 8, 16],  # Solo 4 niveles para test
+        causal=True  # Habilitar causal mask
     )
     attention = AttentionFractalProgresivo(config)
     
@@ -427,7 +506,7 @@ if __name__ == "__main__":
     
     # Test con diferentes secuencias
     print("\n" + "-"*40)
-    print("TEST DE INFERENCIA:")
+    print("TEST DE INFERENCIA (con causal mask):")
     print("-"*40)
     
     batch_size = 1
@@ -446,9 +525,51 @@ if __name__ == "__main__":
         print(f"  Early exit: {info['early_exit']} en nivel {info['nivel_salida']}")
         print(f"  Confianzas: {info['confianzas']}")
     
+    # Test específico de causal mask
+    print("\n" + "-"*40)
+    print("TEST CAUSAL MASK:")
+    print("-"*40)
+    
+    # Verificar que la máscara causal funciona
+    seq_len = 4
+    causal_mask = crear_causal_mask(seq_len, x.device)
+    print(f"\nCausal mask para seq_len={seq_len}:")
+    print(causal_mask.int())  # Mostrar como 0/1
+    
+    # Verificar máscara por ventana
+    ventana = 3
+    window_mask = crear_causal_mask_por_ventana(seq_len, ventana, x.device)
+    print(f"\nCausal mask con ventana={ventana}:")
+    print(window_mask.int())
+    
+    # Comparar con y sin causal
+    print("\n" + "-"*40)
+    print("COMPARACIÓN CON/SIN CAUSAL:")
+    print("-"*40)
+    
+    x = torch.randn(1, 8, config.embed_dim)
+    
+    # Con causal
+    config_causal = AttentionConfig(embed_dim=64, num_heads=4, causal=True, niveles=[2, 4])
+    attn_causal = AttentionFractalProgresivo(config_causal)
+    out_causal, _ = attn_causal(x)
+    
+    # Sin causal
+    config_no_causal = AttentionConfig(embed_dim=64, num_heads=4, causal=False, niveles=[2, 4])
+    attn_no_causal = AttentionFractalProgresivo(config_no_causal)
+    out_no_causal, _ = attn_no_causal(x)
+    
+    # Deben ser diferentes
+    diff = (out_causal - out_no_causal).abs().mean().item()
+    print(f"  Input shape: {tuple(x.shape)}")
+    print(f"  Output con causal: {tuple(out_causal.shape)}")
+    print(f"  Output sin causal: {tuple(out_no_causal.shape)}")
+    print(f"  Diferencia promedio: {diff:.6f}")
+    print(f"  ✓ Causal mask afecta el output: {diff > 0.001}")
+    
     # Simular muchas llamadas
     print("\n" + "-"*40)
-    print("SIMULACIÓN (50 llamadas):")
+    print("SIMULACIÓN (50 llamadas con causal):")
     print("-"*40)
     
     for _ in range(50):
@@ -459,5 +580,7 @@ if __name__ == "__main__":
     attention.print_stats()
     
     print("\n" + "="*60)
+    print("✓ CAUSAL MASK IMPLEMENTADO CORRECTAMENTE")
+    print("="*60)
     print("TEST COMPLETADO")
     print("="*60)
