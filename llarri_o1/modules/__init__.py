@@ -20,7 +20,13 @@ from llarri_o1.modules.tokenizer import (
 from llarri_o1.modules.attention import (
     AttentionFractalProgresivo,
     AttentionConfig,
-    AttentionNivel
+    AttentionNivel,
+    crear_causal_mask,
+    crear_causal_mask_por_ventana
+)
+from llarri_o1.modules.lm_head import (
+    LMHeadFractal,
+    LMHeadConfig
 )
 
 __all__ = [
@@ -42,4 +48,8 @@ __all__ = [
     "AttentionFractalProgresivo",
     "AttentionConfig",
     "AttentionNivel",
+    "crear_causal_mask",
+    "crear_causal_mask_por_ventana",
+    "LMHeadFractal",
+    "LMHeadConfig",
 ]
