@@ -151,12 +151,11 @@ class LLARRIv4(nn.Module):
             dict con logits, loss (si labels), y info de debug
         """
         # 1. Multiescala: tokenizar a múltiples niveles
-        multi_out = self.multiescala(input_ids)
-        x = multi_out['fused']  # [batch, seq, embed_dim]
+        x, multi_info = self.multiescala(input_ids)
+        # x: [batch, seq, embed_dim]
         
         # 2. Bloque Fractal (Cajas 1-6): procesamiento
-        fractal_out = self.bloque_fractal(x)
-        x = fractal_out['output']
+        x, fractal_info = self.bloque_fractal(x)
         
         # 3. Compositor (Cajas 7-9): razonamiento
         comp_out = self.compositor(x)
@@ -180,8 +179,8 @@ class LLARRIv4(nn.Module):
         return {
             'logits': logits,
             'loss': loss,
-            'multiescala_info': multi_out,
-            'fractal_info': fractal_out,
+            'multiescala_info': multi_info,
+            'fractal_info': fractal_info,
             'compositor_info': {
                 'detections': comp_out['detections'],
                 'dominant_plan': comp_out['dominant_plan'],
