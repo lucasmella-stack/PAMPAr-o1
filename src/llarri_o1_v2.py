@@ -227,8 +227,9 @@ class CajaTrinity(nn.Module):
         self.config = config
         dim = config.hidden_dim
         
-        # Proyección de entrada
+        # Proyección de entrada (desde input_dim o desde dim)
         self.input_proj = nn.Linear(config.input_dim, dim * 4)
+        self.internal_proj = nn.Linear(dim, dim * 4)  # Para entradas internas
         
         # Cuadrantes (pesos compartidos o propios)
         if cuadrante_compartido is not None and config.compartir_pesos_cuadrantes:
@@ -254,12 +255,20 @@ class CajaTrinity(nn.Module):
         """
         Procesa input a través de los 4 cuadrantes.
         """
-        # Proyectar entrada
-        if x.shape[-1] != self.config.hidden_dim * 4:
+        dim = self.config.hidden_dim
+        
+        # Proyectar entrada según su tamaño
+        if x.shape[-1] == self.config.input_dim:
+            # Entrada desde fuera (input original)
             x = self.input_proj(x)
+        elif x.shape[-1] == dim:
+            # Entrada desde otra caja
+            x = self.internal_proj(x)
+        elif x.shape[-1] != dim * 4:
+            # Padding si es necesario
+            x = F.pad(x, (0, dim * 4 - x.shape[-1]))
         
         # Dividir en 4 cuadrantes
-        dim = self.config.hidden_dim
         xA = x[..., :dim]
         xB = x[..., dim:dim*2]
         xC = x[..., dim*2:dim*3]
