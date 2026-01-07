@@ -228,8 +228,68 @@ class CajaDatos(nn.Module):
         return self.fusion(out) + x
 
 
+class AutoCalculos(nn.Module):
+    """
+    Auto-cálculos internos: los valores intermedios se calculan entre sí.
+    
+    Si tengo [v1, v2, v3, v4], calculo:
+    - v1 ⊗ v2, v2 ⊗ v3, v3 ⊗ v4 (adyacentes)
+    - v1 ⊗ v3, v2 ⊗ v4 (cruzados)
+    - v1 ⊗ v4 (diagonales)
+    """
+    def __init__(self, dim: int):
+        super().__init__()
+        # 6 operaciones entre pares + fusión
+        self.op_adyacente_1 = nn.Linear(dim * 2, dim)  # v1 ⊗ v2
+        self.op_adyacente_2 = nn.Linear(dim * 2, dim)  # v2 ⊗ v3
+        self.op_adyacente_3 = nn.Linear(dim * 2, dim)  # v3 ⊗ v4
+        self.op_cruzado_1 = nn.Linear(dim * 2, dim)    # v1 ⊗ v3
+        self.op_cruzado_2 = nn.Linear(dim * 2, dim)    # v2 ⊗ v4
+        self.op_diagonal = nn.Linear(dim * 2, dim)     # v1 ⊗ v4
+        
+        # Fusión de todos los cálculos
+        self.fusion = nn.Sequential(
+            nn.Linear(dim * 6, dim * 4),
+            nn.LayerNorm(dim * 4),
+            nn.GELU(),
+        )
+        self.norm = nn.LayerNorm(dim)
+    
+    def forward(self, a, b, c, d):
+        """Calcula todas las combinaciones entre valores internos."""
+        # Cálculos adyacentes
+        ab = self.op_adyacente_1(torch.cat([a, b], dim=-1))
+        bc = self.op_adyacente_2(torch.cat([b, c], dim=-1))
+        cd = self.op_adyacente_3(torch.cat([c, d], dim=-1))
+        
+        # Cálculos cruzados
+        ac = self.op_cruzado_1(torch.cat([a, c], dim=-1))
+        bd = self.op_cruzado_2(torch.cat([b, d], dim=-1))
+        
+        # Cálculo diagonal
+        ad = self.op_diagonal(torch.cat([a, d], dim=-1))
+        
+        # Fusionar todos los cálculos
+        todos = torch.cat([ab, bc, cd, ac, bd, ad], dim=-1)
+        fusionado = self.fusion(todos)
+        
+        # Distribuir de vuelta a los 4 valores con residuales
+        dim = a.shape[-1]
+        a_new = self.norm(a + fusionado[..., :dim] * 0.5)
+        b_new = self.norm(b + fusionado[..., dim:dim*2] * 0.5)
+        c_new = self.norm(c + fusionado[..., dim*2:dim*3] * 0.5)
+        d_new = self.norm(d + fusionado[..., dim*3:] * 0.5)
+        
+        return a_new, b_new, c_new, d_new
+
+
 class CajaCalculos(nn.Module):
-    """Caja de CÁLCULOS - opera sobre datos + otros cálculos."""
+    """
+    Caja de CÁLCULOS - opera sobre datos + otros cálculos.
+    
+    INCLUYE: Auto-cálculos internos donde los valores intermedios
+    también se calculan entre sí.
+    """
     def __init__(self, config: ConfigHyperComprimido, cuadrante: CuadranteProgresivo):
         super().__init__()
         self.config = config
@@ -239,6 +299,7 @@ class CajaCalculos(nn.Module):
         self.op_combinar = nn.Linear(dim * 2, dim)
         self.cuadrante = cuadrante
         self.relaciones = RelacionesCuadrantes(quad_dim)
+        self.auto_calculos = AutoCalculos(quad_dim)  # NUEVO: auto-cálculos internos
         self.integrar = nn.Linear(dim * 2, dim)
         self.norm = nn.LayerNorm(dim)
     
@@ -256,12 +317,17 @@ class CajaCalculos(nn.Module):
         c = x[..., quad_dim*2:quad_dim*3]
         d = x[..., quad_dim*3:]
         
+        # Procesar cuadrantes
         a = self.cuadrante(a)
         b = self.cuadrante(b)
         c = self.cuadrante(c)
         d = self.cuadrante(d)
         
+        # Relaciones entre cuadrantes
         a, b, c, d = self.relaciones(a, b, c, d)
+        
+        # AUTO-CÁLCULOS: los valores intermedios se calculan entre sí
+        a, b, c, d = self.auto_calculos(a, b, c, d)
         
         return torch.cat([a, b, c, d], dim=-1) + x
 
