@@ -89,11 +89,16 @@ This repository is licensed under **GNU AGPLv3 or later (AGPL-3.0-or-later)**.
 
 | Versión | Arquitectura | Parámetros | Accuracy | Estado |
 |---------|--------------|------------|----------|--------|
-| v1.0 | MLP básico | 500K | 95% | Legacy |
-| v2.0 | Trinity simple | 800K | 97% | Legacy |
-| v3.0 | Fractal profundo | 1.8M | - | Muy lento |
-| v3.1 | Cuadrantes | 1.3M | **98.61%** | ✅ Estable |
-| **v4.0** | **HyperComprimido** | **3.3M** | **En prueba** | 🚀 **Nuevo** |
+| v1.0 | MLP básico | 500K | 95% | Archivado |
+| v2.0 | Trinity simple | 800K | 97% | Archivado |
+| v3.0 | Fractal profundo | 1.8M | - | Archivado |
+| v3.1 | Cuadrantes | 1.3M | **98.61%** | Archivado |
+| **v4.0** | **HyperComprimido** | **~49M** | **En prueba** | 🚀 **Activo** |
+
+> **Nota**: El código de versiones anteriores está en la rama `archive/legacy`. Para acceder:
+> ```bash
+> git checkout archive/legacy
+> ```
 
 ---
 
