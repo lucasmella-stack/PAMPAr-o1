@@ -6,5 +6,6 @@ Entrenamiento para LLARRI-O1.
 """
 
 from llarri_o1.training.trainer import Trainer
+from llarri_o1.training.adaptive_trainer import AdaptiveTrainer
 
-__all__ = ["Trainer"]
+__all__ = ["Trainer", "AdaptiveTrainer"]

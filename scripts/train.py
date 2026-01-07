@@ -6,7 +6,14 @@
 Script de entrenamiento para LLARRI-O1.
 
 Uso:
+    # Entrenamiento adaptativo (auto-detecta capacidad)
     python scripts/train.py --epochs 10 --batch-size 32
+    
+    # Forzar modo full (todos los niveles juntos)
+    python scripts/train.py --epochs 10 --mode full
+    
+    # Forzar modo progresivo (por niveles)
+    python scripts/train.py --epochs 10 --mode progressive
 
 Author: Lucas Ricardo Mella Chillemi (Segunda Cabeza)
 """
@@ -19,7 +26,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from llarri_o1 import LlarriO1, Config
-from llarri_o1.training import Trainer
+from llarri_o1.training import Trainer, AdaptiveTrainer
 from llarri_o1.utils import get_mnist_loaders, print_device_info
 
 
@@ -32,6 +39,9 @@ def parse_args():
     parser.add_argument('--no-amp', action='store_true', help='Desactivar mixed precision')
     parser.add_argument('--accumulation', type=int, default=1, help='Gradient accumulation')
     parser.add_argument('--checkpoint', type=str, default=None, help='Checkpoint a cargar')
+    parser.add_argument('--mode', type=str, choices=['auto', 'full', 'progressive'], 
+                        default='auto', help='Modo de entrenamiento')
+    parser.add_argument('--legacy', action='store_true', help='Usar trainer legacy (no adaptativo)')
     return parser.parse_args()
 
 
@@ -49,27 +59,39 @@ def main():
     config = Config(hidden_dim=args.hidden_dim)
     
     # Modelo
-    print("Inicializando modelo...")
+    print("\nInicializando modelo...")
     model = LlarriO1(config)
     
     # Datos
     print(f"Cargando datos (batch_size={args.batch_size})...")
     train_loader, test_loader = get_mnist_loaders(batch_size=args.batch_size)
     
-    # Trainer
-    trainer = Trainer(
-        model=model,
-        train_loader=train_loader,
-        test_loader=test_loader,
-        lr=args.lr,
-        use_amp=not args.no_amp,
-        accumulation_steps=args.accumulation,
-    )
+    # Elegir trainer
+    if args.legacy:
+        # Trainer original
+        trainer = Trainer(
+            model=model,
+            train_loader=train_loader,
+            test_loader=test_loader,
+            lr=args.lr,
+            use_amp=not args.no_amp,
+            accumulation_steps=args.accumulation,
+        )
+    else:
+        # Trainer adaptativo
+        force_mode = None if args.mode == 'auto' else args.mode
+        trainer = AdaptiveTrainer(
+            model=model,
+            train_loader=train_loader,
+            test_loader=test_loader,
+            lr=args.lr,
+            use_amp=not args.no_amp,
+            force_mode=force_mode,
+        )
     
     # Cargar checkpoint si se especificó
-    start_epoch = 0
     if args.checkpoint:
-        start_epoch = trainer.load_checkpoint(args.checkpoint)
+        trainer.load_checkpoint(args.checkpoint)
     
     # Entrenar
     trainer.train(epochs=args.epochs)
@@ -78,4 +100,5 @@ def main():
 
 
 if __name__ == "__main__":
+    main()
     main()
