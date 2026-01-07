@@ -7,7 +7,7 @@ Modelo principal LLARRI-O1 v4.0 HyperComprimido.
 
 import torch
 import torch.nn as nn
-from typing import Optional
+from typing import Optional, List
 
 from llarri_o1.config import Config
 from llarri_o1.modules.cache import CacheBinario
@@ -185,6 +185,22 @@ class LlarriO1(nn.Module):
         fusion = torch.cat(datos + calculos, dim=-1)
         
         return self.output_layer(fusion)
+    
+    def set_active_levels(self, levels: Optional[list]):
+        """
+        Establece qué niveles fractales están activos.
+        
+        Esto permite entrenar por chunks de niveles para reducir
+        uso de memoria en hardware limitado.
+        
+        Args:
+            levels: Lista de niveles activos (ej: [2, 4, 8]) o None para todos
+        
+        Example:
+            >>> model.set_active_levels([2, 4, 8])  # Solo estos niveles
+            >>> model.set_active_levels(None)  # Todos los niveles
+        """
+        self.cuadrante_compartido.set_active_levels(levels)
     
     def to(self, device):
         """Override to también para mover el cache."""

@@ -71,6 +71,7 @@ class CuadranteProgresivo(nn.Module):
         self.dim = dim_cuadrante
         self.niveles = niveles
         self.cache = cache_binario
+        self.active_levels: Optional[List[int]] = None  # None = todos
         
         # Comprimir entrada al nivel binario
         self.comprimir = nn.Linear(dim_cuadrante, 2)
@@ -93,9 +94,19 @@ class CuadranteProgresivo(nn.Module):
         self.expandir = nn.Linear(self.niveles[-1], dim_cuadrante)
         self.norm_final = nn.LayerNorm(dim_cuadrante)
     
+    def set_active_levels(self, levels: Optional[List[int]]):
+        """
+        Establece qué niveles están activos para el forward.
+        
+        Args:
+            levels: Lista de niveles activos (ej: [2, 4, 8]) o None para todos
+        """
+        self.active_levels = levels
+    
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
         Procesa secuencialmente: 2 → 4 → 8 → 16 → 32 → 64 → 128 → 256
+        Solo procesa los niveles activos (o todos si active_levels es None).
         
         Args:
             x: Tensor de shape (batch, dim_cuadrante)
@@ -105,6 +116,14 @@ class CuadranteProgresivo(nn.Module):
         """
         residual = x
         
+        # Determinar qué niveles procesar
+        if self.active_levels is None:
+            niveles_activos = self.niveles
+        else:
+            niveles_activos = [n for n in self.niveles if n in self.active_levels]
+            if not niveles_activos:
+                niveles_activos = self.niveles[:1]  # Al menos nivel 2
+        
         # 1. Comprimir al nivel binario
         h = self.comprimir(x)  # (batch, 2)
         
@@ -113,15 +132,38 @@ class CuadranteProgresivo(nn.Module):
             cache_out = self.cache.lookup(h)  # (batch, 7)
             h = self.fusion_cache(torch.cat([h, cache_out], dim=-1))
         
-        # 3. Procesar nivel 2
+        # 3. Procesar nivel 2 (siempre se procesa)
         h = self.procesos['2'](h)
         
-        # 4. Subir SECUENCIALMENTE por cada nivel
+        # 4. Subir SECUENCIALMENTE solo por niveles activos
+        ultimo_nivel = 2
         for i in range(len(self.niveles) - 1):
             din, dout = self.niveles[i], self.niveles[i + 1]
-            h = self.subir[f'{din}_{dout}'](h)
-            h = self.procesos[str(dout)](h)
+            
+            # Solo procesar si el nivel de destino está activo
+            if dout in niveles_activos:
+                # Si necesitamos saltar niveles, hacerlo con las transiciones
+                if din != ultimo_nivel:
+                    # Transición directa desde ultimo_nivel a din
+                    idx_from = self.niveles.index(ultimo_nivel)
+                    idx_to = self.niveles.index(din)
+                    for j in range(idx_from, idx_to):
+                        d1, d2 = self.niveles[j], self.niveles[j + 1]
+                        h = self.subir[f'{d1}_{d2}'](h)
+                
+                h = self.subir[f'{din}_{dout}'](h)
+                h = self.procesos[str(dout)](h)
+                ultimo_nivel = dout
         
-        # 5. Expandir y residual
+        # 5. Si no llegamos al nivel máximo, expandir desde donde estamos
+        max_nivel = self.niveles[-1]
+        if ultimo_nivel != max_nivel:
+            # Subir hasta el máximo para poder expandir correctamente
+            idx_from = self.niveles.index(ultimo_nivel)
+            for j in range(idx_from, len(self.niveles) - 1):
+                d1, d2 = self.niveles[j], self.niveles[j + 1]
+                h = self.subir[f'{d1}_{d2}'](h)
+        
+        # 6. Expandir y residual
         h = self.expandir(h)
         return self.norm_final(h + residual)
