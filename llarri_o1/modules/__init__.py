@@ -17,6 +17,11 @@ from llarri_o1.modules.tokenizer import (
     EmbeddingComposicional,
     EmbeddingPosicionalFractal
 )
+from llarri_o1.modules.attention import (
+    AttentionFractalProgresivo,
+    AttentionConfig,
+    AttentionNivel
+)
 
 __all__ = [
     "CacheBinario",
@@ -34,4 +39,7 @@ __all__ = [
     "EmbeddingFractal",
     "EmbeddingComposicional",
     "EmbeddingPosicionalFractal",
+    "AttentionFractalProgresivo",
+    "AttentionConfig",
+    "AttentionNivel",
 ]
