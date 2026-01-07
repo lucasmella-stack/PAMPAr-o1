@@ -49,6 +49,14 @@ from .entrenador_fractal import (
     entrenar_modelo_completo
 )
 
+# Entrenador Progresivo (por cuadrantes)
+from .entrenador_progresivo import (
+    LlarriO1_EntrenableProgresivo,
+    EntrenadorProgresivo,
+    entrenar_modelo_progresivo,
+    cargar_mnist_reducido
+)
+
 # Entrenador v2.0 - Legacy
 from .entrenador import (
     Entrenador

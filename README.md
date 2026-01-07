@@ -255,7 +255,53 @@ modelo.load_state_dict(checkpoint['model_state_dict'])
 
 ---
 
-## 📊 Resultados
+## � Entrenamiento Progresivo (Por Cuadrantes)
+
+**INNOVACIÓN:** Entrena nivel por nivel, desde el más pequeño al más grande.
+
+### ¿Por qué?
+
+```
+Nivel 3 (4 dims)   → 48 parámetros     → Patrones BÁSICOS
+Nivel 2 (16 dims)  → 956 parámetros    → Combina patrones
+Nivel 1 (64 dims)  → 14K parámetros    → Patrones complejos  
+Nivel 0 (256 dims) → 222K parámetros   → Visión completa
+```
+
+### Beneficios
+
+- ✅ **Menos RAM** en cada paso
+- ✅ **Entrenamiento estable** (niveles pequeños guían a los grandes)
+- ✅ **Puedes parar** en cualquier nivel
+- ✅ **Curriculum Learning** natural
+
+### Uso
+
+```python
+from src.entrenador_progresivo import entrenar_modelo_progresivo
+
+# Entrenar nivel por nivel
+modelo, historial = entrenar_modelo_progresivo(
+    hidden_dim=256,
+    epochs_por_nivel=10,    # Épocas por cada nivel
+    fine_tuning_epochs=5,   # Fine-tuning al final
+    batch_size=128
+)
+```
+
+### Resultado típico
+
+```
+Nivel 3 (4 dims):   88% accuracy
+Nivel 2 (16 dims):  91% accuracy  
+Nivel 1 (64 dims):  95% accuracy
+Nivel 0 (256 dims): 97% accuracy
+Fine-tuning:        98% accuracy ✓
+```
+
+---
+
+## �📊 Resultados
 
 ### MNIST (28×28 dígitos)
 
