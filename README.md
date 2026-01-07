@@ -13,28 +13,40 @@ LLARRI-O1 is an experimental neural architecture exploring **quadrant-based proc
 Current development target: **v4.0 HyperComprimido** (6 boxes, 8 fractal levels, binary cache, and internal self-calculations in secondary boxes).
 
 ## Quickstart
+
 Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Smoke-test forward pass (no training):
+Quick test (no training):
 
 ```bash
-python -c "import torch; import sys; from pathlib import Path; sys.path.insert(0, str(Path('src').resolve())); from llarri_o1_hypercomprimido import LlarriO1_HyperComprimido; m=LlarriO1_HyperComprimido(); x=torch.randn(2,784); y=m(x); print(y.shape)"
+python examples/basic_usage.py
 ```
 
-Train v4.0 (run as a script):
+Or in Python:
 
-```bash
-python src/llarri_o1_hypercomprimido.py
+```python
+from llarri_o1 import LlarriO1, Config
+import torch
+
+model = LlarriO1()  # Config auto-detects optimal levels
+x = torch.randn(2, 784)  # MNIST input
+output = model(x)  # Shape: (2, 10)
 ```
 
-Generate v4 diagrams:
+Train v4.0:
 
 ```bash
-python src/generar_diagramas_v4_visuales.py
+python scripts/train.py --epochs 10 --batch-size 32
+```
+
+Generate diagrams:
+
+```bash
+python -m llarri_o1.visualization.diagrams
 ```
 
 ## Diagrams
