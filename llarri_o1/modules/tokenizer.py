@@ -573,6 +573,187 @@ class EmbeddingComposicional(nn.Module):
         print("="*60)
 
 
+class EmbeddingPosicionalFractal(nn.Module):
+    """
+    Embedding Posicional Fractal.
+    
+    Combina:
+    1. Sinusoidal base (posición absoluta, 0 parámetros)
+    2. Posición jerárquica por nivel (la estructura fractal ya la tiene)
+    
+    Para posición 7 en una secuencia:
+    - pos_nivel2 = 7          (byte 7)
+    - pos_nivel4 = 7 // 4 = 1 (bloque 1 de nivel 4)
+    - pos_nivel8 = 7 // 16 = 0 (bloque 0 de nivel 8)
+    
+    El embedding combina todas estas escalas.
+    """
+    
+    def __init__(
+        self,
+        embed_dim: int = 256,
+        max_seq_len: int = 8192,
+        niveles: List[int] = None,
+        dropout: float = 0.1
+    ):
+        super().__init__()
+        self.embed_dim = embed_dim
+        self.max_seq_len = max_seq_len
+        self.niveles = niveles or [2, 4, 8, 16, 32, 64, 128, 256]
+        
+        # 1. Sinusoidal base (posición absoluta) - 0 parámetros
+        self.register_buffer('sinusoidal', self._crear_sinusoidal(max_seq_len, embed_dim))
+        
+        # 2. Embeddings aprendidos por nivel (pequeños, solo para bloques)
+        # Nivel 4: max 2048 bloques (8192/4), Nivel 8: max 512 bloques, etc.
+        self.pos_por_nivel = nn.ModuleDict()
+        dim_por_nivel = embed_dim // len(self.niveles)  # Dividir dimensión entre niveles
+        
+        for nivel in self.niveles[1:]:  # Skip nivel 2 (usa sinusoidal puro)
+            max_bloques = max_seq_len // nivel + 1
+            # Embedding pequeño: pocos bloques, pocas dimensiones
+            self.pos_por_nivel[str(nivel)] = nn.Embedding(
+                max_bloques, 
+                dim_por_nivel
+            )
+        
+        # Combinador de escalas
+        # Input: sinusoidal (embed_dim) + niveles (dim_por_nivel * (len-1))
+        total_dim = embed_dim + dim_por_nivel * (len(self.niveles) - 1)
+        self.combinar = nn.Sequential(
+            nn.Linear(total_dim, embed_dim),
+            nn.LayerNorm(embed_dim),
+            nn.Dropout(dropout)
+        )
+        
+        self.dim_por_nivel = dim_por_nivel
+    
+    def _crear_sinusoidal(self, max_len: int, dim: int) -> torch.Tensor:
+        """
+        Crea embeddings sinusoidales (fórmula del Transformer original).
+        
+        PE(pos, 2i)   = sin(pos / 10000^(2i/d))
+        PE(pos, 2i+1) = cos(pos / 10000^(2i/d))
+        """
+        pe = torch.zeros(max_len, dim)
+        position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
+        
+        div_term = torch.exp(
+            torch.arange(0, dim, 2).float() * (-torch.log(torch.tensor(10000.0)) / dim)
+        )
+        
+        pe[:, 0::2] = torch.sin(position * div_term)
+        pe[:, 1::2] = torch.cos(position * div_term[:dim//2] if dim % 2 else div_term)
+        
+        return pe
+    
+    def _calcular_posiciones_fractal(self, seq_len: int) -> Dict[int, torch.Tensor]:
+        """
+        Calcula posiciones por nivel para una secuencia.
+        
+        Para seq_len=16:
+        - nivel 4: [0,0,0,0, 1,1,1,1, 2,2,2,2, 3,3,3,3]
+        - nivel 8: [0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1]
+        """
+        posiciones = {}
+        pos_base = torch.arange(seq_len)
+        
+        for nivel in self.niveles[1:]:
+            # Posición = en qué bloque de 'nivel' estamos
+            pos_nivel = pos_base // nivel
+            posiciones[nivel] = pos_nivel
+        
+        return posiciones
+    
+    def forward(
+        self, 
+        seq_len: int,
+        device: torch.device = None
+    ) -> torch.Tensor:
+        """
+        Genera embeddings posicionales fractales.
+        
+        Args:
+            seq_len: Longitud de secuencia
+            device: Dispositivo
+            
+        Returns:
+            Tensor (seq_len, embed_dim)
+        """
+        if device is None:
+            device = self.sinusoidal.device
+        
+        # 1. Sinusoidal base
+        pos_sin = self.sinusoidal[:seq_len].to(device)  # (seq_len, embed_dim)
+        
+        # 2. Posiciones por nivel
+        posiciones = self._calcular_posiciones_fractal(seq_len)
+        
+        embeddings_nivel = []
+        for nivel in self.niveles[1:]:
+            pos = posiciones[nivel].to(device)
+            pos = pos.clamp(0, self.pos_por_nivel[str(nivel)].num_embeddings - 1)
+            emb_nivel = self.pos_por_nivel[str(nivel)](pos)  # (seq_len, dim_por_nivel)
+            embeddings_nivel.append(emb_nivel)
+        
+        # 3. Concatenar todo
+        # sinusoidal + todos los niveles
+        all_pos = torch.cat([pos_sin] + embeddings_nivel, dim=-1)  # (seq_len, total_dim)
+        
+        # 4. Combinar a dimensión final
+        return self.combinar(all_pos)  # (seq_len, embed_dim)
+    
+    def forward_batch(
+        self, 
+        batch_size: int,
+        seq_len: int,
+        device: torch.device = None
+    ) -> torch.Tensor:
+        """
+        Genera embeddings posicionales para un batch.
+        
+        Returns:
+            Tensor (batch_size, seq_len, embed_dim)
+        """
+        pos_emb = self.forward(seq_len, device)  # (seq_len, embed_dim)
+        return pos_emb.unsqueeze(0).expand(batch_size, -1, -1)  # (batch, seq_len, embed_dim)
+    
+    def get_memoria_usada(self) -> Dict[str, int]:
+        """Calcula memoria usada."""
+        memoria = {
+            'sinusoidal': self.sinusoidal.numel() * 4,
+            'pos_por_nivel': sum(
+                emb.weight.numel() * 4 
+                for emb in self.pos_por_nivel.values()
+            ),
+            'combinar': sum(p.numel() for p in self.combinar.parameters()) * 4,
+        }
+        memoria['total'] = sum(memoria.values())
+        return memoria
+    
+    def print_arquitectura(self):
+        """Imprime detalles de la arquitectura."""
+        print("\n" + "="*60)
+        print("EMBEDDING POSICIONAL FRACTAL")
+        print("="*60)
+        
+        print(f"\nDimensión: {self.embed_dim}")
+        print(f"Max secuencia: {self.max_seq_len}")
+        print(f"Niveles: {self.niveles}")
+        print(f"Dims por nivel: {self.dim_por_nivel}")
+        
+        print(f"\nEmbeddings por nivel:")
+        for nivel, emb in self.pos_por_nivel.items():
+            print(f"  Nivel {nivel:3s}: {emb.num_embeddings} posiciones × {emb.embedding_dim} dims")
+        
+        memoria = self.get_memoria_usada()
+        print(f"\nMemoria total: {memoria['total'] / 1024:.1f} KB")
+        print(f"  - Sinusoidal (buffer): {memoria['sinusoidal'] / 1024:.1f} KB")
+        print(f"  - Pos por nivel: {memoria['pos_por_nivel'] / 1024:.1f} KB")
+        print(f"  - Combinador: {memoria['combinar'] / 1024:.1f} KB")
+        print("="*60)
+
+
 # Alias para compatibilidad
 EmbeddingFractal = EmbeddingComposicional
 
@@ -652,6 +833,60 @@ if __name__ == "__main__":
     print(f"Composicional: {mem_comp / 1024:.1f} KB")
     print(f"Tabla tradicional: {mem_tabla / 1024 / 1024:.1f} MB")
     print(f"Ahorro: {mem_tabla / mem_comp:.0f}x menos memoria")
+    
+    # ========================================
+    # TEST EMBEDDING POSICIONAL FRACTAL
+    # ========================================
+    print("\n" + "="*60)
+    print("TEST EMBEDDING POSICIONAL FRACTAL")
+    print("="*60)
+    
+    # Crear embedding posicional
+    pos_embedding = EmbeddingPosicionalFractal(
+        embed_dim=256,
+        max_seq_len=1024
+    )
+    
+    # Mostrar arquitectura
+    pos_embedding.print_arquitectura()
+    
+    # Test de posiciones
+    print("\nTest de embeddings posicionales:")
+    for seq_len in [4, 16, 64, 256]:
+        pos_emb = pos_embedding(seq_len)
+        print(f"  seq_len={seq_len:3d} → shape {tuple(pos_emb.shape)}")
+    
+    # Mostrar cómo las posiciones se mapean por nivel
+    print("\n" + "-"*40)
+    print("POSICIONES FRACTALES (ejemplo seq_len=16):")
+    print("-"*40)
+    posiciones = pos_embedding._calcular_posiciones_fractal(16)
+    print("Posición byte:  ", list(range(16)))
+    for nivel, pos in sorted(posiciones.items()):
+        print(f"Posición nivel {nivel:3d}:", pos.tolist())
+    
+    # Test combinado: token embedding + posicional
+    print("\n" + "-"*40)
+    print("TEST COMBINADO: Token + Posicional")
+    print("-"*40)
+    
+    texto_test = "Hola mundo"
+    tokens = tokenizer.encode(texto_test)
+    seq_len = len(tokens[2])  # Longitud en nivel 2
+    
+    # Embedding de tokens
+    token_emb = embedding.embed_tokens(tokens, nivel_objetivo=2)  # Sin comprimir para test
+    
+    # Embedding posicional
+    pos_emb = pos_embedding(seq_len)
+    
+    # Combinar (como haría un transformer)
+    combined = token_emb + pos_emb
+    
+    print(f"Texto: '{texto_test}'")
+    print(f"Token embedding: {tuple(token_emb.shape)}")
+    print(f"Pos embedding:   {tuple(pos_emb.shape)}")
+    print(f"Combinado:       {tuple(combined.shape)}")
     
     print("\n" + "="*60)
     print("TEST COMPLETADO")
