@@ -30,6 +30,21 @@ Investigación y experimentación sobre cómputo fractal y compartición de par�
 ## Datos de entrenamiento
 - MNIST (vía torchvision) para los experimentos actuales.
 
+## Uso Rápido
+```python
+from llarri_o1 import LlarriO1, Config
+import torch
+
+model = LlarriO1()  # Auto-detecta niveles fractales óptimos
+x = torch.randn(2, 784)
+output = model(x)  # Shape: (2, 10)
+```
+
+Entrenamiento:
+```bash
+python scripts/train.py --epochs 10 --batch-size 32
+```
+
 ## Evaluación
 - v3.1 Cuadrantes: 98.61% en MNIST (resultado histórico).
 - v4.0 HyperComprimido: smoke tests + corridas de desarrollo; ver README.

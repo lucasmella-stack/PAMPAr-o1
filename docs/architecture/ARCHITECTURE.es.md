@@ -28,6 +28,12 @@ Ideas clave:
 - La VRAM puede seguir siendo un límite durante entrenamiento por estados del optimizador (AdamW) y activaciones.
 
 ## Dónde mirar
-- Modelo: [src/llarri_o1_hypercomprimido.py](../../src/llarri_o1_hypercomprimido.py)
-- Generador de diagramas: [src/generar_diagramas_v4_visuales.py](../../src/generar_diagramas_v4_visuales.py)
+- Paquete: [llarri_o1/](../../llarri_o1/)
+  - Config: [llarri_o1/config.py](../../llarri_o1/config.py)
+  - Modelo: [llarri_o1/model.py](../../llarri_o1/model.py)
+  - Módulos: [llarri_o1/modules/](../../llarri_o1/modules/) (cache, niveles, relaciones, cajas, flujo)
+  - Entrenamiento: [llarri_o1/training/trainer.py](../../llarri_o1/training/trainer.py)
+  - Visualización: [llarri_o1/visualization/diagrams.py](../../llarri_o1/visualization/diagrams.py)
+- Scripts: [scripts/train.py](../../scripts/train.py)
+- Ejemplos: [examples/basic_usage.py](../../examples/basic_usage.py)
 - Diagramas v4: [diagrams/v4-current](../../diagrams/v4-current)

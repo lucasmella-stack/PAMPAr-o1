@@ -16,20 +16,31 @@ Este repositorio contiene múltiples versiones; la versión actual en desarrollo
 pip install -r requirements.txt
 ```
 
-## Uso (ejemplo rápido)
-Smoke-test del modelo (sin entrenar):
+## Uso Rápido
+
+Ejemplo básico:
 ```bash
-python -c "import torch; import sys; from pathlib import Path; sys.path.insert(0, str(Path('src').resolve())); from llarri_o1_hypercomprimido import LlarriO1_HyperComprimido; m=LlarriO1_HyperComprimido(); x=torch.randn(2,784); y=m(x); print(y.shape)"
+python examples/basic_usage.py
 ```
 
-Entrenar v4.0 (ejecución directa):
-```bash
-python src/llarri_o1_hypercomprimido.py
+O en Python:
+```python
+from llarri_o1 import LlarriO1, Config
+import torch
+
+model = LlarriO1()  # Config auto-detecta niveles óptimos
+x = torch.randn(2, 784)  # Entrada MNIST
+output = model(x)  # Shape: (2, 10)
 ```
 
-Generar diagramas v4.0:
+Entrenar v4.0:
 ```bash
-python src/generar_diagramas_v4_visuales.py
+python scripts/train.py --epochs 10 --batch-size 32
+```
+
+Generar diagramas:
+```bash
+python -m llarri_o1.visualization.diagrams
 ```
 
 ## Diagramas

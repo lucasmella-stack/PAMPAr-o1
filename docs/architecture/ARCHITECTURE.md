@@ -28,6 +28,12 @@ Key ideas:
 - GPU VRAM can still be a bottleneck during training due to optimizer states (AdamW) and activations.
 
 ## Where to look
-- Core model: [src/llarri_o1_hypercomprimido.py](../../src/llarri_o1_hypercomprimido.py)
-- Diagram generator: [src/generar_diagramas_v4_visuales.py](../../src/generar_diagramas_v4_visuales.py)
+- Package: [llarri_o1/](../../llarri_o1/)
+  - Config: [llarri_o1/config.py](../../llarri_o1/config.py)
+  - Model: [llarri_o1/model.py](../../llarri_o1/model.py)
+  - Modules: [llarri_o1/modules/](../../llarri_o1/modules/) (cache, niveles, relaciones, cajas, flujo)
+  - Training: [llarri_o1/training/trainer.py](../../llarri_o1/training/trainer.py)
+  - Visualization: [llarri_o1/visualization/diagrams.py](../../llarri_o1/visualization/diagrams.py)
+- Scripts: [scripts/train.py](../../scripts/train.py)
+- Examples: [examples/basic_usage.py](../../examples/basic_usage.py)
 - v4 diagrams: [diagrams/v4-current](../../diagrams/v4-current)

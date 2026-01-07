@@ -30,6 +30,21 @@ Research and experimentation on fractal computation / parameter sharing patterns
 ## Training Data
 - MNIST (via torchvision) for current experiments.
 
+## Quick Start
+```python
+from llarri_o1 import LlarriO1, Config
+import torch
+
+model = LlarriO1()  # Auto-detects optimal fractal levels
+x = torch.randn(2, 784)
+output = model(x)  # Shape: (2, 10)
+```
+
+Training:
+```bash
+python scripts/train.py --epochs 10 --batch-size 32
+```
+
 ## Evaluation
 - v3.1 Cuadrantes: 98.61% on MNIST (historical result).
 - v4.0 HyperComprimido: smoke tests + dev runs; see repo README for current status.
