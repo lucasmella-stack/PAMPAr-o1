@@ -325,12 +325,15 @@ class LLARRILanguageModel(nn.Module):
         token_ids = tokens_por_nivel.get(nivel, tokens_por_nivel[2])
         generated = list(token_ids)
         
+        # Obtener device del modelo
+        device = next(self.parameters()).device
+        
         for _ in range(max_new_tokens):
             # Limitar contexto
             context = generated[-self.config.max_length:]
             
-            # Forward
-            input_ids = torch.tensor([context], dtype=torch.long)
+            # Forward - mover a device correcto
+            input_ids = torch.tensor([context], dtype=torch.long, device=device)
             output = self.forward(input_ids=input_ids, nivel=nivel)
             
             # Obtener logits del último token
