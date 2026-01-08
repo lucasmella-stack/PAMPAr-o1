@@ -73,6 +73,7 @@ class LLARRIv7Cerebral(nn.Module):
         usar_hipocampo: bool = True,
         capacidad_memoria: int = 5000,
         max_iteraciones: int = 2,
+        dropout: float = 0.1,
     ):
         super().__init__()
         
@@ -81,10 +82,12 @@ class LLARRIv7Cerebral(nn.Module):
         self.n_modulos = 6
         self.max_iteraciones = max_iteraciones
         self.usar_hipocampo = usar_hipocampo
+        self.dropout_rate = dropout
         
         # === EMBEDDING ===
         self.embedding = nn.Embedding(vocab_size, dim)
         self.pos_encoding = nn.Embedding(4096, dim)
+        self.dropout = nn.Dropout(dropout)
         
         # === TÁLAMO (Router/Modulador) ===
         self.talamo = TalamoConMemoria(
@@ -162,6 +165,7 @@ class LLARRIv7Cerebral(nn.Module):
         # === 1. EMBEDDING ===
         positions = torch.arange(seq_len, device=device).unsqueeze(0)
         x = self.embedding(input_ids) + self.pos_encoding(positions)
+        x = self.dropout(x)  # Regularización
         
         # === 2. PROCESAMIENTO CEREBRAL ===
         stats = {}
@@ -221,6 +225,8 @@ class LLARRIv7Cerebral(nn.Module):
         max_new_tokens: int = 100,
         temperature: float = 0.8,
         top_k: int = 50,
+        top_p: float = 0.9,
+        repetition_penalty: float = 1.2,
     ) -> torch.Tensor:
         """
         Genera texto autoregressivamente.
@@ -228,8 +234,10 @@ class LLARRIv7Cerebral(nn.Module):
         Args:
             input_ids: (batch, seq) prompt inicial
             max_new_tokens: cuántos tokens generar
-            temperature: control de creatividad
-            top_k: filtrar a top-k tokens
+            temperature: control de creatividad (0.7-1.2)
+            top_k: filtrar a top-k tokens (40-100)
+            top_p: nucleus sampling threshold (0.9-0.95)
+            repetition_penalty: penalizar tokens repetidos (1.1-1.5)
             
         Returns:
             tokens generados (batch, seq + max_new_tokens)
@@ -247,6 +255,15 @@ class LLARRIv7Cerebral(nn.Module):
             result = self(context)
             logits = result['logits'][:, -1, :]  # Último token
             
+            # Repetition penalty - penalizar tokens ya generados
+            if repetition_penalty != 1.0:
+                for i in range(input_ids.size(0)):
+                    for token_id in set(input_ids[i].tolist()):
+                        if logits[i, token_id] > 0:
+                            logits[i, token_id] /= repetition_penalty
+                        else:
+                            logits[i, token_id] *= repetition_penalty
+            
             # Temperature
             logits = logits / temperature
             
@@ -254,6 +271,20 @@ class LLARRIv7Cerebral(nn.Module):
             if top_k > 0:
                 v, _ = torch.topk(logits, min(top_k, logits.size(-1)))
                 logits[logits < v[:, [-1]]] = -float('inf')
+            
+            # Top-p (nucleus) sampling
+            if top_p < 1.0:
+                sorted_logits, sorted_indices = torch.sort(logits, descending=True)
+                cumulative_probs = torch.cumsum(F.softmax(sorted_logits, dim=-1), dim=-1)
+                
+                # Remover tokens con probabilidad acumulada > top_p
+                sorted_indices_to_remove = cumulative_probs > top_p
+                sorted_indices_to_remove[:, 1:] = sorted_indices_to_remove[:, :-1].clone()
+                sorted_indices_to_remove[:, 0] = False
+                
+                for i in range(logits.size(0)):
+                    indices_to_remove = sorted_indices[i, sorted_indices_to_remove[i]]
+                    logits[i, indices_to_remove] = -float('inf')
             
             # Muestrear
             probs = F.softmax(logits, dim=-1)
