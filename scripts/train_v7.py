@@ -85,9 +85,9 @@ def get_dataloaders(data_dir: str, seq_len: int, batch_size: int, vocab_size: in
     
     print("📚 Cargando datos...")
     print("   Train:")
-    train_dataset = WikiTextDataset(str(train_path), seq_len, vocab_size, max_tokens=50_000_000)
+    train_dataset = WikiTextDataset(str(train_path), seq_len, vocab_size)
     print("   Val:")
-    val_dataset = WikiTextDataset(str(val_path), seq_len, vocab_size, max_tokens=5_000_000)
+    val_dataset = WikiTextDataset(str(val_path), seq_len, vocab_size)
     
     train_loader = DataLoader(
         train_dataset, 
