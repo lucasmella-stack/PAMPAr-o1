@@ -31,7 +31,7 @@ from llarri_o1.modules.bloque_fractal import (
     BloqueFractal,
     BloqueFractalConfig,
 )
-from llarri_o1.modules.compositor_v2 import (
+from llarri_o1.modules.compositor_v2_fast import (
     ModuloCompositorV2,
     CompositorV2Config
 )
@@ -55,12 +55,10 @@ class LLARRIv5Config:
     num_vecinos: int = 3
     umbral_confianza: float = 0.7
     
-    # Compositor V2 (cajas 7-9 matemáticas)
+    # Compositor V2 FAST (cajas 7-9 matemáticas)
     entropy_threshold_low: float = 0.5
     entropy_threshold_high: float = 4.0
-    ngram_window: int = 8
     repetition_penalty: float = 1.2
-    beam_width: int = 5
     
     # Generación
     max_length: int = 256
@@ -120,17 +118,15 @@ class LLARRIv5(nn.Module):
         self.lm_head = nn.Linear(config.embed_dim, config.vocab_size)
         print(f"✓ LMHead: {config.embed_dim} → {config.vocab_size}")
         
-        # 4. Compositor V2 (Cajas 7-9) - MATEMÁTICO
+        # 4. Compositor V2 FAST (Cajas 7-9) - MATEMÁTICO VECTORIZADO
         compositor_config = CompositorV2Config(
             vocab_size=config.vocab_size,
             entropy_threshold_low=config.entropy_threshold_low,
             entropy_threshold_high=config.entropy_threshold_high,
-            ngram_window=config.ngram_window,
             repetition_penalty=config.repetition_penalty,
-            beam_width=config.beam_width,
         )
         self.compositor = ModuloCompositorV2(compositor_config)
-        print(f"✓ Cajas 7-9: Compositor MATEMÁTICO")
+        print(f"✓ Cajas 7-9: Compositor MATEMÁTICO VECTORIZADO")
         
         # Contar parámetros
         n_params = sum(p.numel() for p in self.parameters())
