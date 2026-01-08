@@ -38,21 +38,31 @@ from llarri_o1.models.language_model_v7 import (
 
 
 class WikiTextDataset(Dataset):
-    """Dataset para WikiText-103."""
+    """Dataset para WikiText-103 con carga eficiente por chunks."""
     
-    def __init__(self, data_path: str, seq_len: int = 128, vocab_size: int = 50257):
+    def __init__(self, data_path: str, seq_len: int = 128, vocab_size: int = 50257, max_tokens: int = 50_000_000):
         self.seq_len = seq_len
         self.vocab_size = vocab_size
         
-        # Cargar datos
-        with open(data_path, 'r', encoding='utf-8') as f:
-            text = f.read()
+        # Cargar datos por chunks para evitar MemoryError
+        tokens_list = []
+        total_read = 0
+        chunk_size = 10_000_000  # 10MB por chunk
         
-        # Tokenización simple (byte-level)
-        self.tokens = torch.tensor(
-            [min(ord(c), vocab_size - 1) for c in text],
-            dtype=torch.long
-        )
+        with open(data_path, 'r', encoding='utf-8') as f:
+            while total_read < max_tokens:
+                chunk = f.read(chunk_size)
+                if not chunk:
+                    break
+                chunk_tokens = [min(ord(c), vocab_size - 1) for c in chunk]
+                tokens_list.extend(chunk_tokens)
+                total_read += len(chunk_tokens)
+                if total_read >= max_tokens:
+                    tokens_list = tokens_list[:max_tokens]
+                    break
+        
+        self.tokens = torch.tensor(tokens_list, dtype=torch.long)
+        del tokens_list  # Liberar memoria
         
         self.n_samples = (len(self.tokens) - 1) // seq_len
         print(f"   Tokens: {len(self.tokens):,}")
@@ -75,9 +85,9 @@ def get_dataloaders(data_dir: str, seq_len: int, batch_size: int, vocab_size: in
     
     print("📚 Cargando datos...")
     print("   Train:")
-    train_dataset = WikiTextDataset(str(train_path), seq_len, vocab_size)
+    train_dataset = WikiTextDataset(str(train_path), seq_len, vocab_size, max_tokens=50_000_000)
     print("   Val:")
-    val_dataset = WikiTextDataset(str(val_path), seq_len, vocab_size)
+    val_dataset = WikiTextDataset(str(val_path), seq_len, vocab_size, max_tokens=5_000_000)
     
     train_loader = DataLoader(
         train_dataset, 
