@@ -130,6 +130,10 @@ class LLARRIv4(nn.Module):
         self.lm_head = nn.Linear(config.embed_dim, config.vocab_size)
         print(f"✓ LMHead: {config.embed_dim} → {config.vocab_size}")
         
+        # 5. Escala para logit_bias (empieza pequeño para no dominar)
+        self.bias_scale = nn.Parameter(torch.tensor(0.1))
+        print(f"✓ Bias scale: learnable (init=0.1)")
+        
         # Contar parámetros
         n_params = sum(p.numel() for p in self.parameters())
         print(f"\n📊 Total parámetros: {n_params:,} ({n_params/1e6:.2f}M)")
@@ -162,8 +166,8 @@ class LLARRIv4(nn.Module):
         x = comp_out['features']
         logit_bias = comp_out['logit_bias']  # [batch, seq, vocab]
         
-        # 4. LM Head + bias del compositor
-        logits = self.lm_head(x) + logit_bias
+        # 4. LM Head + bias del compositor (escalado)
+        logits = self.lm_head(x) + self.bias_scale * logit_bias
         
         # Loss si hay labels
         loss = None
