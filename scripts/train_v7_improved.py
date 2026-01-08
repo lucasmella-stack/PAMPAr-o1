@@ -100,23 +100,23 @@ def main():
     # === CONFIGURACIÓN MEJORADA ===
     config = {
         'vocab_size': 256,
-        'dim': 64,
-        'n_heads': 2,
-        'dropout': 0.15,  # NUEVO: Dropout para regularización
+        'dim': 128,  # AUMENTADO para más capacidad
+        'n_heads': 4,  # AUMENTADO
+        'dropout': 0.15,  
         'usar_hipocampo': False,
         'max_iteraciones': 1,
         'actividad_basal': 0.2,
         
         # Entrenamiento mejorado
         'seq_len': 128,
-        'batch_size': 64,  # Batch más grande
-        'grad_accum_steps': 4,  # Gradient accumulation
-        'epochs': 12,  
-        'lr': 5e-4,  # Learning rate más alto para converger más rápido
+        'batch_size': 32,  # Reducido por más VRAM
+        'grad_accum_steps': 4,
+        'epochs': 15,  
+        'lr': 3e-4,  # Un poco más bajo para modelo más grande
         'warmup_steps': 500,
-        'label_smoothing': 0.1,  # NUEVO
+        'label_smoothing': 0.1,
         'gradient_clip': 0.5,
-        'train_tokens': 2_000_000,  # Como antes
+        'train_tokens': 2_000_000,
         'val_tokens': 200_000,
         
         # Early stopping

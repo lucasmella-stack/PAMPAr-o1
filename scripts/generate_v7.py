@@ -28,7 +28,7 @@ def main():
     )
 
     # Cargar pesos
-    checkpoint = torch.load('checkpoints/llarri_v7_best.pt', map_location=device)
+    checkpoint = torch.load('checkpoints/llarri_v7_improved_best.pt', map_location=device)
     model.load_state_dict(checkpoint['model_state_dict'])
     model = model.to(device)
     model.eval()
