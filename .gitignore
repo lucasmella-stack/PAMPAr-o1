@@ -11,3 +11,8 @@ models/checkpoints/
 outputs/
 llarri-o1-model/*.bin
 *.bin
+
+data/wikitext-103/
+data/MNIST/
+*.raw
+checkpoints/*.pt

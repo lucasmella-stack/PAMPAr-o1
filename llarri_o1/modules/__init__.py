@@ -2,14 +2,10 @@
 # Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi / Segunda Cabeza
 
 """
-Módulos componentes de LLARRI-O1.
+Módulos componentes de LLARRI-O1 v7 (Arquitectura Cerebral).
 """
 
 from llarri_o1.modules.cache import CacheBinario
-from llarri_o1.modules.niveles import ProcesoNivel, CuadranteProgresivo
-from llarri_o1.modules.relaciones import RelacionesCuadrantes, AutoCalculos
-from llarri_o1.modules.cajas import CajaDatos, CajaCalculos
-from llarri_o1.modules.flujo import LlaveConexion, LlaveBidireccional, SistemaFlujoCompleto
 from llarri_o1.modules.tokenizer import (
     TokenizadorFractal, 
     TokenizerConfig, 
@@ -38,17 +34,23 @@ from llarri_o1.modules.bloque_fractal import (
     CajaOutput
 )
 
+# Módulos cerebrales v7
+from llarri_o1.modules.cerebral import (
+    Talamo,
+    TalamoConMemoria,
+    ModuloLenguaje,
+    ModuloLogica,
+    ModuloMatematicas,
+    ModuloPatrones,
+    ModuloContexto,
+    ModuloCreatividad,
+    CuerpoCalloso,
+    IntegradorCerebral,
+    Hipocampo,
+)
+
 __all__ = [
     "CacheBinario",
-    "ProcesoNivel",
-    "CuadranteProgresivo",
-    "RelacionesCuadrantes",
-    "AutoCalculos",
-    "CajaDatos",
-    "CajaCalculos",
-    "LlaveConexion",
-    "LlaveBidireccional",
-    "SistemaFlujoCompleto",
     "TokenizadorFractal",
     "TokenizerConfig", 
     "EmbeddingFractal",
@@ -68,4 +70,16 @@ __all__ = [
     "CajaProcesa",
     "CajaEvalua",
     "CajaOutput",
+    # v7 Cerebral
+    "Talamo",
+    "TalamoConMemoria",
+    "ModuloLenguaje",
+    "ModuloLogica",
+    "ModuloMatematicas",
+    "ModuloPatrones",
+    "ModuloContexto",
+    "ModuloCreatividad",
+    "CuerpoCalloso",
+    "IntegradorCerebral",
+    "Hipocampo",
 ]

@@ -2,32 +2,34 @@
 # Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi / Segunda Cabeza
 
 """
-LLARRI-O1 — Fractal Language Model
-==================================
+LLARRI-O1 — Cerebral Language Model v7
+======================================
 
-Arquitectura de Modelo de Lenguaje con:
-- 6 cajas (Mezcla → Procesa → Evalúa → Output)
-- Tokenización Transmutativa (TT)
-- Embeddings Composicionales por Nivel (ECN)
-- FFN Progresivo por Distancia (FPD)
-- Early Exit Multietapa (EEM)
-- Cache Evolutivo Binario (CEB)
+Arquitectura de Modelo de Lenguaje Cerebral con:
+- 6 Módulos Especializados (Lenguaje, Lógica, Matemáticas, Patrones, Contexto, Creatividad)
+- Tálamo: Router con modulación continua (nunca apaga, solo modula 15%-100%)
+- Spreading Activation: Módulos vecinos se alertan mutuamente
+- Hipocampo: Memoria con LSH para recuperación O(1)
+- Cuerpo Calloso: Integración de hemisferios
+- Detector de Consenso: Early exit cuando módulos están de acuerdo
 
 Autor: Lucas Ricardo Mella Chillemi (Segunda Cabeza)
 Coordinador: Alvaro (Segunda Cabeza)
 
 Uso rápido:
-    from llarri_o1 import LLARRILanguageModel, LLARRIConfig
+    from llarri_o1 import LLARRIv7Cerebral
     
-    model = LLARRILanguageModel()
-    output = model.generate("Hola", max_new_tokens=50)
+    model = LLARRIv7Cerebral(vocab_size=50257, d_model=128)
+    output = model(input_ids)
 """
 
-# Language Model (v2) - API principal
-from llarri_o1.models.language_model import LLARRILanguageModel, LLARRIConfig
-
-# Modelo base (v4 HyperComprimido) - para clasificación
-from llarri_o1.model import LlarriO1, Config
+# Language Model v7 - Arquitectura Cerebral
+from llarri_o1.models.language_model_v7 import (
+    LLARRIv7Cerebral,
+    LLARRIv7Mini,
+    LLARRIv7Base,
+    LLARRIv7Large,
+)
 
 # Módulos componentes
 from llarri_o1.modules import (
@@ -49,25 +51,30 @@ from llarri_o1.modules import (
     LMHeadConfig,
     # Cache Evolutivo Binario (CEB)
     CacheBinario,
-    # Legacy/internos
-    CuadranteProgresivo,
-    CajaDatos,
-    CajaCalculos,
-    SistemaFlujoCompleto,
+    # v7 Cerebral
+    Talamo,
+    TalamoConMemoria,
+    ModuloLenguaje,
+    ModuloLogica,
+    ModuloMatematicas,
+    ModuloPatrones,
+    ModuloContexto,
+    ModuloCreatividad,
+    IntegradorCerebral,
+    Hipocampo,
 )
 
-__version__ = "2.0.0"
+__version__ = "7.0.0"
 __author__ = "Lucas Ricardo Mella Chillemi"
 __email__ = "lucas@segundacabeza.com"
 __license__ = "AGPL-3.0-or-later"
 
 __all__ = [
-    # API principal
-    "LLARRILanguageModel",
-    "LLARRIConfig",
-    # Modelo base
-    "LlarriO1",
-    "Config",
+    # API principal v7
+    "LLARRIv7Cerebral",
+    "LLARRIv7Mini",
+    "LLARRIv7Base", 
+    "LLARRIv7Large",
     # Tokenización Transmutativa
     "TokenizadorFractal",
     "TokenizerConfig",
@@ -86,9 +93,15 @@ __all__ = [
     "LMHeadConfig",
     # Cache
     "CacheBinario",
-    # Legacy
-    "CuadranteProgresivo",
-    "CajaDatos",
-    "CajaCalculos",
-    "SistemaFlujoCompleto",
+    # v7 Cerebral
+    "Talamo",
+    "TalamoConMemoria",
+    "ModuloLenguaje",
+    "ModuloLogica",
+    "ModuloMatematicas",
+    "ModuloPatrones",
+    "ModuloContexto",
+    "ModuloCreatividad",
+    "IntegradorCerebral",
+    "Hipocampo",
 ]
