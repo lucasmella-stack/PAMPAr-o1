@@ -35,7 +35,7 @@ from llarri_o1.cerebro import LLARRIv8, ConfigLLARRI
 class WikiTextDataset(Dataset):
     """Dataset para WikiText tokenizado."""
     
-    def __init__(self, data_path: str, tokenizer_path: str, seq_len: int = 256):
+    def __init__(self, data_path: str, tokenizer_path: str, seq_len: int = 256, max_tokens: int = 2_000_000):
         self.seq_len = seq_len
         
         # Cargar tokenizer
@@ -51,6 +51,13 @@ class WikiTextDataset(Dataset):
         lines = [l.strip() for l in text.split('\n') if l.strip() and not l.startswith('=')]
         text_clean = ' '.join(lines)
         
+        # Limitar tamaño para no quedarse sin RAM
+        # WikiText-103 completo es ~500MB, usamos solo una parte
+        max_chars = max_tokens * 4  # Aproximadamente 4 chars por token
+        if len(text_clean) > max_chars:
+            print(f"Limitando a {max_chars:,} caracteres (~{max_tokens:,} tokens)")
+            text_clean = text_clean[:max_chars]
+        
         # Tokenizar en chunks para manejar textos largos
         print("Tokenizando...")
         self.tokens = []
@@ -58,6 +65,9 @@ class WikiTextDataset(Dataset):
         for i in range(0, len(text_clean), chunk_size):
             chunk = text_clean[i:i+chunk_size]
             self.tokens.extend(self.tokenizer.Encode(chunk))
+            if len(self.tokens) >= max_tokens:
+                self.tokens = self.tokens[:max_tokens]
+                break
         print(f"Total tokens: {len(self.tokens):,}")
         
         # Calcular número de ejemplos
