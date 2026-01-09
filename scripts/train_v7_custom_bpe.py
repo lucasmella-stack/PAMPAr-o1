@@ -106,8 +106,9 @@ def train_epoch(model, dataloader, optimizer, scheduler, criterion, device,
     for batch_idx, (x, y) in enumerate(dataloader):
         x, y = x.to(device), y.to(device)
         
-        # Forward
-        logits = model(x)
+        # Forward - modelo retorna dict
+        output = model(x)
+        logits = output['logits']
         
         # Loss con label smoothing
         loss = criterion(logits.view(-1, logits.size(-1)), y.view(-1))
@@ -145,7 +146,8 @@ def evaluate(model, dataloader, criterion, device):
     for x, y in dataloader:
         x, y = x.to(device), y.to(device)
         
-        logits = model(x)
+        output = model(x)
+        logits = output['logits']
         loss = criterion(logits.view(-1, logits.size(-1)), y.view(-1))
         
         total_loss += loss.item()
@@ -172,7 +174,8 @@ def generate_sample(model, tokenizer, prompt, device, max_tokens=50, temperature
         # Solo usar últimos 256 tokens
         curr_input = input_ids[:, -256:]
         
-        logits = model(curr_input)
+        output = model(curr_input)
+        logits = output['logits']
         next_logits = logits[0, -1, :] / temperature
         
         # Top-p sampling
