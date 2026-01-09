@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi / Segunda Cabeza
 """
-LLARRI v7.3 - Arquitectura Cerebral con Liderazgo Dinámico
+LLARRI v7.3/7.4 - Arquitectura Cerebral con Liderazgo Dinámico
 
 Módulos inspirados en la organización del cerebro humano:
 - Liderazgo: un módulo domina según la tarea
@@ -11,6 +11,7 @@ Módulos inspirados en la organización del cerebro humano:
 """
 
 from .talamo_liderazgo import TalamoConLiderazgo
+from .talamo_reglas import TalamoConReglas, DetectorDeContenido
 from .modulos_acoplables import (
     ModuloAcoplable,
     ModuloLenguajeAcoplable,
@@ -25,6 +26,8 @@ from .hipocampo import Hipocampo
 
 __all__ = [
     'TalamoConLiderazgo',
+    'TalamoConReglas',
+    'DetectorDeContenido',
     'ModuloAcoplable',
     'ModuloLenguajeAcoplable',
     'ModuloLogicaAcoplable',
