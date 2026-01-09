@@ -1,0 +1,227 @@
+╔══════════════════════════════════════════════════════════════════════════════════════════════════╗
+║                           LLARRI v8 - ARQUITECTURA CEREBRAL                                      ║
+║                        Modelo de Lenguaje con Razonamiento Deductivo                             ║
+║                                    ~6M parámetros                                                ║
+╚══════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+                                    ┌─────────────────┐
+                                    │   INPUT_IDS     │
+                                    │  (batch, seq)   │
+                                    └────────┬────────┘
+                                             │
+                                             ▼
+                    ╔═══════════════════════════════════════════════════════╗
+                    ║              EMBEDDINGS                               ║
+                    ║  ┌──────────────┐    ┌──────────────┐                ║
+                    ║  │ Token Embed  │ +  │  Pos Embed   │                ║
+                    ║  │  (8000,128)  │    │  (256,128)   │                ║
+                    ║  └──────────────┘    └──────────────┘                ║
+                    ╚═══════════════════════════════════════════════════════╝
+                                             │
+                                             ▼
+        ╔════════════════════════════════════════════════════════════════════════════════════════╗
+        ║                              BLOQUE CEREBRAL x3                                        ║
+        ║  ┌──────────────────────────────────────────────────────────────────────────────────┐  ║
+        ║  │                                                                                  │  ║
+        ║  │    ╔═══════════════════════════════════════════════════════════════════════╗    │  ║
+        ║  │    ║                         TÁLAMO                                        ║    │  ║
+        ║  │    ║                    (EL ORQUESTADOR)                                   ║    │  ║
+        ║  │    ║                                                                       ║    │  ║
+        ║  │    ║   ┌─────────────────────────────────────────────────────────────┐    ║    │  ║
+        ║  │    ║   │  LLAVES (70%)              │    ATENCIÓN (30%)              │    ║    │  ║
+        ║  │    ║   │  ═══════════              │    ═══════════════             │    ║    │  ║
+        ║  │    ║   │  Reglas EXPLÍCITAS:       │    Pesos APRENDIDOS:           │    ║    │  ║
+        ║  │    ║   │  • Token → Módulo         │    • Query(x) → pesos          │    ║    │  ║
+        ║  │    ║   │  • Patrones de dominio    │    • Para casos ambiguos       │    ║    │  ║
+        ║  │    ║   │  • "el,la,un" → Lenguaje  │                                │    ║    │  ║
+        ║  │    ║   │  • "1,2,+,-" → Matemáticas│                                │    ║    │  ║
+        ║  │    ║   │  • "si,entonces" → Lógica │                                │    ║    │  ║
+        ║  │    ║   └─────────────────────────────────────────────────────────────┘    ║    │  ║
+        ║  │    ║                              │                                        ║    │  ║
+        ║  │    ║                              ▼                                        ║    │  ║
+        ║  │    ║              PESOS DE DISTRIBUCIÓN (batch, seq, 6)                    ║    │  ║
+        ║  │    ╚═══════════════════════════════════════════════════════════════════════╝    │  ║
+        ║  │                                   │                                              │  ║
+        ║  │                 ┌─────────────────┼─────────────────┐                            │  ║
+        ║  │                 ▼                 ▼                 ▼                            │  ║
+        ║  │    ╔════════════════════════════════════════════════════════════════════════╗   │  ║
+        ║  │    ║                    6 NEURONAS ESPECIALIZADAS                           ║   │  ║
+        ║  │    ║                                                                        ║   │  ║
+        ║  │    ║   ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐              ║   │  ║
+        ║  │    ║   │LENGUAJE  │  │ LÓGICA   │  │MATEMÁTIC │  │PATRONES  │              ║   │  ║
+        ║  │    ║   │──────────│  │──────────│  │──────────│  │──────────│              ║   │  ║
+        ║  │    ║   │•Gramática│  │•Inferenc │  │•Números  │  │•Secuenc  │              ║   │  ║
+        ║  │    ║   │•Sintaxis │  │•Si-Enton │  │•Operador │  │•Repetici │              ║   │  ║
+        ║  │    ║   │•Fluidez  │  │•Premisas │  │•Cálculos │  │•Orden    │              ║   │  ║
+        ║  │    ║   └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘              ║   │  ║
+        ║  │    ║        │             │             │             │                    ║   │  ║
+        ║  │    ║   ┌────┴─────┐  ┌────┴─────┐                                          ║   │  ║
+        ║  │    ║   │CONTEXTO  │  │CREATIVID │                                          ║   │  ║
+        ║  │    ║   │──────────│  │──────────│                                          ║   │  ║
+        ║  │    ║   │•Referenc │  │•Variabil │                                          ║   │  ║
+        ║  │    ║   │•Temporal │  │•Combinar │                                          ║   │  ║
+        ║  │    ║   │•GRU ctx  │  │•Ruido    │                                          ║   │  ║
+        ║  │    ║   └──────────┘  └──────────┘                                          ║   │  ║
+        ║  │    ╚════════════════════════════════════════════════════════════════════════╝   │  ║
+        ║  │                                   │                                              │  ║
+        ║  │    ╔════════════════════════════════════════════════════════════════════════╗   │  ║
+        ║  │    ║                         SINAPSIS                                       ║   │  ║
+        ║  │    ║              (Conexiones entre Neuronas)                               ║   │  ║
+        ║  │    ║                                                                        ║   │  ║
+        ║  │    ║      LENGUAJE ───0.8──► CONTEXTO ───0.8──► LENGUAJE                   ║   │  ║
+        ║  │    ║          │                  │                                          ║   │  ║
+        ║  │    ║         0.5               0.6                                          ║   │  ║
+        ║  │    ║          ▼                  ▼                                          ║   │  ║
+        ║  │    ║       LÓGICA ◄───0.7──► MATEMÁTICAS                                   ║   │  ║
+        ║  │    ║          │                  │                                          ║   │  ║
+        ║  │    ║         0.6               0.8                                          ║   │  ║
+        ║  │    ║          ▼                  ▼                                          ║   │  ║
+        ║  │    ║      PATRONES ◄──0.6───────┘                                          ║   │  ║
+        ║  │    ║          │                                                             ║   │  ║
+        ║  │    ║         0.4                                                            ║   │  ║
+        ║  │    ║          ▼                                                             ║   │  ║
+        ║  │    ║     CREATIVIDAD ───0.7──► LENGUAJE                                    ║   │  ║
+        ║  │    ║                                                                        ║   │  ║
+        ║  │    ║   Tipos: EXCITATORIA (+peso) │ INHIBITORIA (-peso) │ MODULADORA       ║   │  ║
+        ║  │    ╚════════════════════════════════════════════════════════════════════════╝   │  ║
+        ║  │                                   │                                              │  ║
+        ║  │                                   ▼                                              │  ║
+        ║  │                    COMBINACIÓN PESADA POR TÁLAMO                                 │  ║
+        ║  │                    output = Σ (peso_i × salida_módulo_i)                         │  ║
+        ║  │                                                                                  │  ║
+        ║  └──────────────────────────────────────────────────────────────────────────────────┘  ║
+        ╚════════════════════════════════════════════════════════════════════════════════════════╝
+                                             │
+                                             ▼
+        ╔════════════════════════════════════════════════════════════════════════════════════════╗
+        ║                              MOTOR DE AXIOMAS                                          ║
+        ║                         (Razonamiento Deductivo)                                       ║
+        ║                                                                                        ║
+        ║   ┌─────────────────────────────────────────────────────────────────────────────────┐  ║
+        ║   │                                                                                 │  ║
+        ║   │   MODUS PONENS              MODUS TOLLENS              SILOGISMO               │  ║
+        ║   │   ═════════════             ═════════════              ═════════               │  ║
+        ║   │                                                                                 │  ║
+        ║   │   A → B                     A → B                      A → B                   │  ║
+        ║   │   A                         ¬B                         B → C                   │  ║
+        ║   │   ─────                     ─────                      ─────                   │  ║
+        ║   │   ∴ B                       ∴ ¬A                       ∴ A → C                 │  ║
+        ║   │                                                                                 │  ║
+        ║   │   "Si llueve, hay nubes"    "Si llueve, hay nubes"     "Si A entonces B"       │  ║
+        ║   │   "Llueve"                  "No hay nubes"             "Si B entonces C"       │  ║
+        ║   │   → "Hay nubes"             → "No llueve"              → "Si A entonces C"     │  ║
+        ║   │                                                                                 │  ║
+        ║   └─────────────────────────────────────────────────────────────────────────────────┘  ║
+        ║                                                                                        ║
+        ║   • Detecta contexto lógico (umbral > 0.2)                                            ║
+        ║   • Aplica axiomas cuando es apropiado                                                ║
+        ║   • peso_axiomas aprendible (~0.3)                                                    ║
+        ╚════════════════════════════════════════════════════════════════════════════════════════╝
+                                             │
+                                             ▼
+        ╔════════════════════════════════════════════════════════════════════════════════════════╗
+        ║                           MEMORIA DE EXPERIENCIA                                       ║
+        ║                      (Aprendizaje de Éxitos/Fracasos)                                 ║
+        ║                                                                                        ║
+        ║   ┌───────────────────────────────┐    ┌───────────────────────────────┐              ║
+        ║   │    PROTOTIPOS DE ÉXITO        │    │   PROTOTIPOS DE FRACASO       │              ║
+        ║   │    ═══════════════════        │    │   ════════════════════        │              ║
+        ║   │                               │    │                               │              ║
+        ║   │    32 vectores aprendibles    │    │    32 vectores aprendibles    │              ║
+        ║   │    Contextos que funcionaron  │    │    Contextos a evitar         │              ║
+        ║   │                               │    │                               │              ║
+        ║   │    resultado >= 0.6 → éxito   │    │    resultado < 0.3 → fracaso  │              ║
+        ║   └───────────────────────────────┘    └───────────────────────────────┘              ║
+        ║                                                                                        ║
+        ║   Flujo:                                                                               ║
+        ║   1. Consultar éxitos → info_exito                                                    ║
+        ║   2. Consultar fracasos → info_fracaso (para evitarlos)                               ║
+        ║   3. Refinar: x + peso_memoria × refinador([x, info_exito, info_fracaso])            ║
+        ║                                                                                        ║
+        ║   • Predictor de resultado: predice si una acción tendrá éxito                        ║
+        ║   • Similitud con fracasos: penaliza generaciones similares a fracasos               ║
+        ╚════════════════════════════════════════════════════════════════════════════════════════╝
+                                             │
+                                             ▼
+                    ╔═══════════════════════════════════════════════════════╗
+                    ║                    LM HEAD                            ║
+                    ║                                                       ║
+                    ║   LayerNorm → Linear(128, 8000)                       ║
+                    ║   (weights tied con token_embed)                      ║
+                    ║                                                       ║
+                    ╚═══════════════════════════════════════════════════════╝
+                                             │
+                                             ▼
+                                    ┌─────────────────┐
+                                    │    LOGITS       │
+                                    │ (batch,seq,8000)│
+                                    └─────────────────┘
+
+
+═══════════════════════════════════════════════════════════════════════════════════════════════════
+                                    RESUMEN DE PARÁMETROS
+═══════════════════════════════════════════════════════════════════════════════════════════════════
+
+  Componente          │  Parámetros   │  Descripción
+  ════════════════════│═══════════════│═══════════════════════════════════════════════
+  Embeddings          │  ~1.1M        │  Token (8000×128) + Posicional (256×128)
+  Bloques Cerebrales  │  ~4.6M        │  3 bloques × (Tálamo + 6 Neuronas + Sinapsis)
+  Motor Axiomas       │  ~338K        │  Modus Ponens + Modus Tollens + Silogismo
+  Memoria Experiencia │  ~140K        │  Prototipos (32×128) + Queries + Refinador
+  ════════════════════│═══════════════│═══════════════════════════════════════════════
+  TOTAL               │  ~6.1M        │  Optimizado para GTX 1650 (4GB VRAM)
+
+
+═══════════════════════════════════════════════════════════════════════════════════════════════════
+                                    FILOSOFÍA DE DISEÑO
+═══════════════════════════════════════════════════════════════════════════════════════════════════
+
+  "NO MEZCLAR PERAS CON MANZANAS"
+  
+  Cada módulo tiene su DOMINIO claro:
+  • Lenguaje: gramática, artículos, preposiciones
+  • Lógica: si-entonces, inferencia, verdad/falsedad
+  • Matemáticas: números, operadores, cálculos
+  • Patrones: secuencias, repeticiones, orden
+  • Contexto: referencias, temporal, coherencia
+  • Creatividad: variabilidad, combinación, novedad
+
+  El TÁLAMO decide QUIÉN procesa usando:
+  • 70% LLAVES (reglas explícitas, no aprendidas)
+  • 30% Atención (para casos ambiguos)
+
+  Las SINAPSIS conectan módulos con LÓGICA:
+  • Lenguaje ↔ Contexto (alta correlación)
+  • Lógica ↔ Matemáticas (razonamiento formal)
+  • Patrones → Creatividad (inspiración)
+
+  Los AXIOMAS permiten RAZONAMIENTO DEDUCTIVO:
+  • No solo predicción estadística
+  • Reglas lógicas que SIEMPRE son verdad
+  • Derivar conclusiones de premisas
+
+  La MEMORIA aprende de RESULTADOS:
+  • Qué funcionó → repetir patrones exitosos
+  • Qué falló → evitar patrones fracasados
+  • Autoaprendizaje práctico
+
+═══════════════════════════════════════════════════════════════════════════════════════════════════
+                                    DIFERENCIAS vs v7.3
+═══════════════════════════════════════════════════════════════════════════════════════════════════
+
+  v7.3 (Anterior)                    │  v8 (Actual)
+  ═══════════════════════════════════│═══════════════════════════════════════════════
+  Tálamo solo con red neuronal       │  Tálamo con LLAVES (70%) + red (30%)
+  Módulos activación uniforme (~22%) │  Módulos con dominios claros
+  Sin comunicación inter-módulo      │  Sinapsis con conexiones lógicas
+  Sin razonamiento deductivo         │  Axiomas (modus ponens, silogismo)
+  Sin aprendizaje de resultados      │  Memoria de experiencia (éxito/fracaso)
+  ~28M parámetros                    │  ~6M parámetros (VRAM-friendly)
+  Generación incoherente             │  [Por evaluar con entrenamiento]
+
+═══════════════════════════════════════════════════════════════════════════════════════════════════
+
+  Autor: Lucas Ricardo Mella Chillemi (Segunda Cabeza)
+  Fecha: Enero 2026
+  Versión: 8.0.0
+
