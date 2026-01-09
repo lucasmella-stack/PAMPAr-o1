@@ -51,8 +51,13 @@ class WikiTextDataset(Dataset):
         lines = [l.strip() for l in text.split('\n') if l.strip() and not l.startswith('=')]
         text_clean = ' '.join(lines)
         
+        # Tokenizar en chunks para manejar textos largos
         print("Tokenizando...")
-        self.tokens = self.tokenizer.Encode(text_clean)
+        self.tokens = []
+        chunk_size = 100000  # Caracteres por chunk
+        for i in range(0, len(text_clean), chunk_size):
+            chunk = text_clean[i:i+chunk_size]
+            self.tokens.extend(self.tokenizer.Encode(chunk))
         print(f"Total tokens: {len(self.tokens):,}")
         
         # Calcular número de ejemplos
