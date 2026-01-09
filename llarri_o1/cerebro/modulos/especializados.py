@@ -82,8 +82,9 @@ class NeuronaLenguaje(Neurona):
         2. Detección de patrones gramaticales
         3. Bias de frecuencia
         """
-        # Atención base
-        atendido = self.attention(self.norm1(x), mask)
+        # Atención base (query, key, value)
+        x_norm = self.norm1(x)
+        atendido, _ = self.attention(x_norm, x_norm, x_norm, attn_mask=mask)
         x = x + atendido
         
         # Detección gramatical
@@ -142,8 +143,9 @@ class NeuronaLogica(Neurona):
         """
         Procesamiento lógico: busca estructuras de razonamiento.
         """
-        # Atención base
-        atendido = self.attention(self.norm1(x), mask)
+        # Atención base (query, key, value)
+        x_norm = self.norm1(x)
+        atendido, _ = self.attention(x_norm, x_norm, x_norm, attn_mask=mask)
         x_atendido = x + atendido
         
         # Análisis de premisas (qué tokens son premisas vs conclusiones)
@@ -212,8 +214,9 @@ class NeuronaMatematicas(Neurona):
         if seq <= self.pos_numerica.shape[1]:
             x = x + self.pos_numerica[:, :seq, :]
         
-        # Atención
-        atendido = self.attention(self.norm1(x), mask)
+        # Atención (query, key, value)
+        x_norm = self.norm1(x)
+        atendido, _ = self.attention(x_norm, x_norm, x_norm, attn_mask=mask)
         x = x + atendido
         
         # Detectar operaciones
@@ -266,8 +269,9 @@ class NeuronaPatrones(Neurona):
         """
         Detecta patrones comparando posiciones.
         """
-        # Atención base
-        atendido = self.attention(self.norm1(x), mask)
+        # Atención base (query, key, value)
+        x_norm = self.norm1(x)
+        atendido, _ = self.attention(x_norm, x_norm, x_norm, attn_mask=mask)
         x = x + atendido
         
         # Agregar información de patrones
@@ -322,8 +326,9 @@ class NeuronaContexto(Neurona):
         """
         Procesa manteniendo estado contextual.
         """
-        # Atención base
-        atendido = self.attention(self.norm1(x), mask)
+        # Atención base (query, key, value)
+        x_norm = self.norm1(x)
+        atendido, _ = self.attention(x_norm, x_norm, x_norm, attn_mask=mask)
         x_atendido = x + atendido
         
         # Acumular contexto con GRU
@@ -383,8 +388,9 @@ class NeuronaCreatividad(Neurona):
         """
         Procesamiento creativo con variabilidad controlada.
         """
-        # Atención base
-        atendido = self.attention(self.norm1(x), mask)
+        # Atención base (query, key, value)
+        x_norm = self.norm1(x)
+        atendido, _ = self.attention(x_norm, x_norm, x_norm, attn_mask=mask)
         x = x + atendido
         
         # Combinar conceptos
