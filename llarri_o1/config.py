@@ -3,32 +3,28 @@
 
 """
 Configuración del modelo LLARRI-O1.
+
+Este archivo contiene:
+- Config: Configuración legacy para MNIST (v4)
+- ConfigLLARRI: Configuración para modelo de lenguaje v8
+- Presets escalables: LOCAL_4GB, SERVER_8GB, SERVER_24GB, SERVER_80GB
 """
 
-from dataclasses import dataclass
-from typing import List, Optional
+from dataclasses import dataclass, field
+from typing import List, Optional, Dict
 
 
 @dataclass
 class Config:
     """
-    Configuración del modelo LLARRI-O1 v4.0 HyperComprimido.
-    
-    Attributes:
-        input_dim: Dimensión de entrada (784 para MNIST 28x28)
-        hidden_dim: Dimensión oculta (debe ser divisible por 4)
-        output_dim: Dimensión de salida (10 para clasificación)
-        num_cajas_datos: Número de cajas de datos (default: 3)
-        num_cajas_calculos: Número de cajas de cálculos (default: 3)
-        niveles_fractales: Lista de dimensiones para cada nivel fractal
-        dropout: Probabilidad de dropout
+    Configuración del modelo LLARRI-O1 v4.0 HyperComprimido (Legacy - MNIST).
     """
     input_dim: int = 784
     hidden_dim: int = 1024
     output_dim: int = 10
     num_cajas_datos: int = 3
     num_cajas_calculos: int = 3
-    niveles_fractales: List[int] = None  # Se calcula en __post_init__
+    niveles_fractales: List[int] = None
     dropout: float = 0.1
     
     def __post_init__(self):
@@ -37,18 +33,214 @@ class Config:
         
         quad_dim = self.hidden_dim // 4
         
-        # Calcular niveles fractales por defecto basado en quad_dim
         if self.niveles_fractales is None:
-            # Niveles: 2, 4, 8, ... hasta el máximo permitido por quad_dim
             self.niveles_fractales = []
             nivel = 2
             while nivel <= quad_dim:
                 self.niveles_fractales.append(nivel)
                 nivel *= 2
         
-        # Validar que los niveles no excedan quad_dim
         max_nivel = max(self.niveles_fractales)
         assert quad_dim >= max_nivel, (
             f"quad_dim ({quad_dim}) debe ser >= nivel máximo ({max_nivel}). "
             f"Aumenta hidden_dim a {max_nivel * 4} o reduce niveles_fractales."
         )
+
+
+@dataclass
+class ConfigLLARRI:
+    """
+    Configuración del modelo LLARRI v8 - Modelo de Lenguaje.
+    
+    Arquitectura modular con:
+    - 6 módulos especializados (Lenguaje, Lógica, Matemáticas, Patrones, Contexto, Creatividad)
+    - Sistema de LLAVES (reglas explícitas) en el Tálamo
+    - SINAPSIS (conexiones inter-módulo)
+    - AXIOMAS (razonamiento deductivo)
+    - Memoria práctica (aprendizaje de éxitos/fracasos)
+    """
+    # Modelo
+    vocab_size: int = 8000
+    dim: int = 128
+    n_heads: int = 4
+    n_capas: int = 3
+    dropout: float = 0.1
+    max_seq_len: int = 256
+    
+    # Tálamo - Sistema de LLAVES
+    peso_llaves: float = 0.7  # 70% reglas, 30% aprendido
+    
+    # Axiomas - Razonamiento deductivo
+    usar_axiomas: bool = True
+    
+    # Memoria práctica
+    usar_memoria: bool = True
+    capacidad_memoria: int = 200
+    
+    # Eficiencia (para escalar)
+    use_gradient_checkpointing: bool = False
+    use_mixed_precision: bool = False
+    
+    # Entrenamiento
+    batch_size: int = 16
+    learning_rate: float = 3e-4
+    weight_decay: float = 0.01
+    warmup_steps: int = 100
+    max_epochs: int = 10
+    
+    def estimate_params(self) -> Dict[str, int]:
+        """Estima el número de parámetros del modelo."""
+        # Embeddings
+        emb = self.vocab_size * self.dim + self.max_seq_len * self.dim
+        
+        # 6 módulos × n_capas bloques
+        # Cada módulo: attention + ffn ≈ 4 * dim^2 + 8 * dim^2 = 12 * dim^2
+        modulos = 6 * self.n_capas * 12 * self.dim * self.dim
+        
+        # Axiomas
+        axiomas = 3 * 3 * self.dim * self.dim if self.usar_axiomas else 0
+        
+        # Memoria
+        memoria = self.capacidad_memoria * self.dim * 2 if self.usar_memoria else 0
+        
+        # LM Head (comparte pesos con embeddings)
+        lm_head = 0
+        
+        return {
+            "embeddings": emb,
+            "modulos": modulos,
+            "axiomas": axiomas,
+            "memoria": memoria,
+            "lm_head": lm_head,
+            "total": emb + modulos + axiomas + memoria + lm_head
+        }
+    
+    def estimate_vram_gb(self) -> float:
+        """Estima VRAM necesaria en GB (modelo + gradientes + activaciones)."""
+        params = self.estimate_params()["total"]
+        # Modelo: 4 bytes/param (fp32)
+        # Gradientes: 4 bytes/param
+        # Optimizer states (AdamW): 8 bytes/param
+        # Activaciones: ~2x modelo para batch=16, seq=256
+        bytes_needed = params * (4 + 4 + 8) + params * 2 * self.batch_size / 16
+        return bytes_needed / (1024**3)
+
+
+# =============================================================================
+# PRESETS ESCALABLES
+# =============================================================================
+
+# Para GTX 1650 (4GB VRAM) - Desarrollo local
+LOCAL_4GB = ConfigLLARRI(
+    vocab_size=8000,
+    dim=128,
+    n_heads=4,
+    n_capas=3,
+    dropout=0.1,
+    max_seq_len=256,
+    peso_llaves=0.7,
+    usar_axiomas=True,
+    usar_memoria=True,
+    capacidad_memoria=200,
+    use_gradient_checkpointing=False,
+    use_mixed_precision=True,  # FP16 para ahorrar VRAM
+    batch_size=16,
+    learning_rate=3e-4,
+    max_epochs=20,
+)
+
+# Para GPU 8GB (RTX 3060/3070) - Servidor pequeño
+SERVER_8GB = ConfigLLARRI(
+    vocab_size=16000,
+    dim=256,
+    n_heads=8,
+    n_capas=4,
+    dropout=0.1,
+    max_seq_len=512,
+    peso_llaves=0.6,
+    usar_axiomas=True,
+    usar_memoria=True,
+    capacidad_memoria=500,
+    use_gradient_checkpointing=True,
+    use_mixed_precision=True,
+    batch_size=32,
+    learning_rate=2e-4,
+    max_epochs=30,
+)
+
+# Para GPU 24GB (RTX 3090/4090) - Servidor mediano
+SERVER_24GB = ConfigLLARRI(
+    vocab_size=32000,
+    dim=512,
+    n_heads=8,
+    n_capas=6,
+    dropout=0.1,
+    max_seq_len=1024,
+    peso_llaves=0.5,
+    usar_axiomas=True,
+    usar_memoria=True,
+    capacidad_memoria=1000,
+    use_gradient_checkpointing=True,
+    use_mixed_precision=True,
+    batch_size=64,
+    learning_rate=1e-4,
+    max_epochs=50,
+)
+
+# Para A100 80GB - Servidor grande (causa justa)
+SERVER_80GB = ConfigLLARRI(
+    vocab_size=50000,
+    dim=1024,
+    n_heads=16,
+    n_capas=12,
+    dropout=0.1,
+    max_seq_len=2048,
+    peso_llaves=0.4,  # Más aprendizaje con más datos
+    usar_axiomas=True,
+    usar_memoria=True,
+    capacidad_memoria=2000,
+    use_gradient_checkpointing=True,
+    use_mixed_precision=True,
+    batch_size=128,
+    learning_rate=5e-5,
+    max_epochs=100,
+)
+
+
+def get_config_for_vram(vram_gb: float) -> ConfigLLARRI:
+    """Devuelve la configuración óptima para la VRAM disponible."""
+    if vram_gb <= 4:
+        return LOCAL_4GB
+    elif vram_gb <= 8:
+        return SERVER_8GB
+    elif vram_gb <= 24:
+        return SERVER_24GB
+    else:
+        return SERVER_80GB
+
+
+def print_config_comparison():
+    """Imprime comparación de todas las configuraciones."""
+    configs = [
+        ("LOCAL_4GB", LOCAL_4GB),
+        ("SERVER_8GB", SERVER_8GB),
+        ("SERVER_24GB", SERVER_24GB),
+        ("SERVER_80GB", SERVER_80GB),
+    ]
+    
+    print("\n" + "=" * 80)
+    print("CONFIGURACIONES ESCALABLES LLARRI v8")
+    print("=" * 80)
+    
+    for name, cfg in configs:
+        params = cfg.estimate_params()
+        vram = cfg.estimate_vram_gb()
+        print(f"\n{name}:")
+        print(f"  Parámetros: {params['total']:,}")
+        print(f"  VRAM estimada: {vram:.2f} GB")
+        print(f"  Dimensión: {cfg.dim}, Capas: {cfg.n_capas}, Heads: {cfg.n_heads}")
+        print(f"  Vocab: {cfg.vocab_size:,}, Seq: {cfg.max_seq_len}")
+
+
+if __name__ == "__main__":
+    print_config_comparison()

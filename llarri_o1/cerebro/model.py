@@ -18,13 +18,18 @@ Arquitectura:
 5. Axiomas aplican razonamiento lógico
 6. Memoria refina basado en experiencias pasadas
 7. LM Head genera tokens
+
+Escalabilidad:
+- Soporta gradient checkpointing para reducir VRAM
+- Soporta mixed precision (FP16/BF16)
+- Configuraciones presets: LOCAL_4GB, SERVER_8GB, SERVER_24GB, SERVER_80GB
 """
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.utils.checkpoint import checkpoint
 from typing import Dict, List, Tuple, Optional
-from dataclasses import dataclass
 
 from .talamo import Talamo
 from .sinapsis import Sinapsis
@@ -35,33 +40,8 @@ from .modulos.especializados import (
 from .razonamiento.axiomas import MotorAxiomas
 from .memoria.experiencia import MemoriaExperiencia
 
-
-@dataclass
-class ConfigLLARRI:
-    """Configuración del modelo LLARRI v8."""
-    
-    # Dimensiones
-    vocab_size: int = 8000
-    dim: int = 256
-    n_heads: int = 4
-    n_capas: int = 4
-    
-    # Regularización
-    dropout: float = 0.1
-    
-    # Tálamo
-    peso_llaves: float = 0.7  # 70% reglas, 30% aprendido
-    
-    # Razonamiento
-    usar_axiomas: bool = True
-    
-    # Memoria
-    usar_memoria: bool = True
-    capacidad_memoria: int = 500
-    
-    # Generación
-    max_seq_len: int = 512
-    repetition_penalty: float = 1.2
+# Importar ConfigLLARRI desde config.py central
+from ..config import ConfigLLARRI
 
 
 class CerebralBlock(nn.Module):
@@ -76,9 +56,11 @@ class CerebralBlock(nn.Module):
     5. Combina salidas pesadas
     """
     
-    def __init__(self, config: ConfigLLARRI):
+    def __init__(self, config: ConfigLLARRI, block_idx: int = 0):
         super().__init__()
         self.config = config
+        self.block_idx = block_idx
+        self.use_checkpoint = getattr(config, 'use_gradient_checkpointing', False)
         
         # Nombres de módulos
         self.nombres_modulos = [
@@ -198,8 +180,11 @@ class LLARRIv8(nn.Module):
         # Bloques Cerebrales
         # ============================================
         self.bloques = nn.ModuleList([
-            CerebralBlock(config) for _ in range(config.n_capas)
+            CerebralBlock(config, block_idx=i) for i in range(config.n_capas)
         ])
+        
+        # Gradient checkpointing flag
+        self.use_gradient_checkpointing = getattr(config, 'use_gradient_checkpointing', False)
         
         # ============================================
         # Razonamiento Axiomático
@@ -289,7 +274,15 @@ class LLARRIv8(nn.Module):
         # ============================================
         info_bloques = []
         for bloque in self.bloques:
-            x, info = bloque(x, input_ids, mask)
+            if self.use_gradient_checkpointing and self.training:
+                # Gradient checkpointing para ahorrar VRAM
+                x, info = checkpoint(
+                    bloque,
+                    x, input_ids, mask,
+                    use_reentrant=False
+                )
+            else:
+                x, info = bloque(x, input_ids, mask)
             info_bloques.append(info)
         
         # ============================================
