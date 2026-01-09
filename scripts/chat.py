@@ -30,23 +30,56 @@ def load_model(checkpoint_path: str, device: torch.device):
     """Carga el modelo desde un checkpoint."""
     print(f"📥 Cargando modelo desde: {checkpoint_path}")
     
-    ckpt = torch.load(checkpoint_path, map_location=device)
+    ckpt = torch.load(checkpoint_path, map_location=device, weights_only=False)
     
-    # Obtener configuración
+    # Obtener configuración del checkpoint
+    from llarri_o1.config import ConfigLLARRI
+    
     if 'config' in ckpt:
-        config = ckpt['config']
+        saved_config = ckpt['config']
+        
+        if isinstance(saved_config, dict):
+            # Crear config con los valores guardados
+            # Usar valores por defecto para campos que no existan
+            config = ConfigLLARRI(
+                vocab_size=saved_config.get('vocab_size', 8000),
+                dim=saved_config.get('dim', 128),
+                n_heads=saved_config.get('n_heads', 4),
+                n_capas=saved_config.get('n_capas', 3),
+                dropout=saved_config.get('dropout', 0.1),
+                max_seq_len=saved_config.get('max_seq_len', 256),
+                peso_llaves=saved_config.get('peso_llaves', 0.7),
+                usar_axiomas=saved_config.get('usar_axiomas', True),
+                usar_memoria=saved_config.get('usar_memoria', True),
+                capacidad_memoria=saved_config.get('capacidad_memoria', 200),
+            )
+        elif hasattr(saved_config, 'vocab_size'):
+            config = saved_config
+        else:
+            config = LOCAL_4GB
     else:
-        # Config por defecto
         config = LOCAL_4GB
+    
+    print(f"   Config: dim={config.dim}, capas={config.n_capas}, vocab={config.vocab_size}")
     
     # Crear modelo
     model = LLARRIv8(config).to(device)
-    model.load_state_dict(ckpt['model'])
+    
+    # Cargar pesos (puede ser 'model' o 'model_state_dict')
+    if 'model' in ckpt:
+        model.load_state_dict(ckpt['model'])
+    elif 'model_state_dict' in ckpt:
+        model.load_state_dict(ckpt['model_state_dict'])
+    else:
+        model.load_state_dict(ckpt)
+    
     model.eval()
     
     # Info del checkpoint
     if 'epoch' in ckpt:
         print(f"   Época: {ckpt['epoch']+1}")
+    elif 'step' in ckpt:
+        print(f"   Step: {ckpt['step']}")
     if 'val_loss' in ckpt and ckpt['val_loss']:
         print(f"   Val Loss: {ckpt['val_loss']:.4f}")
     

@@ -54,11 +54,13 @@ class Talamo(nn.Module):
         n_modulos: int = 6,
         nombres_modulos: Optional[List[str]] = None,
         peso_llaves: float = 0.7,  # 70% reglas, 30% aprendido
+        vocab_size: int = 8000,  # Tamaño del vocabulario
     ):
         super().__init__()
         self.dim = dim
         self.n_modulos = n_modulos
         self.peso_llaves = peso_llaves
+        self.vocab_size = vocab_size
         
         # Nombres de los módulos
         self.nombres = nombres_modulos or [
@@ -73,7 +75,7 @@ class Talamo(nn.Module):
         
         # Buffer para mapeo rápido token -> módulo
         # Se poblará cuando tengamos el tokenizer
-        self.register_buffer('token_a_modulo', torch.zeros(32000, n_modulos))
+        self.register_buffer('token_a_modulo', torch.zeros(vocab_size, n_modulos))
         
         # ============================================
         # Atención aprendida (para casos ambiguos)

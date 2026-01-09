@@ -74,6 +74,7 @@ class CerebralBlock(nn.Module):
             n_modulos=6,
             nombres_modulos=self.nombres_modulos,
             peso_llaves=config.peso_llaves,
+            vocab_size=config.vocab_size,  # Pasar vocab_size
         )
         
         # Módulos especializados
