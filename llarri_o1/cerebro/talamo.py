@@ -264,19 +264,22 @@ class Talamo(nn.Module):
             pesos: (batch, seq, n_modulos) - pesos por posición y módulo
         """
         batch, seq, _ = x.shape
+        device = x.device
         
         # ============================================
         # 1. Pesos por LLAVES (reglas explícitas)
         # ============================================
         if token_ids is not None and self.token_a_modulo.shape[0] > 1:
+            # Asegurar que el buffer esté en el device correcto
+            token_a_modulo = self.token_a_modulo.to(device)
             # Lookup directo: token_id -> pesos de módulos
-            token_ids_clamped = token_ids.clamp(0, self.token_a_modulo.shape[0] - 1)
-            pesos_llaves = self.token_a_modulo[token_ids_clamped]  # (batch, seq, n_modulos)
+            token_ids_clamped = token_ids.clamp(0, token_a_modulo.shape[0] - 1)
+            pesos_llaves = token_a_modulo[token_ids_clamped]  # (batch, seq, n_modulos)
         else:
             # Sin token_ids, usar distribución uniforme
             pesos_llaves = torch.ones(
                 batch, seq, self.n_modulos, 
-                device=x.device
+                device=device
             ) / self.n_modulos
         
         # ============================================
