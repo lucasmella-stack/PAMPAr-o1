@@ -115,15 +115,51 @@ class ConfigLLARRI:
             "total": emb + modulos + axiomas + memoria + lm_head
         }
     
-    def estimate_vram_gb(self) -> float:
-        """Estima VRAM necesaria en GB (modelo + gradientes + activaciones)."""
+    def estimate_vram_gb(self, training: bool = True) -> float:
+        """
+        Estima VRAM necesaria en GB.
+        
+        Durante entrenamiento incluye:
+        - Modelo (params * 4 bytes para FP32, o * 2 para FP16)
+        - Gradientes (igual que modelo)
+        - Optimizer states AdamW (2x params)
+        - Activaciones (batch * seq * dim * n_capas * factor)
+        
+        Durante inferencia solo modelo + activaciones mínimas.
+        """
         params = self.estimate_params()["total"]
-        # Modelo: 4 bytes/param (fp32)
-        # Gradientes: 4 bytes/param
-        # Optimizer states (AdamW): 8 bytes/param
-        # Activaciones: ~2x modelo para batch=16, seq=256
-        bytes_needed = params * (4 + 4 + 8) + params * 2 * self.batch_size / 16
-        return bytes_needed / (1024**3)
+        
+        # Bytes por parámetro
+        if self.use_mixed_precision:
+            param_bytes = 2  # FP16
+        else:
+            param_bytes = 4  # FP32
+        
+        # Modelo
+        model_bytes = params * param_bytes
+        
+        if training:
+            # Gradientes (mismo tamaño que modelo)
+            grad_bytes = params * param_bytes
+            
+            # Optimizer states (AdamW: momentum + variance = 2x)
+            # Siempre FP32 para estabilidad
+            optimizer_bytes = params * 4 * 2
+            
+            # Activaciones: batch * seq * dim * capas * 6_modulos * factor
+            # Factor ~10 para attention + ffn intermedios
+            activation_bytes = (
+                self.batch_size * self.max_seq_len * self.dim * 
+                self.n_capas * 6 * 10 * param_bytes
+            )
+            
+            total_bytes = model_bytes + grad_bytes + optimizer_bytes + activation_bytes
+        else:
+            # Inferencia: solo modelo + activaciones mínimas
+            activation_bytes = self.max_seq_len * self.dim * self.n_capas * 6 * param_bytes
+            total_bytes = model_bytes + activation_bytes
+        
+        return total_bytes / (1024**3)
 
 
 # =============================================================================
@@ -131,6 +167,7 @@ class ConfigLLARRI:
 # =============================================================================
 
 # Para GTX 1650 (4GB VRAM) - Desarrollo local
+# CONSERVADOR para no quedarse sin VRAM
 LOCAL_4GB = ConfigLLARRI(
     vocab_size=8000,
     dim=128,
@@ -142,9 +179,9 @@ LOCAL_4GB = ConfigLLARRI(
     usar_axiomas=True,
     usar_memoria=True,
     capacidad_memoria=200,
-    use_gradient_checkpointing=False,
+    use_gradient_checkpointing=False,  # No necesario con este tamaño
     use_mixed_precision=True,  # FP16 para ahorrar VRAM
-    batch_size=16,
+    batch_size=8,  # Batch pequeño para 4GB
     learning_rate=3e-4,
     max_epochs=20,
 )
@@ -190,18 +227,18 @@ SERVER_24GB = ConfigLLARRI(
 # Para A100 80GB - Servidor grande (causa justa)
 SERVER_80GB = ConfigLLARRI(
     vocab_size=50000,
-    dim=1024,
-    n_heads=16,
-    n_capas=12,
+    dim=768,  # Reducido para caber en 80GB
+    n_heads=12,
+    n_capas=8,
     dropout=0.1,
-    max_seq_len=2048,
+    max_seq_len=1024,
     peso_llaves=0.4,  # Más aprendizaje con más datos
     usar_axiomas=True,
     usar_memoria=True,
     capacidad_memoria=2000,
-    use_gradient_checkpointing=True,
+    use_gradient_checkpointing=True,  # Necesario
     use_mixed_precision=True,
-    batch_size=128,
+    batch_size=32,  # Conservador
     learning_rate=5e-5,
     max_epochs=100,
 )
@@ -234,12 +271,14 @@ def print_config_comparison():
     
     for name, cfg in configs:
         params = cfg.estimate_params()
-        vram = cfg.estimate_vram_gb()
+        vram_train = cfg.estimate_vram_gb(training=True)
+        vram_infer = cfg.estimate_vram_gb(training=False)
         print(f"\n{name}:")
         print(f"  Parámetros: {params['total']:,}")
-        print(f"  VRAM estimada: {vram:.2f} GB")
+        print(f"  VRAM entrenamiento: {vram_train:.2f} GB")
+        print(f"  VRAM inferencia: {vram_infer:.2f} GB")
         print(f"  Dimensión: {cfg.dim}, Capas: {cfg.n_capas}, Heads: {cfg.n_heads}")
-        print(f"  Vocab: {cfg.vocab_size:,}, Seq: {cfg.max_seq_len}")
+        print(f"  Vocab: {cfg.vocab_size:,}, Seq: {cfg.max_seq_len}, Batch: {cfg.batch_size}")
 
 
 if __name__ == "__main__":
