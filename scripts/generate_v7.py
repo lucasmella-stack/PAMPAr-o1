@@ -20,8 +20,8 @@ def main():
     # Crear modelo con misma config
     model = LLARRIv7Cerebral(
         vocab_size=256,
-        dim=64,
-        n_heads=2,
+        dim=128,  # ACTUALIZADO
+        n_heads=4,  # ACTUALIZADO
         usar_hipocampo=False,
         max_iteraciones=1,
         actividad_basal=0.2,
