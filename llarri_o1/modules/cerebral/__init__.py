@@ -1,40 +1,37 @@
-# SPDX-License-Identifier: MIT
-# Copyright (c) 2025 Segunda Cabeza
-# Author: Lucas Ricardo Mella Chillemi <lucas@segundacabeza.com>
-# Coordinator: Alvaro <alvaro@segundacabeza.com>
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi / Segunda Cabeza
 """
-LLARRI v7 - Arquitectura Cerebral
+LLARRI v7.3 - Arquitectura Cerebral con Liderazgo Dinámico
 
 Módulos inspirados en la organización del cerebro humano:
-- Especialización: cada módulo tiene una tarea específica
-- No interferencia: los módulos no se meten en el dominio de otros  
-- Modulación continua: nada se apaga, todo se modula
-- Propagación: la activación se propaga a módulos vecinos
-- Integración ordenada: comunicación via protocolos claros
+- Liderazgo: un módulo domina según la tarea
+- Acoplamiento: los otros módulos siguen al líder
+- Consenso: decisiones coordinadas entre módulos
+- Memoria: hipocampo con recuperación O(1)
 """
 
-from .talamo import Talamo, TalamoConMemoria
-from .modulos_especializados import (
-    ModuloLenguaje,
-    ModuloLogica, 
-    ModuloMatematicas,
-    ModuloPatrones,
-    ModuloContexto,
-    ModuloCreatividad,
+from .talamo_liderazgo import TalamoConLiderazgo
+from .modulos_acoplables import (
+    ModuloAcoplable,
+    ModuloLenguajeAcoplable,
+    ModuloLogicaAcoplable, 
+    ModuloMatematicasAcoplable,
+    ModuloPatronesAcoplable,
+    ModuloContextoAcoplable,
+    ModuloCreatividadAcoplable,
 )
-from .integracion import CuerpoCalloso, IntegradorCerebral
+from .integracion_liderazgo import CoordinadorCerebral
 from .hipocampo import Hipocampo
 
 __all__ = [
-    'Talamo',
-    'TalamoConMemoria',
-    'ModuloLenguaje',
-    'ModuloLogica',
-    'ModuloMatematicas', 
-    'ModuloPatrones',
-    'ModuloContexto',
-    'ModuloCreatividad',
-    'CuerpoCalloso',
-    'IntegradorCerebral',
+    'TalamoConLiderazgo',
+    'ModuloAcoplable',
+    'ModuloLenguajeAcoplable',
+    'ModuloLogicaAcoplable',
+    'ModuloMatematicasAcoplable', 
+    'ModuloPatronesAcoplable',
+    'ModuloContextoAcoplable',
+    'ModuloCreatividadAcoplable',
+    'CoordinadorCerebral',
     'Hipocampo',
 ]

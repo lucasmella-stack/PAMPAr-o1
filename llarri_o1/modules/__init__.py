@@ -2,84 +2,54 @@
 # Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi / Segunda Cabeza
 
 """
-Módulos componentes de LLARRI-O1 v7 (Arquitectura Cerebral).
+Módulos componentes de LLARRI-O1 v7.3 (Arquitectura Cerebral con Liderazgo).
 """
 
+# Utilidades básicas
 from llarri_o1.modules.cache import CacheBinario
-from llarri_o1.modules.tokenizer import (
-    TokenizadorFractal, 
-    TokenizerConfig, 
-    EmbeddingFractal, 
-    EmbeddingComposicional,
-    EmbeddingPosicionalFractal
-)
 from llarri_o1.modules.attention import (
     AttentionFractalProgresivo,
     AttentionConfig,
-    AttentionNivel,
-    crear_causal_mask,
-    crear_causal_mask_por_ventana
 )
 from llarri_o1.modules.lm_head import (
     LMHeadFractal,
     LMHeadConfig
 )
-from llarri_o1.modules.bloque_fractal import (
-    BloqueFractal,
-    BloqueFractalConfig,
-    BloqueFractalMultinivel,
-    CajaMezcla,
-    CajaProcesa,
-    CajaEvalua,
-    CajaOutput
-)
 
-# Módulos cerebrales v7
+# Módulos cerebrales v7.3 con liderazgo
 from llarri_o1.modules.cerebral import (
-    Talamo,
-    TalamoConMemoria,
-    ModuloLenguaje,
-    ModuloLogica,
-    ModuloMatematicas,
-    ModuloPatrones,
-    ModuloContexto,
-    ModuloCreatividad,
-    CuerpoCalloso,
-    IntegradorCerebral,
+    # Tálamo con liderazgo
+    TalamoConLiderazgo,
+    # Módulos acoplables
+    ModuloAcoplable,
+    ModuloLenguajeAcoplable,
+    ModuloLogicaAcoplable,
+    ModuloMatematicasAcoplable,
+    ModuloPatronesAcoplable,
+    ModuloContextoAcoplable,
+    ModuloCreatividadAcoplable,
+    # Integración
+    CoordinadorCerebral,
+    # Memoria
     Hipocampo,
 )
 
 __all__ = [
+    # Utils
     "CacheBinario",
-    "TokenizadorFractal",
-    "TokenizerConfig", 
-    "EmbeddingFractal",
-    "EmbeddingComposicional",
-    "EmbeddingPosicionalFractal",
     "AttentionFractalProgresivo",
     "AttentionConfig",
-    "AttentionNivel",
-    "crear_causal_mask",
-    "crear_causal_mask_por_ventana",
     "LMHeadFractal",
     "LMHeadConfig",
-    "BloqueFractal",
-    "BloqueFractalConfig",
-    "BloqueFractalMultinivel",
-    "CajaMezcla",
-    "CajaProcesa",
-    "CajaEvalua",
-    "CajaOutput",
-    # v7 Cerebral
-    "Talamo",
-    "TalamoConMemoria",
-    "ModuloLenguaje",
-    "ModuloLogica",
-    "ModuloMatematicas",
-    "ModuloPatrones",
-    "ModuloContexto",
-    "ModuloCreatividad",
-    "CuerpoCalloso",
-    "IntegradorCerebral",
+    # v7.3 Cerebral con Liderazgo
+    "TalamoConLiderazgo",
+    "ModuloAcoplable",
+    "ModuloLenguajeAcoplable",
+    "ModuloLogicaAcoplable",
+    "ModuloMatematicasAcoplable",
+    "ModuloPatronesAcoplable",
+    "ModuloContextoAcoplable",
+    "ModuloCreatividadAcoplable",
+    "CoordinadorCerebral",
     "Hipocampo",
 ]
