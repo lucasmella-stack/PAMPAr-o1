@@ -345,17 +345,17 @@ def main():
     vocab_size = sp.GetPieceSize()
     print(f"Vocab size: {vocab_size}")
     
-    # Configuración del modelo (conservadora para 4GB VRAM)
+    # Configuración del modelo (LIVIANA para 4GB VRAM GTX 1650)
     config = ConfigLLARRI(
         vocab_size=vocab_size,
-        dim=256,
+        dim=128,          # Reducido para VRAM
         n_heads=4,
-        n_capas=4,
+        n_capas=3,        # Reducido para VRAM
         dropout=0.1,
         peso_llaves=0.7,
         usar_axiomas=True,
         usar_memoria=True,
-        capacidad_memoria=500,
+        capacidad_memoria=200,
         max_seq_len=256,
         repetition_penalty=1.2,
     )
