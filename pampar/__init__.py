@@ -2,40 +2,62 @@
 # Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi / Segunda Cabeza
 
 """
-PampaR — Cerebral Language Model v8
-======================================
+PampaR v9 — Modelo de Lenguaje Cerebral con Territorios
+========================================================
 
-Arquitectura de Modelo de Lenguaje Cerebral con:
-- 6 Módulos Especializados (Lenguaje, Lógica, Matemáticas, Patrones, Contexto, Creatividad)
-- Tálamo con LLAVES: Reglas explícitas de dominio + atención aprendida
-- Sinapsis: Conexiones lógicas entre módulos
-- Axiomas: Razonamiento deductivo (modus ponens, silogismo, etc.)
-- Memoria de Experiencia: Aprendizaje a partir de éxitos/fracasos
+Definición en una frase:
+"PampaR es un cerebro artificial donde el tálamo orquesta tokens hacia 
+territorios especializados (Expresivo, Contextual, Formal, Estructural) 
+que colaboran via fronteras bidireccionales, combinando reglas explícitas 
+(LLAVES 70%) con atención aprendida (30%) para generar lenguaje."
+
+Arquitectura v9:
+- TÁLAMO: Orquestador con LLAVES (reglas + aprendizaje)
+- 4 TERRITORIOS:
+  · Expresivo: Lenguaje + Creatividad
+  · Contextual: Contexto
+  · Formal: Lógica
+  · Estructural: Patrones + Matemáticas
+- 6 FRONTERAS: Conexiones bidireccionales entre territorios
+- AXIOMAS: Razonamiento deductivo (opcional)
+- MEMORIA: Experiencia acumulada (opcional)
 
 Autor: Lucas Ricardo Mella Chillemi (Segunda Cabeza)
 Coordinador: Alvaro (Segunda Cabeza)
 
 Uso rápido:
-    from pampar import PampaR, ConfigPampaR
+    from pampar import PampaR, ConfigPampaR, LOCAL_4GB
     
-    config = ConfigPampaR(vocab_size=8000, dim=256)
-    model = PampaR(config)
+    model = PampaR(LOCAL_4GB)
     output = model(input_ids)
 """
 
-__version__ = "8.0.0"
+__version__ = "9.0.0"
 __author__ = "Lucas Ricardo Mella Chillemi"
 
 # ============================================
-# Modelo Principal v8
+# Modelo Principal v9
 # ============================================
 from pampar.cerebro import (
     PampaR,
     ConfigPampaR,
-    CerebralBlock,
+    BloqueTerrritorial,
     Talamo,
-    Sinapsis,
+    TalamoTerritorial,
+    Territorio,
+    GestorTerritorios,
+    FronteraBidireccional,
+    GestorFronteras,
     Neurona,
+)
+
+# Configuraciones predefinidas
+from pampar.config import (
+    LOCAL_4GB,
+    LOCAL_4GB_MAX,
+    SERVER_8GB,
+    SERVER_24GB,
+    SERVER_80GB,
 )
 
 # Módulos especializados
@@ -54,7 +76,7 @@ from pampar.cerebro.razonamiento import MotorAxiomas
 # Memoria
 from pampar.cerebro.memoria import MemoriaExperiencia
 
-# Utilidades (si existen)
+# Utilidades
 try:
     from pampar.utils.device import get_device, print_device_info
 except ImportError:
@@ -62,13 +84,26 @@ except ImportError:
     print_device_info = None
 
 __all__ = [
-    # Modelo principal
+    # Modelo principal v9
     "PampaR",
     "ConfigPampaR",
-    "CerebralBlock",
+    "BloqueTerrritorial",
+    # Configuraciones
+    "LOCAL_4GB",
+    "LOCAL_4GB_MAX",
+    "SERVER_8GB",
+    "SERVER_24GB",
+    "SERVER_80GB",
     # Orquestación
     "Talamo",
-    "Sinapsis",
+    "TalamoTerritorial",
+    # Territorios v9
+    "Territorio",
+    "GestorTerritorios",
+    # Fronteras v9
+    "FronteraBidireccional",
+    "GestorFronteras",
+    # Base
     "Neurona",
     # Módulos especializados
     "NeuronaLenguaje",
