@@ -167,31 +167,30 @@ class ConfigPampaR:
 # =============================================================================
 
 # Para RTX/GTX con 4GB VRAM + 32GB RAM
-# Configuración SEGURA y ESTABLE
+# Configuración SEGURA y ESTABLE - MÁS RÁPIDA
 LOCAL_4GB = ConfigPampaR(
     vocab_size=8000,
-    dim=128,               # Conservador para evitar OOM
+    dim=128,
     n_heads=4,
     n_capas=3,
     dropout=0.1,
     max_seq_len=256,
     peso_llaves=0.7,
-    usar_axiomas=True,
-    usar_memoria=True,
-    capacidad_memoria=100,
-    use_gradient_checkpointing=True,   # Ahorra VRAM
-    use_mixed_precision=True,          # FP16 obligatorio
+    usar_axiomas=False,     # Desactivar para velocidad
+    usar_memoria=False,     # Desactivar para velocidad
+    capacidad_memoria=0,
+    use_gradient_checkpointing=False,  # Desactivar - causa lentitud
+    use_mixed_precision=True,          # FP16 para ahorrar VRAM
     batch_size=8,                      
     learning_rate=2e-4,
     max_epochs=30,
 )
 
 # Configuración ÓPTIMA para GTX 1650 4GB + 32GB RAM
-# Maximiza el modelo sin explotar
 LOCAL_4GB_MAX = ConfigPampaR(
     vocab_size=8000,
-    dim=160,               # Balance entre capacidad y estabilidad
-    n_heads=4,             # 160/4 = 40 dim por head
+    dim=160,
+    n_heads=4,
     n_capas=4,             
     dropout=0.1,
     max_seq_len=256,
@@ -199,9 +198,9 @@ LOCAL_4GB_MAX = ConfigPampaR(
     usar_axiomas=True,
     usar_memoria=True,
     capacidad_memoria=100,
-    use_gradient_checkpointing=True,
+    use_gradient_checkpointing=False,
     use_mixed_precision=True,
-    batch_size=4,          # Batch pequeño + accumulation
+    batch_size=4,
     learning_rate=1.5e-4,
     max_epochs=50,
 )

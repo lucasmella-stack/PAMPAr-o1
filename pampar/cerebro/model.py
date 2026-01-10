@@ -123,16 +123,13 @@ class CerebralBlock(nn.Module):
             salida = modulo.procesar(x, mask)
             salidas_modulos[nombre] = salida
         
-        # 3. Sinapsis: comunicación entre módulos
-        for origen in self.nombres_modulos:
-            for destino in self.sinapsis.obtener_conexiones_de(origen):
-                senal = self.sinapsis.transmitir(
-                    origen, destino, 
-                    salidas_modulos[origen]
-                )
-                if senal is not None:
-                    # La señal sináptica modifica la salida del destino
-                    salidas_modulos[destino] = salidas_modulos[destino] + senal
+        # 3. Sinapsis desactivadas para entrenamiento rápido
+        # TODO: Reactivar después de entrenamiento base
+        # for origen in self.nombres_modulos:
+        #     for destino in self.sinapsis.obtener_conexiones_de(origen):
+        #         senal = self.sinapsis.transmitir(origen, destino, salidas_modulos[origen])
+        #         if senal is not None:
+        #             salidas_modulos[destino] = salidas_modulos[destino] + senal
         
         # 4. Combinar salidas pesadas por tálamo
         output = torch.zeros_like(x)
@@ -143,13 +140,8 @@ class CerebralBlock(nn.Module):
         # 5. Residual + normalización
         output = self.norm(x + output)
         
-        # Info para análisis
-        info = {
-            'pesos_modulos': {
-                nombre: pesos[:, :, i].mean().item()
-                for i, nombre in enumerate(self.nombres_modulos)
-            }
-        }
+        # Info desactivada durante entrenamiento (muy costoso)
+        info = {}
         
         return output, info
 
