@@ -76,30 +76,38 @@ class TextDataset(Dataset):
             print(f"  📄 Cargando: {data_path}")
             
             try:
+                # Leer línea por línea para ahorrar memoria
+                buffer = []
+                buffer_size = 0
+                chunk_size = 50000  # chars por chunk
+                
                 with open(data_path, 'r', encoding=encoding, errors='ignore') as f:
-                    text = f.read()
+                    for line in f:
+                        line = line.strip()
+                        if not line or line.startswith('='):
+                            continue
+                        
+                        buffer.append(line)
+                        buffer_size += len(line)
+                        
+                        # Tokenizar cuando el buffer es grande
+                        if buffer_size >= chunk_size:
+                            text_chunk = ' '.join(buffer)
+                            self.tokens.extend(self.tokenizer.Encode(text_chunk))
+                            buffer = []
+                            buffer_size = 0
+                            
+                            if len(self.tokens) >= max_tokens:
+                                break
+                    
+                    # Tokenizar lo que quede en el buffer
+                    if buffer and len(self.tokens) < max_tokens:
+                        text_chunk = ' '.join(buffer)
+                        self.tokens.extend(self.tokenizer.Encode(text_chunk))
+                        
             except Exception as e:
                 print(f"  ⚠️ Error leyendo {data_path}: {e}")
                 continue
-            
-            # Limpiar
-            lines = [l.strip() for l in text.split('\n') 
-                     if l.strip() and not l.startswith('=')]
-            text_clean = ' '.join(lines)
-            
-            # Limitar tamaño
-            max_chars_per_file = (max_tokens - len(self.tokens)) * 4
-            if len(text_clean) > max_chars_per_file:
-                text_clean = text_clean[:int(max_chars_per_file)]
-            
-            # Tokenizar en chunks
-            chunk_size = 100000
-            for i in range(0, len(text_clean), chunk_size):
-                chunk = text_clean[i:i+chunk_size]
-                self.tokens.extend(self.tokenizer.Encode(chunk))
-                
-                if len(self.tokens) >= max_tokens:
-                    break
             
             if len(self.tokens) >= max_tokens:
                 self.tokens = self.tokens[:max_tokens]
@@ -423,10 +431,16 @@ def main():
     
     if args.checkpoint and os.path.exists(args.checkpoint):
         print(f"\n📥 Cargando checkpoint: {args.checkpoint}")
-        ckpt = torch.load(args.checkpoint, map_location=device)
-        model.load_state_dict(ckpt['model'])
-        start_epoch = ckpt.get('epoch', 0) + 1
-        best_val_loss = ckpt.get('val_loss', float('inf'))
+        ckpt = torch.load(args.checkpoint, map_location=device, weights_only=False)
+        # Manejar diferentes formatos de checkpoint
+        if 'model' in ckpt:
+            model.load_state_dict(ckpt['model'])
+        elif 'model_state_dict' in ckpt:
+            model.load_state_dict(ckpt['model_state_dict'])
+        else:
+            model.load_state_dict(ckpt)
+        start_epoch = ckpt.get('epoch', 0) + 1 if isinstance(ckpt, dict) else 0
+        best_val_loss = ckpt.get('val_loss', float('inf')) if isinstance(ckpt, dict) else float('inf')
         print(f"   Continuando desde época {start_epoch}")
     
     # =========================================================================
