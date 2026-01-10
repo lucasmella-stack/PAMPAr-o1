@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi / Segunda Cabeza
 """
-LLARRI v8 - Modelo Principal
+PampaR - Modelo Principal
 
 Integra todos los componentes del cerebro:
 - Tálamo: orquestador con LLAVES
@@ -40,8 +40,8 @@ from .modulos.especializados import (
 from .razonamiento.axiomas import MotorAxiomas
 from .memoria.experiencia import MemoriaExperiencia
 
-# Importar ConfigLLARRI desde config.py central
-from ..config import ConfigLLARRI
+# Importar ConfigPampaR desde config.py central
+from pampar.config import ConfigPampaR
 
 
 class CerebralBlock(nn.Module):
@@ -56,7 +56,7 @@ class CerebralBlock(nn.Module):
     5. Combina salidas pesadas
     """
     
-    def __init__(self, config: ConfigLLARRI, block_idx: int = 0):
+    def __init__(self, config: ConfigPampaR, block_idx: int = 0):
         super().__init__()
         self.config = config
         self.block_idx = block_idx
@@ -154,9 +154,9 @@ class CerebralBlock(nn.Module):
         return output, info
 
 
-class LLARRIv8(nn.Module):
+class PampaR(nn.Module):
     """
-    LLARRI v8 - Modelo de Lenguaje Cerebral
+    PampaR - Modelo de Lenguaje Cerebral
     
     Características:
     - Arquitectura modular inspirada en neurociencia
@@ -166,7 +166,7 @@ class LLARRIv8(nn.Module):
     - Memoria de experiencia para aprendizaje práctico
     """
     
-    def __init__(self, config: ConfigLLARRI):
+    def __init__(self, config: ConfigPampaR):
         super().__init__()
         self.config = config
         

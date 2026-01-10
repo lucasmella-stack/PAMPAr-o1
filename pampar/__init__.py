@@ -2,7 +2,7 @@
 # Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi / Segunda Cabeza
 
 """
-LLARRI-O1 — Cerebral Language Model v8
+PampaR — Cerebral Language Model v8
 ======================================
 
 Arquitectura de Modelo de Lenguaje Cerebral con:
@@ -16,10 +16,10 @@ Autor: Lucas Ricardo Mella Chillemi (Segunda Cabeza)
 Coordinador: Alvaro (Segunda Cabeza)
 
 Uso rápido:
-    from llarri_o1 import LLARRIv8, ConfigLLARRI
+    from pampar import PampaR, ConfigPampaR
     
-    config = ConfigLLARRI(vocab_size=8000, dim=256)
-    model = LLARRIv8(config)
+    config = ConfigPampaR(vocab_size=8000, dim=256)
+    model = PampaR(config)
     output = model(input_ids)
 """
 
@@ -29,9 +29,9 @@ __author__ = "Lucas Ricardo Mella Chillemi"
 # ============================================
 # Modelo Principal v8
 # ============================================
-from llarri_o1.cerebro import (
-    LLARRIv8,
-    ConfigLLARRI,
+from pampar.cerebro import (
+    PampaR,
+    ConfigPampaR,
     CerebralBlock,
     Talamo,
     Sinapsis,
@@ -39,7 +39,7 @@ from llarri_o1.cerebro import (
 )
 
 # Módulos especializados
-from llarri_o1.cerebro.modulos import (
+from pampar.cerebro.modulos import (
     NeuronaLenguaje,
     NeuronaLogica,
     NeuronaMatematicas,
@@ -49,22 +49,22 @@ from llarri_o1.cerebro.modulos import (
 )
 
 # Razonamiento
-from llarri_o1.cerebro.razonamiento import MotorAxiomas
+from pampar.cerebro.razonamiento import MotorAxiomas
 
 # Memoria
-from llarri_o1.cerebro.memoria import MemoriaExperiencia
+from pampar.cerebro.memoria import MemoriaExperiencia
 
 # Utilidades (si existen)
 try:
-    from llarri_o1.utils.device import get_device, print_device_info
+    from pampar.utils.device import get_device, print_device_info
 except ImportError:
     get_device = None
     print_device_info = None
 
 __all__ = [
     # Modelo principal
-    "LLARRIv8",
-    "ConfigLLARRI",
+    "PampaR",
+    "ConfigPampaR",
     "CerebralBlock",
     # Orquestación
     "Talamo",

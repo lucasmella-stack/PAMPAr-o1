@@ -42,12 +42,12 @@ class ConfigFull:
         self.checkpoint_mejor = "checkpoints/llarri_v8_full_best.pt"  # Usar el mejor del training anterior
         self.checkpoint_base = "checkpoints/llarri_v8_max_best.pt"
         
-        # Entrenamiento - OPTIMIZADO PARA VELOCIDAD con 4GB VRAM
-        self.batch_size = 256  # Batch grande para velocidad
-        self.gradient_accumulation = 1  # Sin acumulación = más rápido
-        self.learning_rate = 3e-4  # LR más alto para batch grande
+        # Entrenamiento - OPTIMIZADO PARA 4GB VRAM (seguro)
+        self.batch_size = 32  # Batch seguro para 4GB
+        self.gradient_accumulation = 2  # Batch efectivo = 64
+        self.learning_rate = 1e-4  # LR moderado
         self.weight_decay = 0.01
-        self.warmup_steps = 200  # Menos warmup
+        self.warmup_steps = 300  # Warmup adecuado
         self.max_grad_norm = 1.0
         
         # Mixed precision - CRÍTICO para 4GB
@@ -244,7 +244,7 @@ class EntrenadorCompleto:
             self.config.corpus_path,
             self.config.tokenizer_path,
             self.seq_len,
-            max_tokens=None  # TODO el corpus
+            max_tokens=10_000_000  # 10M tokens - rápido (~4-6 horas)
         )
         
         total_tokens = len(dataset.tokens)

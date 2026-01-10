@@ -2,11 +2,11 @@
 # Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi / Segunda Cabeza
 
 """
-Configuración del modelo LLARRI-O1.
+Configuración del modelo PampaR.
 
 Este archivo contiene:
 - Config: Configuración legacy para MNIST (v4)
-- ConfigLLARRI: Configuración para modelo de lenguaje v8
+- ConfigPampaR: Configuración para modelo de lenguaje v8
 - Presets escalables: LOCAL_4GB, SERVER_8GB, SERVER_24GB, SERVER_80GB
 """
 
@@ -17,7 +17,7 @@ from typing import List, Optional, Dict
 @dataclass
 class Config:
     """
-    Configuración del modelo LLARRI-O1 v4.0 HyperComprimido (Legacy - MNIST).
+    Configuración del modelo PampaR v4.0 HyperComprimido (Legacy - MNIST).
     """
     input_dim: int = 784
     hidden_dim: int = 1024
@@ -48,9 +48,9 @@ class Config:
 
 
 @dataclass
-class ConfigLLARRI:
+class ConfigPampaR:
     """
-    Configuración del modelo LLARRI v8 - Modelo de Lenguaje.
+    Configuración del modelo PampaR - Modelo de Lenguaje.
     
     Arquitectura modular con:
     - 6 módulos especializados (Lenguaje, Lógica, Matemáticas, Patrones, Contexto, Creatividad)
@@ -168,7 +168,7 @@ class ConfigLLARRI:
 
 # Para GTX 1650 (4GB VRAM) - Desarrollo local
 # CONSERVADOR para no quedarse sin VRAM
-LOCAL_4GB = ConfigLLARRI(
+LOCAL_4GB = ConfigPampaR(
     vocab_size=8000,
     dim=128,
     n_heads=4,
@@ -187,7 +187,7 @@ LOCAL_4GB = ConfigLLARRI(
 )
 
 # Para GPU 8GB (RTX 3060/3070) - Servidor pequeño
-SERVER_8GB = ConfigLLARRI(
+SERVER_8GB = ConfigPampaR(
     vocab_size=16000,
     dim=256,
     n_heads=8,
@@ -206,7 +206,7 @@ SERVER_8GB = ConfigLLARRI(
 )
 
 # Para GPU 24GB (RTX 3090/4090) - Servidor mediano
-SERVER_24GB = ConfigLLARRI(
+SERVER_24GB = ConfigPampaR(
     vocab_size=32000,
     dim=512,
     n_heads=8,
@@ -225,7 +225,7 @@ SERVER_24GB = ConfigLLARRI(
 )
 
 # Para A100 80GB - Servidor grande (causa justa)
-SERVER_80GB = ConfigLLARRI(
+SERVER_80GB = ConfigPampaR(
     vocab_size=50000,
     dim=768,  # Reducido para caber en 80GB
     n_heads=12,
@@ -244,7 +244,7 @@ SERVER_80GB = ConfigLLARRI(
 )
 
 
-def get_config_for_vram(vram_gb: float) -> ConfigLLARRI:
+def get_config_for_vram(vram_gb: float) -> ConfigPampaR:
     """Devuelve la configuración óptima para la VRAM disponible."""
     if vram_gb <= 4:
         return LOCAL_4GB
@@ -266,7 +266,7 @@ def print_config_comparison():
     ]
     
     print("\n" + "=" * 80)
-    print("CONFIGURACIONES ESCALABLES LLARRI v8")
+    print("CONFIGURACIONES ESCALABLES PampaR")
     print("=" * 80)
     
     for name, cfg in configs:

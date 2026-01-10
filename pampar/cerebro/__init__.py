@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi / Segunda Cabeza
 """
-LLARRI Cerebro - Arquitectura neural modular
+PampaR Cerebro - Arquitectura neural modular
 
 Componentes:
-- model.py: LLARRIv8, el modelo principal
+- model.py: PampaR, el modelo principal
 - talamo.py: Orquestador con LLAVES
 - sinapsis.py: Conexiones inter-módulo
 - neurona.py: Clase base para módulos
@@ -15,15 +15,15 @@ Submódulos:
 - memoria/: Experiencia y aprendizaje
 """
 
-from .model import LLARRIv8, ConfigLLARRI, CerebralBlock
+from .model import PampaR, ConfigPampaR, CerebralBlock
 from .talamo import Talamo, LlaveModulo
 from .sinapsis import Sinapsis, TipoSinapsis, ReglaSinaptica
 from .neurona import Neurona
 
 __all__ = [
     # Modelo principal
-    'LLARRIv8',
-    'ConfigLLARRI',
+    'PampaR',
+    'ConfigPampaR',
     'CerebralBlock',
     # Orquestación
     'Talamo',
