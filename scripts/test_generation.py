@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test de generación de texto con LLARRI v8
+Test de generación de texto con PampaR v8
 Compara con estadísticas de otros modelos
 """
 
@@ -10,26 +10,26 @@ import sys
 import time
 sys.path.insert(0, '.')
 
-from llarri_o1.cerebro.model import LLARRIv8
-from llarri_o1.config import ConfigLLARRI
+from PampaR_o1.cerebro.model import PampaRv8
+from PampaR_o1.config import ConfigPampaR
 
 def main():
     # Cargar modelo
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print("="*60)
-    print("LLARRI v8 - Test de Generación")
+    print("PampaR v8 - Test de Generación")
     print("="*60)
     
-    ckpt = torch.load('checkpoints/llarri_v8_best.pt', map_location=device, weights_only=False)
+    ckpt = torch.load('checkpoints/PampaR_v8_best.pt', map_location=device, weights_only=False)
     
-    # Reconstruir config (puede ser dict o ConfigLLARRI)
+    # Reconstruir config (puede ser dict o ConfigPampaR)
     cfg = ckpt.get('config', {})
     if isinstance(cfg, dict):
-        config = ConfigLLARRI(**{k: v for k, v in cfg.items() if k in ConfigLLARRI.__dataclass_fields__})
+        config = ConfigPampaR(**{k: v for k, v in cfg.items() if k in ConfigPampaR.__dataclass_fields__})
     else:
-        config = cfg  # Ya es ConfigLLARRI
+        config = cfg  # Ya es ConfigPampaR
     
-    model = LLARRIv8(config).to(device)
+    model = PampaRv8(config).to(device)
     if 'model' in ckpt:
         model.load_state_dict(ckpt['model'])
     elif 'model_state_dict' in ckpt:
@@ -38,13 +38,13 @@ def main():
     
     # Tokenizer
     tokenizer = spm.SentencePieceProcessor()
-    tokenizer.Load('data/tokenizer/llarri_bpe.model')
+    tokenizer.Load('data/tokenizer/PampaR_bpe.model')
     
     n_params = sum(p.numel() for p in model.parameters())
     val_loss = ckpt.get('val_loss', None)
     perplexity = ckpt.get('perplexity', None)
     
-    print(f"\n📊 Modelo: LLARRI v8")
+    print(f"\n📊 Modelo: PampaR v8")
     print(f"   Parámetros: {n_params:,} ({n_params/1e6:.1f}M)")
     print(f"   Device: {device}")
     print(f"   Val Loss: {val_loss:.4f}" if val_loss else "   Val Loss: N/A")
@@ -96,7 +96,7 @@ def main():
         print(f'\n📝 Prompt: "{p}"')
         result, tps = generate(p, max_tokens=40, temp=0.7, top_k=40)
         total_tps += tps
-        print(f'🤖 LLARRI: {result}')
+        print(f'🤖 PampaR: {result}')
         print(f'   ⚡ {tps:.1f} tokens/s')
     
     avg_tps = total_tps / len(prompts)
@@ -110,7 +110,7 @@ def main():
 ┌─────────────────────┬────────────┬─────────────┬────────────┐
 │ Modelo              │ Parámetros │ Perplexity  │ Arquitectura│
 ├─────────────────────┼────────────┼─────────────┼────────────┤
-│ LLARRI v8 (local)   │    6.1M    │   ~487      │ Modular 6  │
+│ PampaR v8 (local)   │    6.1M    │   ~487      │ Modular 6  │
 ├─────────────────────┼────────────┼─────────────┼────────────┤
 │ GPT-2 Small         │   124M     │   ~35-40    │ Transformer│
 │ GPT-2 Medium        │   355M     │   ~25-30    │ Transformer│
@@ -122,9 +122,9 @@ def main():
     
     print("📊 ANÁLISIS:")
     print(f"""
-    LLARRI v8 tiene {n_params/1e6:.1f}M params vs GPT-2 Small con 124M.
+    PampaR v8 tiene {n_params/1e6:.1f}M params vs GPT-2 Small con 124M.
     
-    - LLARRI es ~20x más pequeño que GPT-2 Small
+    - PampaR es ~20x más pequeño que GPT-2 Small
     - Perplexity más alto es esperado por:
       1. Modelo mucho más pequeño
       2. Vocab de 8k tokens (vs 50k de GPT-2)
@@ -157,7 +157,7 @@ def main():
             if prompt.lower() in ['salir', 'exit', 'quit', '']:
                 break
             result, tps = generate(prompt, max_tokens=60, temp=0.7, top_k=40)
-            print(f'🤖 LLARRI: {result}')
+            print(f'🤖 PampaR: {result}')
             print(f'   ⚡ {tps:.1f} tokens/s')
         except KeyboardInterrupt:
             break

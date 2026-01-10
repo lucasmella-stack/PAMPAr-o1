@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi / Segunda Cabeza
 """
-LLARRI v8 - API Server
+PampaR v8 - API Server
 
-Servidor HTTP/WebSocket para inferencia con LLARRI v8.
+Servidor HTTP/WebSocket para inferencia con PampaR v8.
 Diseñado para escalabilidad en servidores con diferentes capacidades.
 
 Uso local (desarrollo):
@@ -13,7 +13,7 @@ Uso en servidor:
     python scripts/server.py --host 0.0.0.0 --port 8080 --workers 4
 
 Docker:
-    docker run -p 8080:8080 -v ./checkpoints:/app/checkpoints llarri-server
+    docker run -p 8080:8080 -v ./checkpoints:/app/checkpoints PampaR-server
 
 Endpoints:
     POST /generate    - Genera texto a partir de un prompt
@@ -79,7 +79,7 @@ if HAS_FASTAPI:
 # =============================================================================
 
 class ModelManager:
-    """Gestiona el modelo LLARRI para inferencia."""
+    """Gestiona el modelo PampaR para inferencia."""
     
     def __init__(
         self,
@@ -102,8 +102,8 @@ class ModelManager:
         
     def load(self):
         """Carga el modelo y tokenizer."""
-        from llarri_o1.config import LOCAL_4GB
-        from llarri_o1.cerebro.model import LLARRIv8
+        from PampaR_o1.config import LOCAL_4GB
+        from PampaR_o1.cerebro.model import PampaRv8
         
         print(f"📥 Cargando modelo desde: {self.checkpoint_path}")
         print(f"   Device: {self.device}")
@@ -118,7 +118,7 @@ class ModelManager:
             self.config = LOCAL_4GB
         
         # Modelo
-        self.model = LLARRIv8(self.config).to(self.device)
+        self.model = PampaRv8(self.config).to(self.device)
         self.model.load_state_dict(ckpt['model'])
         self.model.eval()
         
@@ -236,7 +236,7 @@ class ModelManager:
         params = self.model.contar_parametros() if self.model else {}
         
         return {
-            'name': 'LLARRI v8',
+            'name': 'PampaR v8',
             'version': '8.0.0',
             'parameters': params.get('total', 0),
             'device': str(self.device),
@@ -257,8 +257,8 @@ class ModelManager:
 def create_app(model_manager: ModelManager) -> 'FastAPI':
     """Crea la aplicación FastAPI."""
     app = FastAPI(
-        title="LLARRI v8 API",
-        description="API para generación de texto con LLARRI v8",
+        title="PampaR v8 API",
+        description="API para generación de texto con PampaR v8",
         version="8.0.0",
     )
     
@@ -394,12 +394,12 @@ def run_simple_server(model_manager: ModelManager, host: str, port: int):
 # =============================================================================
 
 def main():
-    parser = argparse.ArgumentParser(description='LLARRI v8 Server')
+    parser = argparse.ArgumentParser(description='PampaR v8 Server')
     parser.add_argument('--checkpoint', type=str,
-                       default='checkpoints/llarri_v8_best.pt',
+                       default='checkpoints/PampaR_v8_best.pt',
                        help='Path al checkpoint')
     parser.add_argument('--tokenizer', type=str,
-                       default='data/tokenizer/llarri_bpe.model',
+                       default='data/tokenizer/PampaR_bpe.model',
                        help='Path al tokenizer')
     parser.add_argument('--host', type=str, default='127.0.0.1',
                        help='Host (0.0.0.0 para acceso externo)')
@@ -430,7 +430,7 @@ def main():
     )
     
     print("\n" + "=" * 60)
-    print("LLARRI v8 - SERVER")
+    print("PampaR v8 - SERVER")
     print("=" * 60)
     
     if args.simple or not HAS_FASTAPI:

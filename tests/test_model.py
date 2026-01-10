@@ -2,7 +2,7 @@
 # Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi / Segunda Cabeza
 
 """
-Tests para LLARRI-O1 v4.0.
+Tests para PampaR v4.0.
 """
 
 from __future__ import annotations
@@ -16,7 +16,7 @@ import torch
 repo_root = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(repo_root))
 
-from llarri_o1 import LlarriO1, Config
+from pampar import PampaR, Config
 
 
 def test_forward_backward_cpu():
@@ -24,7 +24,7 @@ def test_forward_backward_cpu():
     config = Config(hidden_dim=256)  # Modelo pequeño para test rápido
     config.niveles_fractales = [2, 4, 8, 16, 32, 64]  # Menos niveles
     
-    model = LlarriO1(config)
+    model = PampaR(config)
     model.eval()
 
     x = torch.randn(2, 784)
@@ -64,7 +64,7 @@ def test_model_parameters():
     config = Config(hidden_dim=256)
     config.niveles_fractales = [2, 4, 8, 16, 32, 64]
     
-    model = LlarriO1(config)
+    model = PampaR(config)
     
     total_params = sum(p.numel() for p in model.parameters())
     trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
