@@ -166,42 +166,43 @@ class ConfigPampaR:
 # PRESETS ESCALABLES
 # =============================================================================
 
-# Para RTX con 4GB VRAM - MÁXIMO RENDIMIENTO
-# Optimizado para exprimir cada MB de VRAM
+# Para RTX/GTX con 4GB VRAM + 32GB RAM
+# Configuración SEGURA y ESTABLE
 LOCAL_4GB = ConfigPampaR(
     vocab_size=8000,
-    dim=192,               # Aumentado de 128 → 192 (50% más capacidad)
-    n_heads=6,             # Aumentado de 4 → 6 heads
-    n_capas=4,             # Aumentado de 3 → 4 capas
+    dim=128,               # Conservador para evitar OOM
+    n_heads=4,
+    n_capas=3,
     dropout=0.1,
     max_seq_len=256,
     peso_llaves=0.7,
     usar_axiomas=True,
     usar_memoria=True,
-    capacidad_memoria=150, # Reducido para ahorrar VRAM
-    use_gradient_checkpointing=True,   # ACTIVADO para ahorrar VRAM
+    capacidad_memoria=100,
+    use_gradient_checkpointing=True,   # Ahorra VRAM
     use_mixed_precision=True,          # FP16 obligatorio
-    batch_size=4,                      # Batch pequeño pero gradient accumulation
+    batch_size=8,                      
     learning_rate=2e-4,
     max_epochs=30,
 )
 
-# Configuración AGRESIVA para 4GB - máximo modelo posible
+# Configuración ÓPTIMA para GTX 1650 4GB + 32GB RAM
+# Maximiza el modelo sin explotar
 LOCAL_4GB_MAX = ConfigPampaR(
     vocab_size=8000,
-    dim=256,               # Máximo para 4GB con gradient checkpointing
-    n_heads=8,
-    n_capas=4,
-    dropout=0.15,          # Más dropout para regularización
-    max_seq_len=192,       # Secuencias más cortas para compensar
+    dim=160,               # Balance entre capacidad y estabilidad
+    n_heads=4,             # 160/4 = 40 dim por head
+    n_capas=4,             
+    dropout=0.1,
+    max_seq_len=256,
     peso_llaves=0.7,
     usar_axiomas=True,
-    usar_memoria=False,    # Desactivar memoria para ahorrar VRAM
-    capacidad_memoria=0,
+    usar_memoria=True,
+    capacidad_memoria=100,
     use_gradient_checkpointing=True,
     use_mixed_precision=True,
-    batch_size=2,          # Batch mínimo + gradient accumulation 8
-    learning_rate=1e-4,
+    batch_size=4,          # Batch pequeño + accumulation
+    learning_rate=1.5e-4,
     max_epochs=50,
 )
 
