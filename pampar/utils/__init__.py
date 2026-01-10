@@ -2,11 +2,11 @@
 # Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi / Segunda Cabeza
 
 """
-Utilidades para LLARRI-O1.
+Utilidades para PampaR.
 """
 
-from llarri_o1.utils.data import get_mnist_loaders
-from llarri_o1.utils.device import get_device, print_device_info
+from pampar.utils.data import get_mnist_loaders
+from pampar.utils.device import get_device, print_device_info
 
 __all__ = [
     "get_mnist_loaders",

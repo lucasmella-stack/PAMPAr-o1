@@ -10,8 +10,8 @@ import sys
 import time
 sys.path.insert(0, '.')
 
-from PampaR_o1.cerebro.model import PampaRv8
-from PampaR_o1.config import ConfigPampaR
+from pampar.cerebro.model import PampaR
+from pampar.config import ConfigPampaR
 
 def main():
     # Cargar modelo
@@ -20,7 +20,7 @@ def main():
     print("PampaR v8 - Test de Generación")
     print("="*60)
     
-    ckpt = torch.load('checkpoints/PampaR_v8_best.pt', map_location=device, weights_only=False)
+    ckpt = torch.load('checkpoints/pampar_best.pt', map_location=device, weights_only=False)
     
     # Reconstruir config (puede ser dict o ConfigPampaR)
     cfg = ckpt.get('config', {})
@@ -29,7 +29,7 @@ def main():
     else:
         config = cfg  # Ya es ConfigPampaR
     
-    model = PampaRv8(config).to(device)
+    model = PampaR(config).to(device)
     if 'model' in ckpt:
         model.load_state_dict(ckpt['model'])
     elif 'model_state_dict' in ckpt:

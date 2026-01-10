@@ -166,24 +166,43 @@ class ConfigPampaR:
 # PRESETS ESCALABLES
 # =============================================================================
 
-# Para GTX 1650 (4GB VRAM) - Desarrollo local
-# CONSERVADOR para no quedarse sin VRAM
+# Para RTX con 4GB VRAM - MÁXIMO RENDIMIENTO
+# Optimizado para exprimir cada MB de VRAM
 LOCAL_4GB = ConfigPampaR(
     vocab_size=8000,
-    dim=128,
-    n_heads=4,
-    n_capas=3,
+    dim=192,               # Aumentado de 128 → 192 (50% más capacidad)
+    n_heads=6,             # Aumentado de 4 → 6 heads
+    n_capas=4,             # Aumentado de 3 → 4 capas
     dropout=0.1,
     max_seq_len=256,
     peso_llaves=0.7,
     usar_axiomas=True,
     usar_memoria=True,
-    capacidad_memoria=200,
-    use_gradient_checkpointing=False,  # No necesario con este tamaño
-    use_mixed_precision=True,  # FP16 para ahorrar VRAM
-    batch_size=8,  # Batch pequeño para 4GB
-    learning_rate=3e-4,
-    max_epochs=20,
+    capacidad_memoria=150, # Reducido para ahorrar VRAM
+    use_gradient_checkpointing=True,   # ACTIVADO para ahorrar VRAM
+    use_mixed_precision=True,          # FP16 obligatorio
+    batch_size=4,                      # Batch pequeño pero gradient accumulation
+    learning_rate=2e-4,
+    max_epochs=30,
+)
+
+# Configuración AGRESIVA para 4GB - máximo modelo posible
+LOCAL_4GB_MAX = ConfigPampaR(
+    vocab_size=8000,
+    dim=256,               # Máximo para 4GB con gradient checkpointing
+    n_heads=8,
+    n_capas=4,
+    dropout=0.15,          # Más dropout para regularización
+    max_seq_len=192,       # Secuencias más cortas para compensar
+    peso_llaves=0.7,
+    usar_axiomas=True,
+    usar_memoria=False,    # Desactivar memoria para ahorrar VRAM
+    capacidad_memoria=0,
+    use_gradient_checkpointing=True,
+    use_mixed_precision=True,
+    batch_size=2,          # Batch mínimo + gradient accumulation 8
+    learning_rate=1e-4,
+    max_epochs=50,
 )
 
 # Para GPU 8GB (RTX 3060/3070) - Servidor pequeño
@@ -244,10 +263,15 @@ SERVER_80GB = ConfigPampaR(
 )
 
 
-def get_config_for_vram(vram_gb: float) -> ConfigPampaR:
-    """Devuelve la configuración óptima para la VRAM disponible."""
+def get_config_for_vram(vram_gb: float, max_mode: bool = False) -> ConfigPampaR:
+    """Devuelve la configuración óptima para la VRAM disponible.
+    
+    Args:
+        vram_gb: VRAM disponible en GB
+        max_mode: Si True, usa configuración agresiva (más parámetros, más riesgo OOM)
+    """
     if vram_gb <= 4:
-        return LOCAL_4GB
+        return LOCAL_4GB_MAX if max_mode else LOCAL_4GB
     elif vram_gb <= 8:
         return SERVER_8GB
     elif vram_gb <= 24:
@@ -260,6 +284,7 @@ def print_config_comparison():
     """Imprime comparación de todas las configuraciones."""
     configs = [
         ("LOCAL_4GB", LOCAL_4GB),
+        ("LOCAL_4GB_MAX", LOCAL_4GB_MAX),
         ("SERVER_8GB", SERVER_8GB),
         ("SERVER_24GB", SERVER_24GB),
         ("SERVER_80GB", SERVER_80GB),

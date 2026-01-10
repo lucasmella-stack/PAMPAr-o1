@@ -102,8 +102,8 @@ class ModelManager:
         
     def load(self):
         """Carga el modelo y tokenizer."""
-        from PampaR_o1.config import LOCAL_4GB
-        from PampaR_o1.cerebro.model import PampaRv8
+        from pampar.config import LOCAL_4GB
+        from pampar.cerebro.model import PampaR
         
         print(f"📥 Cargando modelo desde: {self.checkpoint_path}")
         print(f"   Device: {self.device}")
@@ -118,7 +118,7 @@ class ModelManager:
             self.config = LOCAL_4GB
         
         # Modelo
-        self.model = PampaRv8(self.config).to(self.device)
+        self.model = PampaR(self.config).to(self.device)
         self.model.load_state_dict(ckpt['model'])
         self.model.eval()
         

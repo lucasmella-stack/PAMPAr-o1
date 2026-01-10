@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi / Segunda Cabeza
 """
-Módulos especializados del cerebro LLARRI.
+Módulos especializados del cerebro PampaR.
 
 6 neuronas con dominios específicos:
 - NeuronaLenguaje: gramática, sintaxis, fluidez

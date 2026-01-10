@@ -2,22 +2,22 @@
 # Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi / Segunda Cabeza
 
 """
-Módulos componentes de LLARRI-O1 v7.3 (Arquitectura Cerebral con Liderazgo).
+Módulos componentes de PampaR v7.3 (Arquitectura Cerebral con Liderazgo).
 """
 
 # Utilidades básicas
-from llarri_o1.modules.cache import CacheBinario
-from llarri_o1.modules.attention import (
+from pampar.modules.cache import CacheBinario
+from pampar.modules.attention import (
     AttentionFractalProgresivo,
     AttentionConfig,
 )
-from llarri_o1.modules.lm_head import (
+from pampar.modules.lm_head import (
     LMHeadFractal,
     LMHeadConfig
 )
 
 # Módulos cerebrales v7.3 con liderazgo
-from llarri_o1.modules.cerebral import (
+from pampar.modules.cerebral import (
     # Tálamo con liderazgo
     TalamoConLiderazgo,
     # Módulos acoplables

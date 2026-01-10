@@ -2,10 +2,10 @@
 # Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi / Segunda Cabeza
 
 """
-Entrenamiento para LLARRI-O1.
+Entrenamiento para PampaR.
 """
 
-from llarri_o1.training.trainer import Trainer
-from llarri_o1.training.adaptive_trainer import AdaptiveTrainer
+from pampar.training.trainer import Trainer
+from pampar.training.adaptive_trainer import AdaptiveTrainer
 
 __all__ = ["Trainer", "AdaptiveTrainer"]

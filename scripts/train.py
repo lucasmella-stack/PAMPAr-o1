@@ -36,7 +36,7 @@ import sentencepiece as spm
 
 # Agregar path del proyecto
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from pampar.config import ConfigPampaR, LOCAL_4GB
+from pampar.config import ConfigPampaR, LOCAL_4GB, LOCAL_4GB_MAX
 from pampar.cerebro.model import PampaR
 
 
@@ -326,11 +326,13 @@ def parse_tokens(value: str) -> int:
 def main():
     parser = argparse.ArgumentParser(description="PampaR Training")
     parser.add_argument('--epochs', type=int, default=5, help='Número de épocas')
-    parser.add_argument('--batch-size', type=int, default=16, help='Batch size')
-    parser.add_argument('--lr', type=float, default=1e-4, help='Learning rate')
+    parser.add_argument('--batch-size', type=int, default=None, help='Batch size (default: según config)')
+    parser.add_argument('--lr', type=float, default=None, help='Learning rate (default: según config)')
     parser.add_argument('--tokens', type=str, default=None, help='Límite de tokens (ej: 10M, 50M)')
     parser.add_argument('--resume', action='store_true', help='Continuar desde checkpoint')
     parser.add_argument('--checkpoint', type=str, default=None, help='Path a checkpoint específico')
+    parser.add_argument('--max', action='store_true', help='Usar config MAX (más parámetros, más riesgo OOM)')
+    parser.add_argument('--accum', type=int, default=8, help='Gradient accumulation steps')
     args = parser.parse_args()
     
     print("="*60)
@@ -348,16 +350,29 @@ def main():
     
     # Configuración
     train_config = TrainConfig()
-    train_config.batch_size = args.batch_size
-    train_config.learning_rate = args.lr
+    
+    # Seleccionar config del modelo
+    if args.max:
+        model_config = LOCAL_4GB_MAX
+        print("\n⚡ Modo MAX activado - configuración agresiva")
+    else:
+        model_config = LOCAL_4GB
+    
+    # Usar valores del config si no se especifican
+    train_config.batch_size = args.batch_size or model_config.batch_size
+    train_config.learning_rate = args.lr or model_config.learning_rate
+    train_config.gradient_accumulation = args.accum
+    
     if args.tokens:
         train_config.max_tokens = parse_tokens(args.tokens)
     
-    model_config = LOCAL_4GB
-    
     print(f"\n🎯 Configuración:")
+    print(f"   Modelo: {'LOCAL_4GB_MAX' if args.max else 'LOCAL_4GB'}")
+    print(f"   Dim: {model_config.dim}, Capas: {model_config.n_capas}, Heads: {model_config.n_heads}")
     print(f"   Épocas: {args.epochs}")
     print(f"   Batch size: {train_config.batch_size}")
+    print(f"   Gradient accumulation: {train_config.gradient_accumulation}")
+    print(f"   Effective batch: {train_config.batch_size * train_config.gradient_accumulation}")
     print(f"   Learning rate: {train_config.learning_rate}")
     print(f"   Max tokens: {train_config.max_tokens or 'Todo el corpus'}")
     

@@ -22,8 +22,8 @@ import sentencepiece as spm
 # Añadir path del proyecto
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from PampaR_o1.config import LOCAL_4GB, get_config_for_vram
-from PampaR_o1.cerebro.model import PampaRv8
+from pampar.config import LOCAL_4GB, get_config_for_vram
+from pampar.cerebro.model import PampaR
 
 
 def load_model(checkpoint_path: str, device: torch.device):
@@ -33,7 +33,7 @@ def load_model(checkpoint_path: str, device: torch.device):
     ckpt = torch.load(checkpoint_path, map_location=device, weights_only=False)
     
     # Obtener configuración del checkpoint
-    from PampaR_o1.config import ConfigPampaR
+    from pampar.config import ConfigPampaR
     
     if 'config' in ckpt:
         saved_config = ckpt['config']
@@ -63,7 +63,7 @@ def load_model(checkpoint_path: str, device: torch.device):
     print(f"   Config: dim={config.dim}, capas={config.n_capas}, vocab={config.vocab_size}")
     
     # Crear modelo
-    model = PampaRv8(config).to(device)
+    model = PampaR(config).to(device)
     
     # Cargar pesos (puede ser 'model' o 'model_state_dict')
     if 'model' in ckpt:
