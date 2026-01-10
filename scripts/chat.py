@@ -1,13 +1,13 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi / Segunda Cabeza
 """
-LLARRI v8 - Inferencia Interactiva
+PampaR - Inferencia Interactiva
 
-Chat interactivo con el modelo LLARRI v8.
+Chat interactivo con el modelo PampaR.
 
 Uso:
     python scripts/chat.py
-    python scripts/chat.py --checkpoint checkpoints/llarri_v8_best.pt
+    python scripts/chat.py --checkpoint checkpoints/PampaR_v8_best.pt
     python scripts/chat.py --temperature 0.7 --top_p 0.95
 """
 
@@ -22,8 +22,8 @@ import sentencepiece as spm
 # Añadir path del proyecto
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from llarri_o1.config import LOCAL_4GB, get_config_for_vram
-from llarri_o1.cerebro.model import LLARRIv8
+from PampaR_o1.config import LOCAL_4GB, get_config_for_vram
+from PampaR_o1.cerebro.model import PampaRv8
 
 
 def load_model(checkpoint_path: str, device: torch.device):
@@ -33,7 +33,7 @@ def load_model(checkpoint_path: str, device: torch.device):
     ckpt = torch.load(checkpoint_path, map_location=device, weights_only=False)
     
     # Obtener configuración del checkpoint
-    from llarri_o1.config import ConfigLLARRI
+    from PampaR_o1.config import ConfigPampaR
     
     if 'config' in ckpt:
         saved_config = ckpt['config']
@@ -41,7 +41,7 @@ def load_model(checkpoint_path: str, device: torch.device):
         if isinstance(saved_config, dict):
             # Crear config con los valores guardados
             # Usar valores por defecto para campos que no existan
-            config = ConfigLLARRI(
+            config = ConfigPampaR(
                 vocab_size=saved_config.get('vocab_size', 8000),
                 dim=saved_config.get('dim', 128),
                 n_heads=saved_config.get('n_heads', 4),
@@ -63,7 +63,7 @@ def load_model(checkpoint_path: str, device: torch.device):
     print(f"   Config: dim={config.dim}, capas={config.n_capas}, vocab={config.vocab_size}")
     
     # Crear modelo
-    model = LLARRIv8(config).to(device)
+    model = PampaRv8(config).to(device)
     
     # Cargar pesos (puede ser 'model' o 'model_state_dict')
     if 'model' in ckpt:
@@ -141,7 +141,7 @@ def interactive_chat(
 ):
     """Modo chat interactivo."""
     print("\n" + "=" * 60)
-    print("🤖 LLARRI v8 - Chat Interactivo")
+    print("🤖 PampaR - Chat Interactivo")
     print("=" * 60)
     print("\nComandos especiales:")
     print("  /quit, /exit    - Salir")
@@ -204,7 +204,7 @@ def interactive_chat(
                     continue
                     
                 elif cmd == '/help':
-                    print("\n  Escribe cualquier texto para que LLARRI continúe.")
+                    print("\n  Escribe cualquier texto para que PampaR continúe.")
                     print("  Ejemplo: 'El futuro de la inteligencia artificial'")
                     continue
                     
@@ -213,7 +213,7 @@ def interactive_chat(
                     continue
             
             # Generar respuesta
-            print("\n🤖 LLARRI: ", end="", flush=True)
+            print("\n🤖 PampaR: ", end="", flush=True)
             
             response = generate_text(
                 model=model,
@@ -240,12 +240,12 @@ def interactive_chat(
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Chat con LLARRI v8')
+    parser = argparse.ArgumentParser(description='Chat con PampaR')
     parser.add_argument('--checkpoint', type=str, 
-                       default='checkpoints/llarri_v8_best.pt',
+                       default='checkpoints/PampaR_v8_best.pt',
                        help='Path al checkpoint')
     parser.add_argument('--tokenizer', type=str,
-                       default='data/tokenizer/llarri_bpe.model',
+                       default='data/tokenizer/PampaR_bpe.model',
                        help='Path al tokenizer')
     parser.add_argument('--temperature', type=float, default=0.8,
                        help='Temperatura para sampling')
@@ -293,7 +293,7 @@ def main():
     if args.prompt:
         # Modo no interactivo
         print(f"\n📝 Prompt: {args.prompt}")
-        print("\n🤖 LLARRI: ", end="")
+        print("\n🤖 PampaR: ", end="")
         
         response = generate_text(
             model=model,

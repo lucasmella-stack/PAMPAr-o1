@@ -15,7 +15,8 @@ Submódulos:
 - memoria/: Experiencia y aprendizaje
 """
 
-from .model import PampaR, ConfigPampaR, CerebralBlock
+from .model import PampaR, CerebralBlock
+from pampar.config import ConfigPampaR
 from .talamo import Talamo, LlaveModulo
 from .sinapsis import Sinapsis, TipoSinapsis, ReglaSinaptica
 from .neurona import Neurona
