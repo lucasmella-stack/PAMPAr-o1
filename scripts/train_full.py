@@ -27,8 +27,8 @@ import sentencepiece as spm
 
 # Agregar path
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from llarri_o1.config import ConfiguracionEntrenamiento, PRESETS
-from llarri_o1.cerebro.model import LlarriO1
+from llarri_o1.config import ConfigLLARRI, LOCAL_4GB
+from llarri_o1.cerebro.model import LLARRIv8
 
 # ============================================================================
 # CONFIGURACIÓN OPTIMIZADA PARA 4GB VRAM
@@ -39,15 +39,15 @@ class ConfigFull:
     def __init__(self):
         # Modelo
         self.preset = "LOCAL_4GB"
-        self.checkpoint_mejor = "checkpoints/llarri_v8_max_best.pt"
-        self.checkpoint_base = "checkpoints/llarri_v8_best.pt"
+        self.checkpoint_mejor = "checkpoints/llarri_v8_full_best.pt"  # Usar el mejor del training anterior
+        self.checkpoint_base = "checkpoints/llarri_v8_max_best.pt"
         
-        # Entrenamiento - Optimizado para 4GB VRAM
-        self.batch_size = 16  # Más grande para eficiencia
-        self.gradient_accumulation = 4  # Batch efectivo = 64
-        self.learning_rate = 1e-4
+        # Entrenamiento - OPTIMIZADO PARA VELOCIDAD con 4GB VRAM
+        self.batch_size = 256  # Batch grande para velocidad
+        self.gradient_accumulation = 1  # Sin acumulación = más rápido
+        self.learning_rate = 3e-4  # LR más alto para batch grande
         self.weight_decay = 0.01
-        self.warmup_steps = 1000
+        self.warmup_steps = 200  # Menos warmup
         self.max_grad_norm = 1.0
         
         # Mixed precision - CRÍTICO para 4GB
@@ -59,8 +59,8 @@ class ConfigFull:
         
         # Checkpoints
         self.checkpoint_dir = "checkpoints"
-        self.save_every_steps = 5000
-        self.eval_every_steps = 2000
+        self.save_every_steps = 1000  # Guardar más frecuente
+        self.eval_every_steps = 500   # Evaluar más frecuente
         
         # Validación
         self.val_corpus_path = "data/wikitext-103/wikitext-103-raw/wiki.valid.raw"
@@ -80,6 +80,10 @@ class StreamingDataset(Dataset):
         self.sp.Load(tokenizer_path)
         
         print(f"📖 Procesando corpus: {corpus_path}")
+        
+        # Limitar a 10M tokens para entrenamiento rápido (~4-6 horas)
+        # 10M tokens × 5 épocas = 50M tokens totales = 33x más que train_max.py
+        max_safe_tokens = 10_000_000  # 10 millones
         
         # Tokenizar línea por línea
         self.tokens = []
@@ -104,7 +108,11 @@ class StreamingDataset(Dataset):
                 tokens_count += len(line_tokens)
                 lines_count += 1
                 
-                # Límite de tokens
+                # Límite de tokens (50M por seguridad de RAM)
+                if tokens_count >= max_safe_tokens:
+                    print(f"  ⚠️ Límite RAM alcanzado: {tokens_count:,} tokens")
+                    break
+                
                 if max_tokens and tokens_count >= max_tokens:
                     break
                 
@@ -162,10 +170,9 @@ class EntrenadorCompleto:
         # Cargar modelo
         self._cargar_modelo()
         
-        # Cargar tokenizer config
-        preset = PRESETS[self.config.preset]
-        self.seq_len = preset['seq_len']
-        self.vocab_size = preset['vocab_size']
+        # Config desde LOCAL_4GB
+        self.seq_len = LOCAL_4GB.max_seq_len
+        self.vocab_size = LOCAL_4GB.vocab_size
         
     def _cargar_modelo(self):
         """Carga el modelo desde el mejor checkpoint"""
@@ -184,14 +191,14 @@ class EntrenadorCompleto:
         # Cargar
         checkpoint = torch.load(checkpoint_path, map_location=self.device, weights_only=False)
         
-        # Crear modelo
-        preset = PRESETS[self.config.preset]
-        config_modelo = ConfiguracionEntrenamiento(**preset)
-        self.model = LlarriO1(config_modelo)
+        # Crear modelo con LOCAL_4GB config
+        self.model = LLARRIv8(LOCAL_4GB)
         
-        # Cargar pesos
+        # Cargar pesos - diferentes formatos de checkpoint
         if 'model_state_dict' in checkpoint:
             self.model.load_state_dict(checkpoint['model_state_dict'])
+        elif 'model' in checkpoint:
+            self.model.load_state_dict(checkpoint['model'])
         else:
             self.model.load_state_dict(checkpoint)
         
