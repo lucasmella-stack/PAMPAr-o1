@@ -1,34 +1,60 @@
 # PampaR Copilot Instructions
 
-## Project Overview
-PampaR is a **cerebral language model** with brain-inspired modular architecture. The model uses 6 specialized "neurons" coordinated by a central "thalamus" (Tálamo) that routes tokens to appropriate modules using explicit rules (LLAVES).
+## Definición en Una Frase
 
-## Architecture (Big Picture)
+> **"PampaR es un cerebro artificial donde el tálamo orquesta tokens hacia territorios especializados (Expresivo, Contextual, Formal, Estructural) que colaboran via fronteras bidireccionales, combinando reglas explícitas (LLAVES 70%) con atención aprendida (30%) para generar lenguaje."**
+
+## Project Overview
+PampaR v9 is a **cerebral language model** with brain-inspired territorial architecture. The model uses 4 specialized "territories" containing 6 "neurons", coordinated by a central "thalamus" (Tálamo) that routes tokens using explicit rules (LLAVES) + learned attention.
+
+## Architecture v9 (Territorial)
 
 ```
-Input → Embedding → [CerebralBlock ×N] → LM Head → Output
+Input → Embedding → [BloqueTerrritorial ×N] → LM Head → Output
                           ↓
-              Tálamo (LLAVES routing)
+              Tálamo (LLAVES 70% + Atención 30%)
                           ↓
-    ┌─────────────────────┼─────────────────────┐
-    ↓         ↓         ↓         ↓         ↓         ↓
-Lenguaje  Lógica  Matemat  Patron  Context  Creat
-    └─────────────────────┼─────────────────────┘
-                    Sinapsis (inter-module)
+    ┌─────────────────────┴─────────────────────┐
+    │                                           │
+    ▼                                           ▼
+┌───────────────┐                    ┌───────────────┐
+│   EXPRESIVO   │◄───── Frontera ───►│  CONTEXTUAL   │
+│ Lang + Creat  │                    │   Contexto    │
+└───────┬───────┘                    └───────┬───────┘
+        │                                    │
+        │◄────── Fronteras Bidirec ─────────►│
+        │                                    │
+┌───────▼───────┐                    ┌───────▼───────┐
+│    FORMAL     │◄───── Frontera ───►│ ESTRUCTURAL   │
+│    Lógica     │                    │ Patrón + Mat  │
+└───────────────┘                    └───────────────┘
                           ↓
-                       Axiomas (deductive reasoning)
+                       Axiomas (opcional)
 ```
 
 ### Key Components in `pampar/cerebro/`
-- **model.py** → `PampaR` main class, `CerebralBlock` processing blocks
-- **talamo.py** → `Talamo` orchestrator with `LlaveModulo` routing rules
-- **sinapsis.py** → `Sinapsis` inter-module connections with `CONEXIONES_NATURALES` matrix
+- **model.py** → Re-exports from `model_v9.py`
+- **model_v9.py** → `PampaR` main class, `BloqueTerrritorial` processing blocks
+- **talamo.py** → `TalamoTerritorial` orchestrator with LLAVES + territorial routing
+- **territorio.py** → `Territorio`, `GestorTerritorios` - 4 functional groupings
+- **frontera.py** → `FronteraBidireccional`, `GestorFronteras` - 6 bidirectional connections
 - **modulos/especializados.py** → 6 specialized neurons (`NeuronaLenguaje`, `NeuronaLogica`, etc.)
 - **razonamiento/axiomas.py** → `MotorAxiomas` with modus ponens, silogismo, etc.
 
+### Territories (4)
+| Territory | Modules | Function |
+|-----------|---------|----------|
+| **Expresivo** | Lenguaje + Creatividad | Generate fluent text, new ideas |
+| **Contextual** | Contexto | Working memory, coherence |
+| **Formal** | Lógica | Reasoning, rules |
+| **Estructural** | Patrones + Matemáticas | Sequences, numbers, patterns |
+
+### Frontiers (6 bidirectional)
+All territories connect via bidirectional frontiers with learned gates.
+
 ### Configuration System
-- **config.py** → `ConfigPampaR` for language model (v8), `Config` for legacy MNIST (v4)
-- Presets: `LOCAL_4GB`, `SERVER_8GB`, `SERVER_24GB`, `SERVER_80GB` for different VRAM targets
+- **config.py** → `ConfigPampaR` for language model (v9)
+- Presets: `LOCAL_4GB`, `LOCAL_4GB_MAX`, `SERVER_8GB`, `SERVER_24GB`, `SERVER_80GB`
 
 ## Developer Workflows
 
@@ -40,17 +66,16 @@ python scripts/train.py --resume            # Resume from checkpoint
 python scripts/train.py --batch-size 32 --lr 1e-4 --epochs 10
 ```
 
+### Testing v9
+```bash
+python scripts/test_v9.py                   # Test territorial architecture
+pytest tests/                               # Run all tests
+```
+
 ### Inference/Chat
 ```bash
 python scripts/chat.py
 python scripts/chat.py --checkpoint checkpoints/pampar_best.pt
-python scripts/chat.py --temperature 0.7 --top_p 0.95
-```
-
-### Testing
-```bash
-pytest tests/                  # Run all tests
-pytest tests/test_model.py -q  # Specific test file
 ```
 
 ### Data Requirements
@@ -68,34 +93,39 @@ All Python files use SPDX license headers:
 ```
 
 ### Naming Conventions
-- Spanish names for domain concepts: `Tálamo`, `Sinapsis`, `Neurona`, `Axiomas`, `LLAVES`
+- Spanish names for domain concepts: `Tálamo`, `Territorio`, `Frontera`, `Neurona`, `Axiomas`, `LLAVES`
 - English for standard ML terms: `forward`, `batch`, `embedding`
-- Configuration classes: `ConfigPampaR`, `Config`
+- Configuration classes: `ConfigPampaR`
+- Territories: `TipoTerritorio.EXPRESIVO`, `.CONTEXTUAL`, `.FORMAL`, `.ESTRUCTURAL`
 - Module neurons: `NeuronaLenguaje`, `NeuronaLogica`, etc.
 
-### Module Pattern
-Each specialized neuron in `modulos/especializados.py`:
-1. Inherits from `Neurona` base class
-2. Defines `LLAVES` dict with domain-specific token patterns
-3. Implements `es_mi_dominio()` for relevance scoring
-4. Implements `procesar()` with specialized attention + domain-specific layers
+### Territory Pattern (v9)
+Each territory in `territorio.py`:
+1. Contains related modules sharing a buffer
+2. Processes with `procesar()` or `procesar_basal()` (low activation)
+3. Communicates with other territories via `frontera.py`
 
 ### Tálamo LLAVES System
 The thalamus uses 70% rule-based (`peso_llaves=0.7`) + 30% learned attention:
 ```python
-# In talamo.py - define token patterns per module
+# In talamo.py - TalamoTerritorial
 self.llaves = {
     'lenguaje': LlaveModulo(patrones=['el', 'la', 'de', 'que', ...]),
     'matematicas': LlaveModulo(patrones=['0-9', '+', '-', '=', ...]),
     # ...
 }
+# Modules aggregate to territories via modulo_a_territorio matrix
 ```
 
-### Sinapsis Connections
-Inter-module connections defined in `CONEXIONES_NATURALES` dict:
+### Frontier Connections (v9)
+Bidirectional connections between territories in `frontera.py`:
 ```python
-('lenguaje', 'contexto'): (TipoSinapsis.EXCITATORIA, 0.8),
-('logica', 'matematicas'): (TipoSinapsis.EXCITATORIA, 0.7),
+FRONTERAS_DEFINIDAS = [
+    ConfigFrontera('expresivo', 'contextual', 0.8),    # High: narrative + context
+    ConfigFrontera('expresivo', 'formal', 0.5),        # Medium: argumentation
+    ConfigFrontera('formal', 'estructural', 0.7),      # High: math logic
+    # ...
+]
 ```
 
 ## Key Implementation Details
@@ -119,6 +149,6 @@ model.registrar_tokenizer(tokenizer)  # Populates LLAVES token mappings
 
 ## Important Notes
 - **Bilingual docs**: English and Spanish versions exist (`*.es.md`)
-- **Legacy code**: `versions/legacy/` contains older v4 MNIST implementation
-- **Diagrams**: Architecture diagrams in `diagrams/v8-current/`
+- **Legacy code**: `versions/legacy/` contains older v4 MNIST implementation and v8 sinapsis
+- **Diagrams**: Architecture diagrams in `diagrams/v9-territorial/`
 - **License**: AGPL-3.0-or-later (copyleft, disclose source for derivatives)
