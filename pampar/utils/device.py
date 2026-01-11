@@ -20,6 +20,10 @@ def get_device() -> torch.device:
     return torch.device('cpu')
 
 
+# Alias para compatibilidad
+get_optimal_device = get_device
+
+
 def print_device_info():
     """Imprime información del dispositivo disponible."""
     device = get_device()
