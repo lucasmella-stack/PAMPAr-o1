@@ -342,7 +342,7 @@ llarri-o1/
 **Segunda Cabeza** — Innovación en IA
 
 - 🌐 Web: [segundacabeza.com](https://segundacabeza.com)
-- 🤗 HuggingFace: [lucas-mella/llarri-o1](https://huggingface.co/lucas-mella/llarri-o1)
+- 🤗 HuggingFace: [lucas-mella/PAMPAr-o1](https://huggingface.co/lucas-mella/PAMPAr-o1)
 - 📂 GitHub: [lucasmella-stack/llarri-o1](https://github.com/lucasmella-stack/llarri-o1)
 
 ---

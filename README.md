@@ -24,7 +24,7 @@ tags:
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://python.org)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-orange.svg)](https://pytorch.org)
 
-**[Español](README.es.md)** | **[Architecture](docs/architecture/ARCHITECTURE.md)** | **[HuggingFace](https://huggingface.co/lucasmella-stack/pampar)**
+**[Español](README.es.md)** | **[Architecture](docs/architecture/ARCHITECTURE.md)** | **[HuggingFace](https://huggingface.co/lucas-mella/PAMPAr-o1)**
 
 </div>
 
