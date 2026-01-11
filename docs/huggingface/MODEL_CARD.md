@@ -7,189 +7,225 @@ library_name: pytorch
 tags:
 - pytorch
 - language-model
+- cerebral
+- territorial
+- brain-inspired
+- interpretable
+- modular
 - research
-- experimental
-- fractal
-- parameter-sharing
-- early-exit
-- efficient-transformers
-- adaptive-compute
-- hierarchical-tokenization
 pipeline_tag: text-generation
+model-index:
+- name: PampaR-v9
+  results:
+  - task:
+      type: text-generation
+    dataset:
+      name: WikiText-103
+      type: wikitext
+    metrics:
+    - name: Perplexity
+      type: perplexity
+      value: 57.1
+    - name: Parameters
+      type: params
+      value: 6834586
 ---
 
-# 🧠 LLARRI-O1 — Fractal Language Model
+# 🦙 PampaR v9 — Cerebral Language Model
 
 <div align="center">
 
-*"Mix first, process with neighbors — from small to large"*
+*"An artificial brain where territories collaborate through frontiers"*
 
 [![License](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-orange.svg)](https://pytorch.org)
 
-**[Español](MODEL_CARD.es.md)** | **[GitHub](https://github.com/lucasmella-stack/llarri-o1)** | **[Full Documentation](https://github.com/lucasmella-stack/llarri-o1/blob/main/docs/INNOVATIONS.md)**
+**[Español](MODEL_CARD.es.md)** | **[GitHub](https://github.com/lucasmella-stack/llarri-o1)** | **[Architecture Docs](https://github.com/lucasmella-stack/llarri-o1/blob/main/docs/architecture/ARCHITECTURE.md)**
 
 </div>
 
 ---
 
-## What is LLARRI-O1?
+## 📄 Documentation PDFs
 
-LLARRI-O1 is an **experimental language model** that reimagines neural network processing through a **6-box architecture** inspired by CPU cache hierarchies (L1/L2/L3).
+<table>
+<tr>
+<td width="50%" align="center">
 
-Instead of the traditional Transformer pattern (attention → full FFN → repeat), LLARRI:
+### 🏗️ Architecture
+<a href="https://github.com/lucasmella-stack/llarri-o1/blob/main/diagrams/v9-territorial/PampaR_v9_Arquitectura_Territorial.pdf">
+<img src="https://img.shields.io/badge/PDF-Architecture-red?style=for-the-badge&logo=adobe" alt="Architecture PDF"/>
+</a>
 
-1. 🔀 **Mixes globally** (attention to see what's relevant)
-2. 📍 **Processes nearby first** (small/cheap compute)
-3. 📈 **Expands only if needed** (progressive compute)
-4. 🚀 **Exits early when confident** (saves resources)
+</td>
+<td width="50%" align="center">
+
+### 📊 Benchmarks
+<a href="https://github.com/lucasmella-stack/llarri-o1/blob/main/diagrams/v9-territorial/PampaR_v9_Benchmarks_Comparacion.pdf">
+<img src="https://img.shields.io/badge/PDF-Benchmarks-blue?style=for-the-badge&logo=adobe" alt="Benchmarks PDF"/>
+</a>
+
+</td>
+</tr>
+</table>
 
 ---
 
-## Traditional vs LLARRI
+## What is PampaR v9?
+
+> **"PampaR is an artificial brain where the thalamus orchestrates tokens toward specialized territories (Expressive, Contextual, Formal, Structural) that collaborate via bidirectional frontiers, combining explicit rules (LLAVES 70%) with learned attention (30%) to generate language."**
+
+PampaR v9 is a **brain-inspired language model** with a unique **territorial architecture**:
+
+- **4 Specialized Territories** (groupings of related neural modules)
+- **6 Bidirectional Frontiers** (learned inter-territory connections)
+- **1 Tálamo** (orchestrator with hybrid rule-based + neural routing)
+
+---
+
+## Architecture: Territorial Processing
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│              TRADITIONAL TRANSFORMER                        │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│   Input ──► [Attention] ──► [FFN 4x] ──► Output            │
-│                                                             │
-│   • Fixed compute per layer                                 │
-│   • No early exit                                           │
-│   • Same cost for ALL tokens                                │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────────────┐
-│              LLARRI-O1 (6 BOXES)                            │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│   Input ──► [MIX] ──► [PROCESS] ──► [EVALUATE] ──► Output  │
-│                        0.5x→1.0x      early exit?           │
-│                                                             │
-│   Box 1: MIX (Attention) ─────────────────────────────────► │
-│   Box 2: PROCESS nearby (0.5x FFN) ──► EXIT? ──────────────►│
-│   Box 3: PROCESS medium (0.75x FFN) ──► EXIT? ─────────────►│
-│   Box 4: PROCESS far (1.0x FFN) ───────────────────────────►│
-│   Box 6: OUTPUT ◄──────────────────────────────────────────►│
-│                                                             │
-│   • Adaptive compute (easy inputs exit early)               │
-│   • Progressive cost (0.5x → 0.75x → 1.0x)                  │
-│   • Like CPU cache: L1 (fast) → L2 → L3 (slow)              │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
+Input → Embedding → [BloqueTerrritorial ×N] → LM Head → Output
+                              ↓
+                  Tálamo (LLAVES 70% + Atención 30%)
+                              ↓
+        ┌─────────────────────┴─────────────────────┐
+        │                                           │
+        ▼                                           ▼
+┌───────────────┐                        ┌───────────────┐
+│   EXPRESIVO   │◄────── Frontera ──────►│  CONTEXTUAL   │
+│ Lang + Creat  │                        │   Contexto    │
+└───────┬───────┘                        └───────┬───────┘
+        │                                        │
+        │◄─────── Fronteras Bidirec ────────────►│
+        │                                        │
+┌───────▼───────┐                        ┌───────▼───────┐
+│    FORMAL     │◄────── Frontera ──────►│ ESTRUCTURAL   │
+│    Lógica     │                        │ Patrón + Mat  │
+└───────────────┘                        └───────────────┘
+                              ↓
+                       Axiomas (reasoning)
 ```
 
----
+### 4 Territories
 
-## 8 Key Innovations
+| Territory | Modules | Function |
+|-----------|---------|----------|
+| **Expresivo** | Lenguaje + Creatividad | Fluent text generation, novel ideas |
+| **Contextual** | Contexto | Working memory, coherence |
+| **Formal** | Lógica | Logical reasoning, rules |
+| **Estructural** | Patrones + Matemáticas | Sequences, numbers, patterns |
 
-| Acronym | Name | What it does |
-|---------|------|--------------|
-| **TT** | Transmutative Tokenization | Multi-granularity bytes (2→4→8→16) |
-| **ECN** | Compositional Level Embeddings | 24x memory reduction |
-| **PFH** | Fractal Hybrid Positions | Position + level awareness |
-| **MPC** | Mix → Process Nearby | Core architecture philosophy |
-| **FPD** | Distance-Progressive FFN | 0.5x → 0.75x → 1.0x expansion |
-| **EEM** | Multi-stage Early Exit | Exit at box AND fractal level |
-| **CGC** | Gated Box Contributions | Learned contribution control |
-| **CEB** | Evolutionary Binary Cache | L1/L2/L3 cache hierarchy |
+### 6 Bidirectional Frontiers
 
-*Names proposed by founder Lucas Ricardo Mella Chillemi*
-
-📖 **[See full diagrams and comparisons →](https://github.com/lucasmella-stack/llarri-o1/blob/main/docs/INNOVATIONS.md)**
-
----
-
-## Comparison Table
-
-| Aspect | Traditional | LLARRI-O1 |
-|--------|-------------|-----------|
-| **Tokenization** | BPE (fixed vocab) | Bytes + hierarchical levels |
-| **Embeddings** | 50K × 768 = 38M | 256 × 64 + MLPs = ~400K |
-| **FFN size** | Always 4x | 0.5x → 0.75x → 1.0x |
-| **Early exit** | Rare/none | Built-in per box |
-| **Compute** | Fixed | Adaptive |
-| **Memory** | ~500 MB | ~3.8 MB |
+| Connection | Strength | Function |
+|------------|----------|----------|
+| Expresivo ↔ Contextual | 0.8 | Narrative coherence |
+| Expresivo ↔ Formal | 0.5 | Argumentation |
+| Expresivo ↔ Estructural | 0.4 | Structured creativity |
+| Contextual ↔ Formal | 0.6 | Logical context |
+| Contextual ↔ Estructural | 0.5 | Pattern memory |
+| Formal ↔ Estructural | 0.7 | Mathematical logic |
 
 ---
 
-## Model Details
+## Key Innovation: Hybrid Routing (LLAVES)
+
+The **Tálamo** routes tokens using:
+
+- **LLAVES (70%)**: Explicit rules for known patterns
+  - "el", "la", "the" → Language territory
+  - "0-9", "+", "=" → Mathematics territory
+  
+- **Learned Attention (30%)**: Neural network for novel patterns
+
+**Why hybrid?** Provides **interpretability** — you can see exactly why a token was routed to a territory.
+
+---
+
+## Performance
 
 | Property | Value |
 |----------|-------|
-| **Author** | Lucas Ricardo Mella Chillemi |
-| **Organization** | Segunda Cabeza |
-| **Coordinator** | Alvaro |
-| **License** | AGPL-3.0-or-later |
-| **Parameters** | ~544K |
-| **Memory** | ~3.8 MB |
-| **Version** | 2.0.0 |
+| **Parameters** | 6,834,586 |
+| **Validation Loss** | 4.05 |
+| **Perplexity** | 57.1 |
+| **Training Data** | WikiText-103 |
+| **VRAM Usage** | 110 MB |
+
+### Comparison
+
+| Model | Parameters | Perplexity | Efficiency |
+|-------|-----------|------------|------------|
+| LSTM baseline | ~10M | 100-120 | 0.1M/PPL |
+| **PampaR v9** | **6.8M** | **57.1** | **0.12M/PPL** ✨ |
+| Transformer (small) | 44M | 65 | 0.68M/PPL |
+| GPT-2 Small | 124M | 29-35 | 4M/PPL |
 
 ---
 
 ## Quick Start
 
 ```python
-from llarri_o1 import LLARRILanguageModel, LLARRIConfig
+import torch
+from pampar.cerebro import PampaR
+from pampar.config import LOCAL_4GB
+import sentencepiece as sp
 
-# Create model
-config = LLARRIConfig(
-    embed_dim=64,
-    niveles=[2, 4, 8, 16],
-    num_heads=4,
-    ffn_expansion=2.0,
-    num_vecinos=3,
-    umbral_confianza=0.7
-)
+# Load
+tok = sp.SentencePieceProcessor()
+tok.Load('data/tokenizer/llarri_bpe.model')
 
-model = LLARRILanguageModel(config)
+model = PampaR(LOCAL_4GB).cuda()
+ckpt = torch.load('checkpoints/pampar_best.pt', weights_only=False)
+model.load_state_dict(ckpt['model'])
+model.eval()
 
-# Generate text
-output = model.generate(
-    prompt="Hello",
-    max_new_tokens=50,
-    temperatura=0.8,
-    top_k=40
-)
-print(output)
+# Generate
+prompt = "The history of"
+ids = tok.Encode(prompt)
+x = torch.tensor([ids]).cuda()
+
+with torch.no_grad():
+    for _ in range(50):
+        out = model(x)
+        next_id = out['logits'][0, -1].argmax().item()
+        x = torch.cat([x, torch.tensor([[next_id]]).cuda()], dim=1)
+
+print(tok.Decode(x[0].tolist()))
 ```
 
 ---
 
-## Current Status
+## Model Configurations
 
-| Component | Status |
-|-----------|--------|
-| Transmutative Tokenizer (TT) | ✅ Complete |
-| Compositional Embeddings (ECN) | ✅ Complete |
-| Fractal Positions (PFH) | ✅ Complete |
-| 6-Box Block (MPC + FPD) | ✅ Complete |
-| Early Exit (EEM) | ✅ Complete |
-| Gated Contributions (CGC) | ✅ Complete |
-| Binary Cache (CEB) | ✅ Complete |
-| End-to-end generation | ✅ Working |
-| Training | 🔄 In progress |
+| Config | VRAM | Params | Dim | Layers |
+|--------|------|--------|-----|--------|
+| LOCAL_4GB | 4GB | ~6.8M | 128 | 3 |
+| SERVER_8GB | 8GB | ~25M | 256 | 4 |
+| SERVER_24GB | 24GB | ~100M | 512 | 6 |
+| SERVER_80GB | 80GB | ~300M | 768 | 8 |
 
 ---
 
 ## Intended Use
 
-- ✅ Research on efficient transformer architectures
-- ✅ Exploring adaptive compute mechanisms
-- ✅ Educational purposes
-- ⚠️ Not production-ready (untrained)
+- ✅ Research on brain-inspired neural architectures
+- ✅ Exploring interpretable routing mechanisms
+- ✅ Efficient language modeling on limited hardware
+- ⚠️ Not production-ready for commercial applications
 
 ---
 
 ## Citation
 
 ```bibtex
-@software{llarri_o1,
+@software{pampar_v9,
   author = {Mella Chillemi, Lucas Ricardo},
-  title = {LLARRI-O1: Fractal Language Model with Neighbor-Progressive Processing},
+  title = {PampaR: Cerebral Language Model with Territorial Architecture},
   year = {2026},
+  version = {9.0.0},
   organization = {Segunda Cabeza},
   url = {https://github.com/lucasmella-stack/llarri-o1}
 }
@@ -200,23 +236,20 @@ print(output)
 ## Links
 
 - 📂 **GitHub:** [lucasmella-stack/llarri-o1](https://github.com/lucasmella-stack/llarri-o1)
-- 📖 **Innovations:** [Full documentation with diagrams](https://github.com/lucasmella-stack/llarri-o1/blob/main/docs/INNOVATIONS.md)
-- 🏗️ **Architecture:** [Technical details](https://github.com/lucasmella-stack/llarri-o1/blob/main/docs/architecture/ARCHITECTURE.md)
+- 📄 **Architecture PDF:** [View](https://github.com/lucasmella-stack/llarri-o1/blob/main/diagrams/v9-territorial/PampaR_v9_Arquitectura_Territorial.pdf)
+- 📊 **Benchmarks PDF:** [View](https://github.com/lucasmella-stack/llarri-o1/blob/main/diagrams/v9-territorial/PampaR_v9_Benchmarks_Comparacion.pdf)
 
 ---
 
 ## Contact
 
 - **Lucas Ricardo Mella Chillemi** — lucas@segundacabeza.com
-- **Alvaro (Coordinator)** — alvaro@segundacabeza.com
 - **Web:** [segundacabeza.com](https://segundacabeza.com)
 
 ---
 
 <div align="center">
 
-**Made with 💜 by Segunda Cabeza**
-
-*"Mix first, process with neighbors — from small to large"*
+**Made with 💜 by Segunda Cabeza 🇦🇷**
 
 </div>
