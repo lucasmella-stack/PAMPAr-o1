@@ -193,7 +193,8 @@ def entrenar_fragmento(fragmento_num: int, config: ConfigPampaR, resume: bool = 
             # Forward pass con mixed precision
             if use_amp:
                 with autocast('cuda'):
-                    logits = model(input_ids)
+                    outputs = model(input_ids)
+                    logits = outputs['logits']
                     logits = logits.view(-1, config.vocab_size)
                     targets_flat = targets.view(-1)
                     loss = criterion(logits, targets_flat)
@@ -201,7 +202,8 @@ def entrenar_fragmento(fragmento_num: int, config: ConfigPampaR, resume: bool = 
                 
                 scaler.scale(loss).backward()
             else:
-                logits = model(input_ids)
+                outputs = model(input_ids)
+                logits = outputs['logits']
                 logits = logits.view(-1, config.vocab_size)
                 targets_flat = targets.view(-1)
                 loss = criterion(logits, targets_flat)
