@@ -56,19 +56,28 @@ def cargar_corpus(
     """
     print(f"📖 Cargando corpus desde {path}...")
     
+    tokens = []
+    chunk_size = 1_000_000  # Procesar 1M caracteres a la vez
+    
     with open(path, 'r', encoding='utf-8') as f:
-        text = f.read()
+        # Leer en chunks para evitar problemas de memoria
+        while True:
+            chunk = f.read(chunk_size)
+            if not chunk:
+                break
+            
+            # Tokenizar chunk
+            chunk_tokens = tokenizer.Encode(chunk)
+            tokens.extend(chunk_tokens)
+            
+            print(f"   Tokens cargados: {len(tokens):,}", end='\r')
+            
+            # Verificar si ya tenemos suficientes
+            if max_tokens and len(tokens) >= max_tokens:
+                tokens = tokens[:max_tokens]
+                break
     
-    print(f"   Caracteres: {len(text):,}")
-    
-    # Tokenizar
-    tokens = tokenizer.Encode(text)
-    print(f"   Tokens totales: {len(tokens):,}")
-    
-    # Limitar si es necesario
-    if max_tokens and len(tokens) > max_tokens:
-        tokens = tokens[:max_tokens]
-        print(f"   Tokens limitados a: {len(tokens):,}")
+    print(f"\n✅ Tokens totales: {len(tokens):,}")
     
     return tokens
 
