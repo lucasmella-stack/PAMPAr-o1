@@ -175,7 +175,7 @@ def entrenar_fragmento(fragmento_num: int, config: ConfigPampaR, resume: bool = 
     
     # Guardar cada N steps
     save_every = 500
-    log_every = 50
+    log_every = 10  # Log más frecuente para ver progreso
     
     for epoch in range(start_epoch, start_epoch + epochs):
         model.train()
