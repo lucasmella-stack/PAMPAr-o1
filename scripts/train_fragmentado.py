@@ -137,7 +137,7 @@ def entrenar_fragmento(fragmento_num: int, config: ConfigPampaR, resume: bool = 
     print(f"✅ Tokens cargados: {len(tokens):,}")
     
     # Crear dataloader
-    batch_size = 4
+    batch_size = 2  # Reducido de 4 a 2 para ahorrar VRAM
     seq_length = config.max_seq_len
     dataloader = crear_dataloader(tokens, batch_size, seq_length, shuffle=True)
     print(f"📦 Batches por epoch: {len(dataloader):,}")
@@ -155,7 +155,7 @@ def entrenar_fragmento(fragmento_num: int, config: ConfigPampaR, resume: bool = 
     use_amp = config.use_mixed_precision and device.type == 'cuda'
     
     # Gradient accumulation
-    accum_steps = 8
+    accum_steps = 16  # Aumentado de 8 a 16 para compensar batch_size=2
     effective_batch = batch_size * accum_steps
     print(f"🔄 Gradient accumulation: {accum_steps} (effective batch: {effective_batch})")
     
@@ -360,6 +360,7 @@ def main():
     
     # Configuración optimizada para 4GB VRAM
     config = LOCAL_4GB_MAX
+    config.use_gradient_checkpointing = True  # ACTIVADO: Reduce VRAM drásticamente a costa de velocidad
     
     if args.max:
         # Entrenar todos los fragmentos
