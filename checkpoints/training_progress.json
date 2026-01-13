@@ -1,8 +1,8 @@
 {
-  "fragmento_actual": 0,
-  "tokens_totales_vistos": 124996608,
-  "mejor_loss": 4.135329595042236,
-  "epochs_completados": 7,
+  "fragmento_actual": 3,
+  "tokens_totales_vistos": 194995200,
+  "mejor_loss": 3.9261947419317713,
+  "epochs_completados": 9,
   "historial": [
     {
       "fragmento": 1,
@@ -52,6 +52,20 @@
       "loss": 4.135329595042236,
       "tokens": 124996608,
       "timestamp": "2026-01-12T19:49:21.286323"
+    },
+    {
+      "fragmento": 3,
+      "epoch": 8,
+      "loss": 4.016927590842147,
+      "tokens": 159995904,
+      "timestamp": "2026-01-13T00:30:49.122397"
+    },
+    {
+      "fragmento": 3,
+      "epoch": 9,
+      "loss": 3.9261947419317713,
+      "tokens": 194995200,
+      "timestamp": "2026-01-13T05:11:25.328153"
     }
   ]
 }
