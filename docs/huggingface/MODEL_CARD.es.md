@@ -38,16 +38,16 @@ pipeline_tag: text-generation
 <td width="50%" align="center">
 
 ### 🏗️ Arquitectura
-<a href="https://github.com/lucasmella-stack/PAMPAr-o1/blob/main/diagrams/v9-territorial/PampaR_v9_Arquitectura_Territorial.pdf">
-<img src="https://img.shields.io/badge/PDF-Arquitectura-red?style=for-the-badge&logo=adobe" alt="PDF Arquitectura"/>
+<a href="https://htmlpreview.github.io/?https://github.com/lucasmella-stack/PAMPAr-o1/blob/main/diagrams/PampaR_Arquitectura.html">
+<img src="https://img.shields.io/badge/Ver-Arquitectura-1a1a1a?style=for-the-badge&logo=readme" alt="Arquitectura"/>
 </a>
 
 </td>
 <td width="50%" align="center">
 
 ### 📊 Benchmarks
-<a href="https://github.com/lucasmella-stack/PAMPAr-o1/blob/main/diagrams/v9-territorial/PampaR_v9_Benchmarks_Comparacion.pdf">
-<img src="https://img.shields.io/badge/PDF-Benchmarks-blue?style=for-the-badge&logo=adobe" alt="PDF Benchmarks"/>
+<a href="https://htmlpreview.github.io/?https://github.com/lucasmella-stack/PAMPAr-o1/blob/main/diagrams/PampaR_Benchmark_ES.html">
+<img src="https://img.shields.io/badge/Ver-Benchmarks-1a1a1a?style=for-the-badge&logo=readme" alt="Benchmarks"/>
 </a>
 
 </td>

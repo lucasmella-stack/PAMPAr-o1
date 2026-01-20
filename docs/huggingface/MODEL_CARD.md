@@ -53,16 +53,16 @@ model-index:
 <td width="50%" align="center">
 
 ### 🏗️ Architecture
-<a href="https://github.com/lucasmella-stack/PAMPAr-o1/blob/main/diagrams/v9-territorial/PampaR_v9_Arquitectura_Territorial.pdf">
-<img src="https://img.shields.io/badge/PDF-Architecture-red?style=for-the-badge&logo=adobe" alt="Architecture PDF"/>
+<a href="https://htmlpreview.github.io/?https://github.com/lucasmella-stack/PAMPAr-o1/blob/main/diagrams/PampaR_Architecture.html">
+<img src="https://img.shields.io/badge/View-Architecture-1a1a1a?style=for-the-badge&logo=readme" alt="Architecture"/>
 </a>
 
 </td>
 <td width="50%" align="center">
 
 ### 📊 Benchmarks
-<a href="https://github.com/lucasmella-stack/PAMPAr-o1/blob/main/diagrams/v9-territorial/PampaR_v9_Benchmarks_Comparacion.pdf">
-<img src="https://img.shields.io/badge/PDF-Benchmarks-blue?style=for-the-badge&logo=adobe" alt="Benchmarks PDF"/>
+<a href="https://htmlpreview.github.io/?https://github.com/lucasmella-stack/PAMPAr-o1/blob/main/diagrams/PampaR_Benchmark.html">
+<img src="https://img.shields.io/badge/View-Benchmarks-1a1a1a?style=for-the-badge&logo=readme" alt="Benchmarks"/>
 </a>
 
 </td>
