@@ -10,8 +10,7 @@ Modelo con 6 módulos especializados inspirados en el cerebro:
 - Hipocampo: memoria con LSH
 - Integrador: combina outputs respetando modulación
 
-Autor: Lucas Ricardo Mella Chillemi (Segunda Cabeza)
-Coordinador: Alvaro (Segunda Cabeza)
+Autor: Lucas Ricardo Mella Chillemi (Independent Researcher)
 """
 
 import os

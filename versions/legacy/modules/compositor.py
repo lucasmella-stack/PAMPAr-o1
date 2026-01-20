@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # SPDX-FileCopyrightText: 2025 Segunda Cabeza
-# Author: Lucas Ricardo Mella Chillemi (lucas@segundacabeza.com)
-# Coordinator: Alvaro (alvaro@segundacabeza.com)
+# Author: Lucas Ricardo Mella Chillemi (lucas.mella@outlook.com)
 """
 Módulo Compositor - Cajas 7, 8, 9 de LLARRI v4.
 

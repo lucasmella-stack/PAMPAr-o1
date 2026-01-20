@@ -81,7 +81,7 @@ class AdaptiveTrainer:
         >>> trainer = AdaptiveTrainer(model, train_loader, test_loader)
         >>> trainer.train(epochs=10)  # Auto-detecta el mejor modo
     
-    Author: Lucas Ricardo Mella Chillemi (Segunda Cabeza)
+    Author: Lucas Ricardo Mella Chillemi (Independent Researcher)
     """
     
     def __init__(

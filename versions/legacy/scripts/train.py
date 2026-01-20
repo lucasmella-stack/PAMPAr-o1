@@ -15,7 +15,7 @@ Uso:
     # Forzar modo progresivo (por niveles)
     python scripts/train.py --epochs 10 --mode progressive
 
-Author: Lucas Ricardo Mella Chillemi (Segunda Cabeza)
+Author: Lucas Ricardo Mella Chillemi (Independent Researcher)
 """
 
 import argparse

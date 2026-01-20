@@ -19,8 +19,7 @@ Similar a caché L1/L2/L3:
 - ...
 - Nivel 2 = RAM (más lento, todo el detalle)
 
-Author: Lucas Ricardo Mella Chillemi (Segunda Cabeza)
-Coordinator: Alvaro (Segunda Cabeza)
+Author: Lucas Ricardo Mella Chillemi (Independent Researcher)
 """
 
 import torch

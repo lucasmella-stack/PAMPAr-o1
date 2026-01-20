@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: MIT
-# Copyright (c) 2025 Segunda Cabeza
-# Author: Lucas Ricardo Mella Chillemi <lucas@segundacabeza.com>
-# Coordinator: Alvaro <alvaro@segundacabeza.com>
+# Copyright (c) 2025 Lucas Ricardo Mella Chillemi
+# Author: Lucas Ricardo Mella Chillemi <lucas.mella@outlook.com>
 """
 LLARRI v7 - Modelo de Lenguaje con Arquitectura Cerebral
 

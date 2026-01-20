@@ -13,8 +13,7 @@ Tokenización jerárquica donde:
 Los cuadrantes (4 elementos) se combinan para subir de nivel.
 Cache guarda tokens frecuentes para lookup directo.
 
-Author: Lucas Ricardo Mella Chillemi (Segunda Cabeza)
-Coordinator: Alvaro (Segunda Cabeza)
+Author: Lucas Ricardo Mella Chillemi (Independent Researcher)
 """
 
 import torch

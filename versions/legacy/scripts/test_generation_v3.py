@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # SPDX-FileCopyrightText: 2025 Segunda Cabeza
-# Author: Lucas Ricardo Mella Chillemi (lucas@segundacabeza.com)
-# Coordinator: Alvaro (alvaro@segundacabeza.com)
+# Author: Lucas Ricardo Mella Chillemi (lucas.mella@outlook.com)
 """Test de generación de texto con LLARRI v3 Multiescala."""
 
 import torch

@@ -34,9 +34,8 @@ class LlarriO1(nn.Module):
         >>> x = torch.randn(32, 784)  # Batch de 32 imágenes MNIST
         >>> output = model(x)  # Shape: (32, 10)
     
-    Author: Lucas Ricardo Mella Chillemi (Segunda Cabeza)
-    Coordinator: Alvaro (Segunda Cabeza)
-    """
+    Author: Lucas Ricardo Mella Chillemi (Independent Researcher)
+        """
     
     def __init__(self, config: Optional[Config] = None):
         """
