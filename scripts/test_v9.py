@@ -5,6 +5,10 @@
 Test básico de PampaR v9
 """
 
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 import torch
 from pampar import PampaR, LOCAL_4GB
 
