@@ -10,11 +10,11 @@
 
 **Abstract**:
 
-We present PampaR, an experimental language model architecture inspired by the functional organization of the human brain. Unlike standard transformer architectures that treat all computations uniformly, PampaR explores Territorial Processing where specialized neural modules are organized into four functional territories (Expressive, Contextual, Formal, Structural) coordinated by a central Thalamus that routes tokens using a hybrid approach: 70% explicit rules (LLAVES) and 30% learned attention. 
+I present PampaR, an experimental language model architecture inspired by the functional organization of the human brain. Unlike standard transformer architectures that treat all computations uniformly, PampaR explores Territorial Processing where specialized neural modules are organized into four functional territories (Expressive, Contextual, Formal, Structural) coordinated by a central Thalamus that routes tokens using a hybrid approach: 70% explicit rules (LLAVES) and 30% learned attention. 
 
-Our preliminary experiments on WikiText-103 suggest that this architecture can achieve perplexity of approximately 45 with only 14 million parameters, comparing favorably to LSTM baselines (69.1 PPL, 24M params) and Transformer-XL Small (54.5 PPL, 24M params). Notably, the entire model was trained on consumer hardware (NVIDIA GTX 1650 with 4GB VRAM), demonstrating potential efficiency gains of the territorial approach.
+My preliminary experiments on WikiText-103 suggest that this architecture can achieve perplexity of approximately 45 with only 14 million parameters, comparing favorably to LSTM baselines (69.1 PPL, 24M params) and Transformer-XL Small (54.5 PPL, 24M params). Notably, the entire model was trained on consumer hardware (NVIDIA GTX 1650 with 4GB VRAM), demonstrating potential efficiency gains of the territorial approach.
 
-We acknowledge significant limitations: results are from a single training run on one dataset, without ablation studies or downstream task evaluation. The hybrid LLAVES routing system provides qualitative interpretability advantages, but these claims require rigorous validation. We release this technical report and all code under AGPL-3.0 license to document our approach, invite community feedback, and enable reproducibility. This work represents an early exploration of brain-inspired language modeling by an independent researcher.
+I acknowledge significant limitations: results are from a single training run on one dataset, without ablation studies or downstream task evaluation. The hybrid LLAVES routing system provides qualitative interpretability advantages, but these claims require rigorous validation. I release this technical report and all code under AGPL-3.0 license to document my approach, invite community feedback, and enable reproducibility. This work represents an early exploration of brain-inspired language modeling by an independent researcher.
 
 **Primary Category**: cs.CL (Computation and Language)
 
@@ -84,7 +84,7 @@ We acknowledge significant limitations: results are from a single training run o
 2. **Performance**: PPL ~45 vs LSTM 69.1, Transformer-XL 54.5
 3. **Interpretability**: LLAVES system allows inspection of routing decisions
 4. **Accessibility**: Trained on consumer GPU (4GB VRAM)
-5. **Novelty**: First territorial architecture for language modeling (to our knowledge)
+5. **Novelty**: First territorial architecture for language modeling (to my knowledge)
 
 ---
 

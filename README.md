@@ -154,7 +154,7 @@ The tálamo routes tokens using a **hybrid system**:
 - **70% LLAVES** (explicit rules): Pattern matching for known token types
 - **30% Learned attention**: Neural network for novel patterns
 
-This provides **interpretability** (we can see which territory processes each token) while maintaining **flexibility** (the model learns to route unknown patterns).
+This provides **interpretability** (you can inspect which territory processes each token) while maintaining **flexibility** (the model learns to route unknown patterns).
 
 ---
 

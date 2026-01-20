@@ -12,11 +12,11 @@ January 2026
 
 ## Abstract
 
-We present PampaR, an **experimental** language model architecture inspired by the functional organization of the human brain. Unlike standard transformer architectures that treat all computations uniformly, PampaR explores **Territorial Processing** where specialized neural modules are organized into functional territories (Expressive, Contextual, Formal, Structural) coordinated by a central **Thalamus** (Tálamo) that routes tokens using a hybrid approach: 70% explicit rules (LLAVES) and 30% learned attention. 
+I present PampaR, an **experimental** language model architecture inspired by the functional organization of the human brain. Unlike standard transformer architectures that treat all computations uniformly, PampaR explores **Territorial Processing** where specialized neural modules are organized into functional territories (Expressive, Contextual, Formal, Structural) coordinated by a central **Thalamus** (Tálamo) that routes tokens using a hybrid approach: 70% explicit rules (LLAVES) and 30% learned attention. 
 
-Our **preliminary experiments** on WikiText-103 suggest that this architecture can achieve **perplexity of approximately 45** with only **14M parameters**, comparing favorably to LSTM (69.1 PPL) and Transformer-XL Small (54.5 PPL) baselines that use 24M parameters. The model was trained entirely on consumer hardware (GTX 1650 4GB VRAM), demonstrating potential efficiency gains of the territorial approach.
+My **preliminary experiments** on WikiText-103 suggest that this architecture can achieve **perplexity of approximately 45** with only **14M parameters**, comparing favorably to LSTM (69.1 PPL) and Transformer-XL Small (54.5 PPL) baselines that use 24M parameters. The model was trained entirely on consumer hardware (GTX 1650 4GB VRAM), demonstrating potential efficiency gains of the territorial approach.
 
-**Important caveats**: These results are from a single training run on one dataset. Further validation with multiple runs, ablation studies, and evaluation on diverse benchmarks is ongoing. We release this report to document our approach and invite community feedback.
+**Important caveats**: These results are from a single training run on one dataset. Further validation with multiple runs, ablation studies, and evaluation on diverse benchmarks is ongoing. I release this report to document my approach and invite community feedback.
 
 ---
 
@@ -40,7 +40,7 @@ PampaR (Pampa Reasoning) draws inspiration from this organization, exploring a *
 - **Bidirectional frontiers** allow inter-territory communication
 - **Explicit rules** (LLAVES/Keys) provide interpretable routing
 
-**This work is exploratory**: We aim to investigate whether brain-inspired functional specialization can improve efficiency and interpretability in small-scale language models. Our current implementation represents one possible instantiation of these ideas.
+**This work is exploratory**: I aim to investigate whether brain-inspired functional specialization can improve efficiency and interpretability in small-scale language models. My current implementation represents one possible instantiation of these ideas.
 
 ---
 
@@ -106,7 +106,7 @@ LLAVES are explicit, interpretable routing rules based on token patterns:
 | Context | pronouns, references, temporal markers |
 | Creativity | adjectives, metaphors, novel combinations |
 
-This provides **interpretability**: we can directly inspect why a token was routed to a specific territory.
+This provides **interpretability**: one can directly inspect why a token was routed to a specific territory.
 
 ### 2.4 Bidirectional Frontiers
 
@@ -172,7 +172,7 @@ ConfigPampaR(
 
 ### 3.3 Fragmented Training
 
-Due to hardware constraints, we implement **fragmented training**:
+Due to hardware constraints, I implement **fragmented training**:
 
 | Fragment | Tokens | Epochs | Cumulative |
 |----------|--------|--------|------------|
@@ -207,9 +207,9 @@ Due to hardware constraints, we implement **fragmented training**:
 | **PampaR v9** | **14M** | **~45** | **2026** |
 | GPT-2 Small | 125M | 35.1 | 2019 |
 
-**Preliminary finding**: Our results suggest PampaR may achieve **comparable or better perplexity than Transformer-XL Small** with **42% fewer parameters**, trained entirely on consumer hardware.
+**Preliminary finding**: My results suggest PampaR may achieve **comparable or better perplexity than Transformer-XL Small** with **42% fewer parameters**, trained entirely on consumer hardware.
 
-> ⚠️ **Caveat**: This comparison has limitations. Our evaluation uses a single training run without confidence intervals. The baselines are from published papers with potentially different preprocessing. A rigorous comparison would require multiple runs and standardized evaluation protocols.
+> ⚠️ **Caveat**: This comparison has limitations. My evaluation uses a single training run without confidence intervals. The baselines are from published papers with potentially different preprocessing. A rigorous comparison would require multiple runs and standardized evaluation protocols.
 
 ### 4.3 Interpretability Analysis (Qualitative)
 
@@ -238,7 +238,7 @@ Token: "therefore" → LLAVES activation:
 
 ### 5.2 Limitations
 
-We acknowledge several significant limitations of this work:
+I acknowledge several significant limitations of this work:
 
 #### Experimental Design
 1. **Single Dataset**: Results reported only on WikiText-103; generalization to other domains (code, multilingual, scientific text) is untested
@@ -262,7 +262,7 @@ We acknowledge several significant limitations of this work:
 
 ### 5.3 Future Work
 
-We plan to address the limitations above through:
+I plan to address the limitations above through:
 
 #### Short-term (Ongoing)
 1. **Multi-dataset Validation**: Evaluate on Penn Treebank, C4, The Pile
@@ -285,21 +285,21 @@ We plan to address the limitations above through:
 
 ## 6. Conclusion
 
-We have presented PampaR, an **experimental** brain-inspired architecture that explores territorial processing for language modeling. Our preliminary results suggest that the combination of explicit routing rules (LLAVES) with learned attention may offer a promising direction for building efficient and more interpretable language models.
+I have presented PampaR, an **experimental** brain-inspired architecture that explores territorial processing for language modeling. My preliminary results suggest that the combination of explicit routing rules (LLAVES) with learned attention may offer a promising direction for building efficient and more interpretable language models.
 
-**What we claim**:
+**What I claim**:
 - The territorial architecture is a viable alternative to uniform transformer layers
 - Hybrid rule-based + learned routing is implementable and trainable
 - Preliminary results on WikiText-103 are encouraging (PPL ~45 with 14M params)
 - The approach may offer interpretability advantages worth investigating
 
-**What we do NOT claim**:
+**What I do NOT claim**:
 - That PampaR is definitively better than existing architectures
-- That our results generalize beyond WikiText-103
+- That my results generalize beyond WikiText-103
 - That the specific design choices (4 territories, 70% LLAVES) are optimal
 - That the interpretability benefits have been rigorously validated
 
-This work represents an early exploration of brain-inspired language modeling. We release all code under AGPL-3.0 license to enable community validation, criticism, and collaboration. We welcome feedback and contributions.
+This work represents an early exploration of brain-inspired language modeling. I release all code under AGPL-3.0 license to enable community validation, criticism, and collaboration. I welcome feedback and contributions.
 
 **Acknowledgments**: This work was conducted independently without institutional support or cloud compute resources. The entire model was trained on a consumer GPU (GTX 1650 4GB), demonstrating that meaningful ML research remains accessible to independent researchers.
 
