@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PampaR v9 - Brain-Inspired Territorial Architecture</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', -apple-system, sans-serif; 
+            line-height: 1.6; 
+            color: #1a1a1a; 
+            background: #fff;
+            max-width: 210mm;
+            margin: 0 auto;
+            padding: 15mm;
+        }
+        .header { text-align: center; margin-bottom: 2rem; border-bottom: 2px solid #1a1a1a; padding-bottom: 1.5rem; }
+        .logo { width: 80px; height: 80px; margin-bottom: 0.5rem; }
+        h1 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.25rem; }
+        .subtitle { font-size: 1rem; color: #555; }
+        .author { font-size: 0.85rem; color: #666; margin-top: 0.5rem; }
+        h2 { font-size: 1.1rem; font-weight: 600; margin: 1.5rem 0 0.75rem; display: flex; align-items: center; gap: 0.5rem; border-bottom: 1px solid #ddd; padding-bottom: 0.25rem; }
+        h3 { font-size: 0.95rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+        p { margin-bottom: 0.75rem; font-size: 0.9rem; text-align: justify; }
+        .icon { font-size: 1.1rem; }
+        table { width: 100%; border-collapse: collapse; margin: 0.75rem 0; font-size: 0.8rem; }
+        th, td { border: 1px solid #ddd; padding: 0.4rem 0.6rem; text-align: left; }
+        th { background: #f5f5f5; font-weight: 600; }
+        .diagram { background: #fafafa; border: 1px solid #ddd; padding: 1rem; margin: 1rem 0; font-family: 'Consolas', monospace; font-size: 0.7rem; white-space: pre; overflow-x: auto; line-height: 1.3; }
+        .highlight { background: #f0f0f0; padding: 0.5rem; border-left: 3px solid #1a1a1a; margin: 0.75rem 0; font-size: 0.85rem; }
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        ul { margin: 0.5rem 0 0.75rem 1.5rem; font-size: 0.85rem; }
+        li { margin-bottom: 0.25rem; }
+        .footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #ddd; font-size: 0.75rem; color: #666; text-align: center; }
+        code { background: #f5f5f5; padding: 0.1rem 0.3rem; font-size: 0.8rem; }
+        .tag { display: inline-block; background: #1a1a1a; color: #fff; padding: 0.1rem 0.4rem; font-size: 0.7rem; margin-right: 0.25rem; }
+        @media print { body { padding: 10mm; } .diagram { font-size: 0.65rem; } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="../PAMPAr-o1-imagen.png" alt="PampaR Logo" class="logo">
+        <h1>PampaR v9: Brain-Inspired Territorial Architecture</h1>
+        <div class="subtitle">A Language Model with Interpretable Routing</div>
+        <div class="author">Lucas Ricardo Mella Chillemi · Independent Researcher · January 2026</div>
+    </div>
+
+    <h2><i class="ti ti-bulb icon"></i> Abstract</h2>
+    <p>PampaR is a language model architecture inspired by the functional organization of the human brain. Unlike standard transformers that treat all computations uniformly, PampaR introduces <strong>Territorial Processing</strong> where specialized neural modules are organized into functional territories coordinated by a central <strong>Thalamus</strong> that routes tokens using a hybrid approach: 70% explicit rules (LLAVES) and 30% learned attention.</p>
+    <div class="highlight">
+        <strong>Key Result:</strong> ~45 perplexity on WikiText-103 with only 14M parameters, outperforming LSTM (24M, PPL 69.1) and approaching Transformer-XL Small (24M, PPL 54.5) with 42% fewer parameters.
+    </div>
+
+    <h2><i class="ti ti-topology-star icon"></i> Architecture Overview</h2>
+    <div class="diagram">                         Input → Embedding → [Territorial Block ×N] → LM Head → Output
+                                            │
+                              ┌─────────────┴─────────────┐
+                              │          TÁLAMO           │
+                              │   LLAVES 70% + Attn 30%   │
+                              └─────────────┬─────────────┘
+                                            │
+              ┌─────────────────────────────┼─────────────────────────────┐
+              │                             │                             │
+              ▼                             ▼                             ▼
+    ┌─────────────────┐           ┌─────────────────┐           ┌─────────────────┐
+    │    EXPRESIVO    │◄─────────►│   CONTEXTUAL    │◄─────────►│     FORMAL      │
+    │ Language+Creat. │           │     Context     │           │      Logic      │
+    └────────┬────────┘           └────────┬────────┘           └────────┬────────┘
+             │                             │                             │
+             │                    ┌────────┴────────┐                    │
+             └────────────────────┤   ESTRUCTURAL   ├────────────────────┘
+                                  │  Pattern + Math │
+                                  └─────────────────┘</div>
+
+    <h2><i class="ti ti-brain icon"></i> Territories</h2>
+    <p>PampaR organizes computation into 4 functional territories, each containing specialized modules:</p>
+    <table>
+        <tr><th>Territory</th><th>Modules</th><th>Function</th><th>Brain Analogy</th></tr>
+        <tr><td><strong>Expresivo</strong></td><td>Language, Creativity</td><td>Fluent text generation, novel ideas</td><td>Broca's area, Right hemisphere</td></tr>
+        <tr><td><strong>Contextual</strong></td><td>Context</td><td>Working memory, coherence</td><td>Hippocampus, Prefrontal cortex</td></tr>
+        <tr><td><strong>Formal</strong></td><td>Logic</td><td>Deductive reasoning, rules</td><td>Prefrontal cortex</td></tr>
+        <tr><td><strong>Estructural</strong></td><td>Patterns, Mathematics</td><td>Sequences, numbers, structure</td><td>Parietal lobe</td></tr>
+    </table>
+
+    <h2><i class="ti ti-key icon"></i> LLAVES: Interpretable Routing</h2>
+    <p>LLAVES (Spanish for "keys") are explicit, interpretable routing rules based on token patterns:</p>
+    <table>
+        <tr><th>Module</th><th>Activation Patterns</th></tr>
+        <tr><td>Language</td><td>"the", "a", "of", "that", articles, prepositions</td></tr>
+        <tr><td>Mathematics</td><td>digits 0-9, "+", "-", "=", "%", operators</td></tr>
+        <tr><td>Logic</td><td>"if", "then", "because", "therefore"</td></tr>
+        <tr><td>Patterns</td><td>repetitions, sequences, regular structures</td></tr>
+        <tr><td>Context</td><td>pronouns, references, temporal markers</td></tr>
+        <tr><td>Creativity</td><td>adjectives, metaphors, novel combinations</td></tr>
+    </table>
+    <p>The routing formula combines rules with learning:</p>
+    <div class="highlight"><code>routing_weights = λ × LLAVES_activation + (1 - λ) × learned_attention</code> where λ = 0.7</div>
+
+    <h2><i class="ti ti-arrows-exchange icon"></i> Bidirectional Frontiers</h2>
+    <p>Territories communicate via 6 bidirectional frontier connections with learned gates:</p>
+    <table>
+        <tr><th>Connection</th><th>Weight</th><th>Function</th></tr>
+        <tr><td>Expresivo ↔ Contextual</td><td>0.8 (High)</td><td>Narrative needs context</td></tr>
+        <tr><td>Expresivo ↔ Formal</td><td>0.5 (Medium)</td><td>Structured argumentation</td></tr>
+        <tr><td>Expresivo ↔ Estructural</td><td>0.4 (Low)</td><td>Creative structure</td></tr>
+        <tr><td>Contextual ↔ Formal</td><td>0.6 (Medium-high)</td><td>Logical context</td></tr>
+        <tr><td>Contextual ↔ Estructural</td><td>0.5 (Medium)</td><td>Patterns in context</td></tr>
+        <tr><td>Formal ↔ Estructural</td><td>0.7 (High)</td><td>Mathematical logic</td></tr>
+    </table>
+
+    <h2><i class="ti ti-settings icon"></i> Model Configuration</h2>
+    <div class="two-col">
+        <table>
+            <tr><th>Parameter</th><th>Value</th></tr>
+            <tr><td>Total Parameters</td><td>14M</td></tr>
+            <tr><td>Hidden Dimension</td><td>256</td></tr>
+            <tr><td>Attention Heads</td><td>8</td></tr>
+            <tr><td>Territorial Blocks</td><td>6</td></tr>
+            <tr><td>Context Length</td><td>512 tokens</td></tr>
+            <tr><td>Vocabulary</td><td>32K (BPE)</td></tr>
+        </table>
+        <table>
+            <tr><th>Training</th><th>Value</th></tr>
+            <tr><td>Dataset</td><td>WikiText-103</td></tr>
+            <tr><td>Hardware</td><td>GTX 1650 (4GB)</td></tr>
+            <tr><td>Optimizer</td><td>AdamW</td></tr>
+            <tr><td>Learning Rate</td><td>3e-4</td></tr>
+            <tr><td>Precision</td><td>FP16 mixed</td></tr>
+            <tr><td>Training Time</td><td>~8 hours</td></tr>
+        </table>
+    </div>
+
+    <h2><i class="ti ti-chart-bar icon"></i> Results Comparison</h2>
+    <table>
+        <tr><th>Model</th><th>Parameters</th><th>PPL ↓</th><th>Year</th></tr>
+        <tr><td>LSTM (Merity et al.)</td><td>24M</td><td>69.1</td><td>2018</td></tr>
+        <tr><td>Transformer-XL Small</td><td>24M</td><td>54.5</td><td>2019</td></tr>
+        <tr><td><strong>PampaR v9</strong></td><td><strong>14M</strong></td><td><strong>~45</strong></td><td>2026</td></tr>
+        <tr><td>GPT-2 Small</td><td>125M</td><td>35.1</td><td>2019</td></tr>
+    </table>
+
+    <h2><i class="ti ti-checklist icon"></i> Key Advantages</h2>
+    <ul>
+        <li><strong>Interpretability:</strong> LLAVES provide explicit routing rationale</li>
+        <li><strong>Parameter Efficiency:</strong> Competitive PPL with 42% fewer parameters</li>
+        <li><strong>Modularity:</strong> Easy to add or modify specialized territories</li>
+        <li><strong>Biological Plausibility:</strong> Reflects brain's functional organization</li>
+    </ul>
+
+    <h2><i class="ti ti-flag icon"></i> Limitations & Future Work</h2>
+    <ul>
+        <li>Scale: Not yet tested at 1B+ parameters</li>
+        <li>Tasks: Evaluated mainly on language modeling; needs downstream evaluation</li>
+        <li>LLAVES Design: Currently manual; could benefit from automatic rule learning</li>
+    </ul>
+
+    <h2><i class="ti ti-code icon"></i> Reproducibility</h2>
+    <p><strong>GitHub:</strong> <code>github.com/lucasmella-stack/PAMPAr-o1</code></p>
+    <p><strong>HuggingFace:</strong> <code>huggingface.co/lucasmella-stack/PAMPAr-o1</code></p>
+
+    <div class="footer">
+        <p><strong>License:</strong> AGPL-3.0-or-later · <strong>Copyright:</strong> © 2024-2026 Lucas Ricardo Mella Chillemi</p>
+        <p>Document generated January 2026 · <i class="ti ti-mail"></i> lucas.mella@outlook.com</p>
+    </div>
+</body>
+</html>

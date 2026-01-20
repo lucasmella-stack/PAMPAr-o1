@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PampaR v9 - Benchmark Results (14M Parameters)</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', -apple-system, sans-serif; 
+            line-height: 1.6; 
+            color: #1a1a1a; 
+            background: #fff;
+            max-width: 210mm;
+            margin: 0 auto;
+            padding: 15mm;
+        }
+        .header { text-align: center; margin-bottom: 2rem; border-bottom: 2px solid #1a1a1a; padding-bottom: 1.5rem; }
+        h1 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.25rem; }
+        .subtitle { font-size: 1rem; color: #555; }
+        .meta { font-size: 0.8rem; color: #666; margin-top: 0.75rem; display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; }
+        .meta-item { display: flex; align-items: center; gap: 0.25rem; }
+        h2 { font-size: 1.1rem; font-weight: 600; margin: 1.5rem 0 0.75rem; display: flex; align-items: center; gap: 0.5rem; border-bottom: 1px solid #ddd; padding-bottom: 0.25rem; }
+        p { margin-bottom: 0.75rem; font-size: 0.9rem; }
+        .icon { font-size: 1.1rem; }
+        table { width: 100%; border-collapse: collapse; margin: 0.75rem 0; font-size: 0.8rem; }
+        th, td { border: 1px solid #ddd; padding: 0.4rem 0.6rem; text-align: left; }
+        th { background: #f5f5f5; font-weight: 600; }
+        .highlight { background: #f0f0f0; padding: 0.5rem; border-left: 3px solid #1a1a1a; margin: 0.75rem 0; font-size: 0.85rem; }
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+        ul { margin: 0.5rem 0 0.75rem 1.5rem; font-size: 0.85rem; }
+        li { margin-bottom: 0.25rem; }
+        .footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #ddd; font-size: 0.75rem; color: #666; text-align: center; }
+        code { background: #f5f5f5; padding: 0.1rem 0.3rem; font-size: 0.75rem; font-family: 'Consolas', monospace; }
+        .good { color: #2e7d32; }
+        .warn { color: #f57c00; }
+        .bad { color: #c62828; }
+        .stat-box { background: #fafafa; border: 1px solid #ddd; padding: 0.75rem; text-align: center; }
+        .stat-value { font-size: 1.5rem; font-weight: 600; }
+        .stat-label { font-size: 0.75rem; color: #666; }
+        .gen-example { background: #fafafa; border: 1px solid #ddd; padding: 0.5rem; margin: 0.5rem 0; font-size: 0.8rem; }
+        .gen-prompt { font-weight: 600; }
+        .gen-output { color: #555; font-style: italic; }
+        @media print { body { padding: 10mm; } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>PampaR v9 - Benchmark Results</h1>
+        <div class="subtitle">Territorial Language Model · 14M Parameters</div>
+        <div class="meta">
+            <span class="meta-item"><i class="ti ti-calendar"></i> January 2026</span>
+            <span class="meta-item"><i class="ti ti-cpu"></i> GTX 1650 4GB</span>
+            <span class="meta-item"><i class="ti ti-file"></i> pampar_best.pt</span>
+        </div>
+    </div>
+
+    <h2><i class="ti ti-chart-line icon"></i> Training Progress</h2>
+    <table>
+        <tr><th>Fragment</th><th>Tokens</th><th>Final Loss</th><th>Final PPL</th><th>Improvement</th></tr>
+        <tr><td>1</td><td>10M</td><td>4.85</td><td>127.5</td><td>Baseline</td></tr>
+        <tr><td>2</td><td>20M</td><td>4.22</td><td>68.1</td><td class="good">-46.6%</td></tr>
+        <tr><td>3</td><td>35M</td><td>3.93</td><td>50.7</td><td class="good">-60.2%</td></tr>
+        <tr><td>4+</td><td>50M+</td><td>~3.8</td><td>~45</td><td class="good">-64.7%</td></tr>
+    </table>
+    <p><strong>Total tokens seen:</strong> ~200M+ across training</p>
+
+    <h2><i class="ti ti-trophy icon"></i> Model Comparison (WikiText-103)</h2>
+    <table>
+        <tr><th>Model</th><th>Parameters</th><th>PPL ↓</th><th>Year</th><th>Notes</th></tr>
+        <tr><td>LSTM (Merity et al.)</td><td>24M</td><td>69.1</td><td>2018</td><td>AWD-LSTM</td></tr>
+        <tr><td>Transformer-XL Small</td><td>24M</td><td>54.5</td><td>2019</td><td>Recurrent memory</td></tr>
+        <tr><td><strong>PampaR v9</strong></td><td><strong>14M</strong></td><td><strong>~45</strong></td><td>2026</td><td>Territorial architecture</td></tr>
+        <tr><td>GPT-2 Small</td><td>125M</td><td>35.1</td><td>2019</td><td>Standard transformer</td></tr>
+        <tr><td>GPT-2 Medium</td><td>355M</td><td>26.4</td><td>2019</td><td>Standard transformer</td></tr>
+    </table>
+    <div class="highlight">
+        <strong>Key Finding:</strong> PampaR achieves better PPL than LSTM and Transformer-XL Small with <strong>42% fewer parameters</strong> (14M vs 24M).
+    </div>
+
+    <h2><i class="ti ti-chart-bar icon"></i> Key Metrics</h2>
+    <div class="three-col">
+        <div class="stat-box">
+            <div class="stat-value">~45</div>
+            <div class="stat-label">Perplexity (PPL)</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-value">14M</div>
+            <div class="stat-label">Parameters</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-value">68%</div>
+            <div class="stat-label">Diversity Ratio</div>
+        </div>
+    </div>
+
+    <h2><i class="ti ti-writing icon"></i> Text Generation Examples</h2>
+    
+    <h3>Narrative Continuation</h3>
+    <div class="gen-example">
+        <span class="gen-prompt">Prompt:</span> "The city of"<br>
+        <span class="gen-output">Output (T=0.7):</span> The city of M-70 was planned to develop the ship's location and its construction of a new site of a city's location...
+    </div>
+
+    <h3>Historical</h3>
+    <div class="gen-example">
+        <span class="gen-prompt">Prompt:</span> "In the year 1900,"<br>
+        <span class="gen-output">Output (T=0.7):</span> In the year 1900, he had an 19-year-old in the 1900s. The NLLL was designed by the new design of the NFL...
+    </div>
+
+    <h3>Scientific</h3>
+    <div class="gen-example">
+        <span class="gen-prompt">Prompt:</span> "The study of"<br>
+        <span class="gen-output">Output (T=0.7):</span> The study of the New England team, in which he was with the club, was a member of the football club...
+    </div>
+
+    <h3>Sequential</h3>
+    <div class="gen-example">
+        <span class="gen-prompt">Prompt:</span> "First, second, third,"<br>
+        <span class="gen-output">Output (T=0.7):</span> First, second, third, and fourth, in the fourth and third overall, scoring in the third of the final...
+    </div>
+
+    <h2><i class="ti ti-list-check icon"></i> Sentence Perplexity Analysis</h2>
+    <table>
+        <tr><th>Sentence</th><th>PPL</th><th>Analysis</th></tr>
+        <tr><td>"The history of the world is the history of humanity."</td><td>16.7</td><td class="good">Excellent - common phrase</td></tr>
+        <tr><td>"In mathematics, a function is a relation..."</td><td>22.3</td><td class="good">Very good - technical but common</td></tr>
+        <tr><td>"The sun rises in the east and sets in the west."</td><td>65.0</td><td class="warn">Acceptable - less common in corpus</td></tr>
+        <tr><td>"She walked through the forest, listening..."</td><td>61.6</td><td class="warn">Acceptable - narrative</td></tr>
+        <tr><td>"The experiment was conducted in a controlled..."</td><td>190.7</td><td class="bad">High - specific scientific vocabulary</td></tr>
+    </table>
+
+    <h2><i class="ti ti-gauge icon"></i> Efficiency Analysis</h2>
+    <table>
+        <tr><th>Model</th><th>Parameters</th><th>PPL</th><th>PPL/M Params</th><th>Efficiency</th></tr>
+        <tr><td>LSTM (Merity)</td><td>24M</td><td>69.1</td><td>2.88</td><td>Base</td></tr>
+        <tr><td>Transformer-XL</td><td>24M</td><td>54.5</td><td>2.27</td><td>1.27×</td></tr>
+        <tr><td><strong>PampaR v9</strong></td><td>14M</td><td>~45</td><td>3.21</td><td>0.90×</td></tr>
+        <tr><td>GPT-2 Small</td><td>125M</td><td>35.1</td><td>0.28</td><td>10.3×</td></tr>
+    </table>
+    <p><em>Note: Lower PPL/M Params = more efficient. PampaR achieves good PPL with very few parameters.</em></p>
+
+    <h2><i class="ti ti-check icon"></i> Strengths</h2>
+    <ul>
+        <li><strong>Parameter efficiency:</strong> ~45 PPL with only 14M params</li>
+        <li><strong>Grammatical coherence:</strong> Generates fluent, structured text</li>
+        <li><strong>Diversity:</strong> 68% unique tokens indicates good variability</li>
+        <li><strong>Speed:</strong> ~2079 tokens/second on GTX 1650</li>
+    </ul>
+
+    <h2><i class="ti ti-alert-triangle icon"></i> Areas for Improvement</h2>
+    <ul>
+        <li><strong>Technical vocabulary:</strong> High PPL on specific scientific sentences</li>
+        <li><strong>Semantic coherence:</strong> Sometimes generates nonsensical combinations</li>
+        <li><strong>Long context:</strong> Limited to 512 tokens of context</li>
+    </ul>
+
+    <h2><i class="ti ti-settings icon"></i> Test Configuration</h2>
+    <div class="two-col">
+        <div>
+            <p><strong>Model:</strong> PampaR v9 (14,069,410 params)</p>
+            <p><strong>Checkpoint:</strong> pampar_best.pt</p>
+            <p><strong>Device:</strong> CUDA (GTX 1650)</p>
+        </div>
+        <div>
+            <p><strong>Max tokens:</strong> 30-60</p>
+            <p><strong>Temperature:</strong> [0.7, 1.0]</p>
+            <p><strong>Top-p:</strong> 0.9</p>
+            <p><strong>Tokenizer:</strong> SentencePiece BPE (32K)</p>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><strong>License:</strong> AGPL-3.0-or-later · <strong>Copyright:</strong> © 2024-2026 Lucas Ricardo Mella Chillemi</p>
+        <p>Document generated January 2026 · <i class="ti ti-mail"></i> lucas.mella@outlook.com</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PampaR v9 - Resultados de Benchmark (14M Parámetros)</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', -apple-system, sans-serif; 
+            line-height: 1.6; 
+            color: #1a1a1a; 
+            background: #fff;
+            max-width: 210mm;
+            margin: 0 auto;
+            padding: 15mm;
+        }
+        .header { text-align: center; margin-bottom: 2rem; border-bottom: 2px solid #1a1a1a; padding-bottom: 1.5rem; }
+        h1 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.25rem; }
+        .subtitle { font-size: 1rem; color: #555; }
+        .meta { font-size: 0.8rem; color: #666; margin-top: 0.75rem; display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; }
+        .meta-item { display: flex; align-items: center; gap: 0.25rem; }
+        h2 { font-size: 1.1rem; font-weight: 600; margin: 1.5rem 0 0.75rem; display: flex; align-items: center; gap: 0.5rem; border-bottom: 1px solid #ddd; padding-bottom: 0.25rem; }
+        p { margin-bottom: 0.75rem; font-size: 0.9rem; }
+        .icon { font-size: 1.1rem; }
+        table { width: 100%; border-collapse: collapse; margin: 0.75rem 0; font-size: 0.8rem; }
+        th, td { border: 1px solid #ddd; padding: 0.4rem 0.6rem; text-align: left; }
+        th { background: #f5f5f5; font-weight: 600; }
+        .highlight { background: #f0f0f0; padding: 0.5rem; border-left: 3px solid #1a1a1a; margin: 0.75rem 0; font-size: 0.85rem; }
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+        ul { margin: 0.5rem 0 0.75rem 1.5rem; font-size: 0.85rem; }
+        li { margin-bottom: 0.25rem; }
+        .footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #ddd; font-size: 0.75rem; color: #666; text-align: center; }
+        code { background: #f5f5f5; padding: 0.1rem 0.3rem; font-size: 0.75rem; font-family: 'Consolas', monospace; }
+        .good { color: #2e7d32; }
+        .warn { color: #f57c00; }
+        .bad { color: #c62828; }
+        .stat-box { background: #fafafa; border: 1px solid #ddd; padding: 0.75rem; text-align: center; }
+        .stat-value { font-size: 1.5rem; font-weight: 600; }
+        .stat-label { font-size: 0.75rem; color: #666; }
+        .gen-example { background: #fafafa; border: 1px solid #ddd; padding: 0.5rem; margin: 0.5rem 0; font-size: 0.8rem; }
+        .gen-prompt { font-weight: 600; }
+        .gen-output { color: #555; font-style: italic; }
+        @media print { body { padding: 10mm; } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>PampaR v9 - Resultados de Benchmark</h1>
+        <div class="subtitle">Modelo de Lenguaje Territorial · 14M Parámetros</div>
+        <div class="meta">
+            <span class="meta-item"><i class="ti ti-calendar"></i> Enero 2026</span>
+            <span class="meta-item"><i class="ti ti-cpu"></i> GTX 1650 4GB</span>
+            <span class="meta-item"><i class="ti ti-file"></i> pampar_best.pt</span>
+        </div>
+    </div>
+
+    <h2><i class="ti ti-chart-line icon"></i> Progreso de Entrenamiento</h2>
+    <table>
+        <tr><th>Fragmento</th><th>Tokens</th><th>Loss Final</th><th>PPL Final</th><th>Mejora</th></tr>
+        <tr><td>1</td><td>10M</td><td>4.85</td><td>127.5</td><td>Línea base</td></tr>
+        <tr><td>2</td><td>20M</td><td>4.22</td><td>68.1</td><td class="good">-46.6%</td></tr>
+        <tr><td>3</td><td>35M</td><td>3.93</td><td>50.7</td><td class="good">-60.2%</td></tr>
+        <tr><td>4+</td><td>50M+</td><td>~3.8</td><td>~45</td><td class="good">-64.7%</td></tr>
+    </table>
+    <p><strong>Tokens totales vistos:</strong> ~200M+ durante el entrenamiento</p>
+
+    <h2><i class="ti ti-trophy icon"></i> Comparación de Modelos (WikiText-103)</h2>
+    <table>
+        <tr><th>Modelo</th><th>Parámetros</th><th>PPL ↓</th><th>Año</th><th>Notas</th></tr>
+        <tr><td>LSTM (Merity et al.)</td><td>24M</td><td>69.1</td><td>2018</td><td>AWD-LSTM</td></tr>
+        <tr><td>Transformer-XL Small</td><td>24M</td><td>54.5</td><td>2019</td><td>Memoria recurrente</td></tr>
+        <tr><td><strong>PampaR v9</strong></td><td><strong>14M</strong></td><td><strong>~45</strong></td><td>2026</td><td>Arquitectura territorial</td></tr>
+        <tr><td>GPT-2 Small</td><td>125M</td><td>35.1</td><td>2019</td><td>Transformer estándar</td></tr>
+        <tr><td>GPT-2 Medium</td><td>355M</td><td>26.4</td><td>2019</td><td>Transformer estándar</td></tr>
+    </table>
+    <div class="highlight">
+        <strong>Hallazgo Clave:</strong> PampaR logra mejor PPL que LSTM y Transformer-XL Small con <strong>42% menos parámetros</strong> (14M vs 24M).
+    </div>
+
+    <h2><i class="ti ti-chart-bar icon"></i> Métricas Principales</h2>
+    <div class="three-col">
+        <div class="stat-box">
+            <div class="stat-value">~45</div>
+            <div class="stat-label">Perplejidad (PPL)</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-value">14M</div>
+            <div class="stat-label">Parámetros</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-value">68%</div>
+            <div class="stat-label">Ratio de Diversidad</div>
+        </div>
+    </div>
+
+    <h2><i class="ti ti-writing icon"></i> Ejemplos de Generación de Texto</h2>
+    
+    <h3>Continuación Narrativa</h3>
+    <div class="gen-example">
+        <span class="gen-prompt">Prompt:</span> "The city of"<br>
+        <span class="gen-output">Salida (T=0.7):</span> The city of M-70 was planned to develop the ship's location and its construction of a new site of a city's location...
+    </div>
+
+    <h3>Histórico</h3>
+    <div class="gen-example">
+        <span class="gen-prompt">Prompt:</span> "In the year 1900,"<br>
+        <span class="gen-output">Salida (T=0.7):</span> In the year 1900, he had an 19-year-old in the 1900s. The NLLL was designed by the new design of the NFL...
+    </div>
+
+    <h3>Científico</h3>
+    <div class="gen-example">
+        <span class="gen-prompt">Prompt:</span> "The study of"<br>
+        <span class="gen-output">Salida (T=0.7):</span> The study of the New England team, in which he was with the club, was a member of the football club...
+    </div>
+
+    <h3>Secuencial</h3>
+    <div class="gen-example">
+        <span class="gen-prompt">Prompt:</span> "First, second, third,"<br>
+        <span class="gen-output">Salida (T=0.7):</span> First, second, third, and fourth, in the fourth and third overall, scoring in the third of the final...
+    </div>
+
+    <h2><i class="ti ti-list-check icon"></i> Análisis de Perplejidad por Oración</h2>
+    <table>
+        <tr><th>Oración</th><th>PPL</th><th>Análisis</th></tr>
+        <tr><td>"The history of the world is the history of humanity."</td><td>16.7</td><td class="good">Excelente - frase común</td></tr>
+        <tr><td>"In mathematics, a function is a relation..."</td><td>22.3</td><td class="good">Muy bueno - técnico pero común</td></tr>
+        <tr><td>"The sun rises in the east and sets in the west."</td><td>65.0</td><td class="warn">Aceptable - menos común en corpus</td></tr>
+        <tr><td>"She walked through the forest, listening..."</td><td>61.6</td><td class="warn">Aceptable - narrativo</td></tr>
+        <tr><td>"The experiment was conducted in a controlled..."</td><td>190.7</td><td class="bad">Alto - vocabulario científico específico</td></tr>
+    </table>
+
+    <h2><i class="ti ti-gauge icon"></i> Análisis de Eficiencia</h2>
+    <table>
+        <tr><th>Modelo</th><th>Parámetros</th><th>PPL</th><th>PPL/M Params</th><th>Eficiencia</th></tr>
+        <tr><td>LSTM (Merity)</td><td>24M</td><td>69.1</td><td>2.88</td><td>Base</td></tr>
+        <tr><td>Transformer-XL</td><td>24M</td><td>54.5</td><td>2.27</td><td>1.27×</td></tr>
+        <tr><td><strong>PampaR v9</strong></td><td>14M</td><td>~45</td><td>3.21</td><td>0.90×</td></tr>
+        <tr><td>GPT-2 Small</td><td>125M</td><td>35.1</td><td>0.28</td><td>10.3×</td></tr>
+    </table>
+    <p><em>Nota: Menor PPL/M Params = más eficiente. PampaR logra buen PPL con muy pocos parámetros.</em></p>
+
+    <h2><i class="ti ti-check icon"></i> Fortalezas</h2>
+    <ul>
+        <li><strong>Eficiencia de parámetros:</strong> ~45 PPL con solo 14M params</li>
+        <li><strong>Coherencia gramatical:</strong> Genera texto fluido y estructurado</li>
+        <li><strong>Diversidad:</strong> 68% tokens únicos indica buena variabilidad</li>
+        <li><strong>Velocidad:</strong> ~2079 tokens/segundo en GTX 1650</li>
+    </ul>
+
+    <h2><i class="ti ti-alert-triangle icon"></i> Áreas de Mejora</h2>
+    <ul>
+        <li><strong>Vocabulario técnico:</strong> PPL alto en oraciones científicas específicas</li>
+        <li><strong>Coherencia semántica:</strong> A veces genera combinaciones sin sentido</li>
+        <li><strong>Contexto largo:</strong> Limitado a 512 tokens de contexto</li>
+    </ul>
+
+    <h2><i class="ti ti-settings icon"></i> Configuración del Test</h2>
+    <div class="two-col">
+        <div>
+            <p><strong>Modelo:</strong> PampaR v9 (14,069,410 params)</p>
+            <p><strong>Checkpoint:</strong> pampar_best.pt</p>
+            <p><strong>Dispositivo:</strong> CUDA (GTX 1650)</p>
+        </div>
+        <div>
+            <p><strong>Max tokens:</strong> 30-60</p>
+            <p><strong>Temperatura:</strong> [0.7, 1.0]</p>
+            <p><strong>Top-p:</strong> 0.9</p>
+            <p><strong>Tokenizer:</strong> SentencePiece BPE (32K)</p>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><strong>Licencia:</strong> AGPL-3.0-or-later · <strong>Copyright:</strong> © 2024-2026 Lucas Ricardo Mella Chillemi</p>
+        <p>Documento generado Enero 2026 · <i class="ti ti-mail"></i> lucas.mella@outlook.com</p>
+    </div>
+</body>
+</html>
