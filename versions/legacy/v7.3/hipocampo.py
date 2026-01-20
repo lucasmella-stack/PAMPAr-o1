@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: MIT
-# Copyright (c) 2025 Segunda Cabeza
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi
 """
 Hipocampo - Memoria del Sistema
 

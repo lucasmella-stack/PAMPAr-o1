@@ -1,9 +1,9 @@
-# LLARRI-O1 v3.0 - Trinity Fractal Recursivo Profundo
-# Dependencias
-# Autor: Lucas Mella (Segunda Cabeza)
+# PampaR v9 - Cerebral Language Model with Territorial Architecture
+# Dependencies
+# Author: Lucas Ricardo Mella Chillemi
 
 # ============================================
-# CORE (Requerido)
+# CORE (Required)
 # ============================================
 torch>=2.0.0
 torchvision>=0.15.0

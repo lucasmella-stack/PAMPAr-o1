@@ -489,8 +489,8 @@
 
 <div align="center">
 
-**LLARRI-O1** — *Mezcla primero, procesa con cercanos, de menos a más*
+**PampaR v9** — *Un cerebro artificial donde los territorios colaboran a través de fronteras*
 
-**Segunda Cabeza** — Innovación en IA
+**Hecho con ❤️ en Argentina 🇦🇷**
 
 </div>

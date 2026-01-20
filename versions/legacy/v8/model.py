@@ -1,7 +1,13 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
-# Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi / Segunda Cabeza
+# Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi
+#
+# ⚠️ LEGACY CODE - NOT EXECUTABLE
+# This file is preserved for historical reference only.
+# Imports reference modules that no longer exist in this structure.
+# For the current implementation, see pampar/cerebro/
+#
 """
-PampaR - Modelo Principal
+PampaR v8 - Modelo Principal (LEGACY)
 
 Integra todos los componentes del cerebro:
 - Tálamo: orquestador con LLAVES

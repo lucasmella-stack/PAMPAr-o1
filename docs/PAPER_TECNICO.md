@@ -3,7 +3,7 @@
 ## Technical Report — Work in Progress
 
 **Lucas Ricardo Mella Chillemi**  
-Segunda Cabeza (Independent Research)  
+Independent Researcher  
 January 2026
 
 > ⚠️ **Note**: This is a preliminary technical report describing an experimental architecture under active development. Results are promising but require further validation across multiple datasets and configurations.
@@ -406,4 +406,4 @@ python scripts/train_fragmentado.py --max
 ---
 
 **License**: AGPL-3.0-or-later  
-**Copyright**: © 2024-2026 Lucas Ricardo Mella Chillemi / Segunda Cabeza
+**Copyright**: © 2024-2026 Lucas Ricardo Mella Chillemi

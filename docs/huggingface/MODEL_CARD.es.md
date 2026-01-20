@@ -211,8 +211,8 @@ print(tok.Decode(x[0].tolist()))
   title = {PampaR: Modelo de Lenguaje Cerebral con Arquitectura Territorial},
   year = {2026},
   version = {9.0.0},
-  organization = {Segunda Cabeza},
-  url = {https://github.com/lucasmella-stack/llarri-o1}
+  organization = {Investigador Independiente},
+  url = {https://github.com/lucasmella-stack/PAMPAr-o1}
 }
 ```
 
@@ -220,9 +220,9 @@ print(tok.Decode(x[0].tolist()))
 
 ## Enlaces
 
-- 📂 **GitHub:** [lucasmella-stack/llarri-o1](https://github.com/lucasmella-stack/llarri-o1)
-- 📄 **PDF Arquitectura:** [Ver](https://github.com/lucasmella-stack/llarri-o1/blob/main/diagrams/v9-territorial/PampaR_v9_Arquitectura_Territorial.pdf)
-- 📊 **PDF Benchmarks:** [Ver](https://github.com/lucasmella-stack/llarri-o1/blob/main/diagrams/v9-territorial/PampaR_v9_Benchmarks_Comparacion.pdf)
+- 📂 **GitHub:** [lucasmella-stack/PAMPAr-o1](https://github.com/lucasmella-stack/PAMPAr-o1)
+- 📄 **PDF Arquitectura:** [Ver](https://github.com/lucasmella-stack/PAMPAr-o1/blob/main/diagrams/v9-territorial/PampaR_v9_Arquitectura_Territorial.pdf)
+- 📊 **PDF Benchmarks:** [Ver](https://github.com/lucasmella-stack/PAMPAr-o1/blob/main/diagrams/v9-territorial/PampaR_v9_Benchmarks_Comparacion.pdf)
 
 ---
 
@@ -235,6 +235,6 @@ print(tok.Decode(x[0].tolist()))
 
 <div align="center">
 
-**Hecho con 💜 por Segunda Cabeza 🇦🇷**
+**Hecho con ❤️ en Argentina 🇦🇷**
 
 </div>

@@ -6,7 +6,7 @@
 
 **Title**: PampaR: A Brain-Inspired Territorial Architecture for Efficient Language Modeling (Technical Report)
 
-**Authors**: Lucas Ricardo Mella Chillemi (Segunda Cabeza, Independent Research)
+**Authors**: Lucas Ricardo Mella Chillemi (Independent Researcher)
 
 **Abstract**:
 

@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
-# Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi / Segunda Cabeza
+# Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi
 """
-PampaR v8 - API Server
+"""PampaR v9 - API Server
 
-Servidor HTTP/WebSocket para inferencia con PampaR v8.
+Servidor HTTP/WebSocket para inferencia con PampaR v9.
 Diseñado para escalabilidad en servidores con diferentes capacidades.
 
 Uso local (desarrollo):
@@ -236,8 +236,8 @@ class ModelManager:
         params = self.model.contar_parametros() if self.model else {}
         
         return {
-            'name': 'PampaR v8',
-            'version': '8.0.0',
+            'name': 'PampaR v9',
+            'version': '9.0.0',
             'parameters': params.get('total', 0),
             'device': str(self.device),
             'config': {
@@ -257,9 +257,9 @@ class ModelManager:
 def create_app(model_manager: ModelManager) -> 'FastAPI':
     """Crea la aplicación FastAPI."""
     app = FastAPI(
-        title="PampaR v8 API",
-        description="API para generación de texto con PampaR v8",
-        version="8.0.0",
+        title="PampaR v9 API",
+        description="API para generación de texto con PampaR v9",
+        version="9.0.0",
     )
     
     # CORS
@@ -394,12 +394,12 @@ def run_simple_server(model_manager: ModelManager, host: str, port: int):
 # =============================================================================
 
 def main():
-    parser = argparse.ArgumentParser(description='PampaR v8 Server')
+    parser = argparse.ArgumentParser(description='PampaR v9 Server')
     parser.add_argument('--checkpoint', type=str,
-                       default='checkpoints/PampaR_v8_best.pt',
+                       default='checkpoints/pampar_v9_best.pt',
                        help='Path al checkpoint')
     parser.add_argument('--tokenizer', type=str,
-                       default='data/tokenizer/PampaR_bpe.model',
+                       default='data/tokenizer/llarri_bpe.model',
                        help='Path al tokenizer')
     parser.add_argument('--host', type=str, default='127.0.0.1',
                        help='Host (0.0.0.0 para acceso externo)')
@@ -430,7 +430,7 @@ def main():
     )
     
     print("\n" + "=" * 60)
-    print("PampaR v8 - SERVER")
+    print("PampaR v9 - SERVER")
     print("=" * 60)
     
     if args.simple or not HAS_FASTAPI:

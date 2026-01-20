@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
-# SPDX-FileCopyrightText: 2025 Segunda Cabeza
+# Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi
 # Author: Lucas Ricardo Mella Chillemi (lucas.mella@outlook.com)
 """
 LM Head Fractal para LLARRI-O1.

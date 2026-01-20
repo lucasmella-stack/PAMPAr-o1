@@ -221,7 +221,8 @@
 
 ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
-  Autor: Lucas Ricardo Mella Chillemi (Segunda Cabeza)
+  Autor: Lucas Ricardo Mella Chillemi
   Fecha: Enero 2026
   Versión: 8.0.0
+  Nota: Diagrama de versión legacy - ver diagrams/v9-territorial/ para arquitectura actual
 

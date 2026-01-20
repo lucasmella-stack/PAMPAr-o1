@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
-# Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi / Segunda Cabeza
+# Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi
 """
 PampaR - Inferencia Interactiva
 
@@ -242,10 +242,10 @@ def interactive_chat(
 def main():
     parser = argparse.ArgumentParser(description='Chat con PampaR')
     parser.add_argument('--checkpoint', type=str, 
-                       default='checkpoints/PampaR_v8_best.pt',
+                       default='checkpoints/pampar_v9_best.pt',
                        help='Path al checkpoint')
     parser.add_argument('--tokenizer', type=str,
-                       default='data/tokenizer/PampaR_bpe.model',
+                       default='data/tokenizer/llarri_bpe.model',
                        help='Path al tokenizer')
     parser.add_argument('--temperature', type=float, default=0.8,
                        help='Temperatura para sampling')

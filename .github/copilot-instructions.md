@@ -89,7 +89,7 @@ python scripts/chat.py --checkpoint checkpoints/pampar_best.pt
 All Python files use SPDX license headers:
 ```python
 # SPDX-License-Identifier: AGPL-3.0-or-later
-# Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi / Segunda Cabeza
+# Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi
 ```
 
 ### Naming Conventions

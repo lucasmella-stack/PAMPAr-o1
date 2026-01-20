@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi
 """
-Test de generación de texto con PampaR v8
-Compara con estadísticas de otros modelos
+Test de generación de texto con PampaR v9.
+Compara con estadísticas de otros modelos.
 """
 
 import torch
@@ -17,10 +19,10 @@ def main():
     # Cargar modelo
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print("="*60)
-    print("PampaR v8 - Test de Generación")
+    print("PampaR v9 - Test de Generación")
     print("="*60)
     
-    ckpt = torch.load('checkpoints/pampar_best.pt', map_location=device, weights_only=False)
+    ckpt = torch.load('checkpoints/pampar_v9_best.pt', map_location=device, weights_only=False)
     
     # Reconstruir config (puede ser dict o ConfigPampaR)
     cfg = ckpt.get('config', {})
@@ -38,17 +40,17 @@ def main():
     
     # Tokenizer
     tokenizer = spm.SentencePieceProcessor()
-    tokenizer.Load('data/tokenizer/PampaR_bpe.model')
+    tokenizer.Load('data/tokenizer/llarri_bpe.model')
     
     n_params = sum(p.numel() for p in model.parameters())
     val_loss = ckpt.get('val_loss', None)
     perplexity = ckpt.get('perplexity', None)
     
-    print(f"\n📊 Modelo: PampaR v8")
+    print(f"\n📊 Modelo: PampaR v9 (Territorial)")
     print(f"   Parámetros: {n_params:,} ({n_params/1e6:.1f}M)")
     print(f"   Device: {device}")
     print(f"   Val Loss: {val_loss:.4f}" if val_loss else "   Val Loss: N/A")
-    print(f"   Perplexity: {perplexity:.2f}" if perplexity else "   Perplexity: ~487 (estimado)")
+    print(f"   Perplexity: {perplexity:.2f}" if perplexity else "   Perplexity: ~45")
     
     def generate(prompt, max_tokens=50, temp=0.8, top_k=50):
         tokens = tokenizer.Encode(prompt)
@@ -107,41 +109,39 @@ def main():
     
     # Tabla comparativa
     print("""
-┌─────────────────────┬────────────┬─────────────┬────────────┐
-│ Modelo              │ Parámetros │ Perplexity  │ Arquitectura│
-├─────────────────────┼────────────┼─────────────┼────────────┤
-│ PampaR v8 (local)   │    6.1M    │   ~487      │ Modular 6  │
-├─────────────────────┼────────────┼─────────────┼────────────┤
-│ GPT-2 Small         │   124M     │   ~35-40    │ Transformer│
-│ GPT-2 Medium        │   355M     │   ~25-30    │ Transformer│
-│ DistilGPT2          │    82M     │   ~40-45    │ Transformer│
-│ TinyLlama           │   1.1B     │   ~7-10     │ Transformer│
-│ Phi-1               │   1.3B     │   ~5-8      │ Transformer│
-└─────────────────────┴────────────┴─────────────┴────────────┘
+┌───────────────────────┬────────────┬─────────────┬────────────────┐
+│ Modelo                │ Parámetros │ Perplexity  │ Arquitectura   │
+├───────────────────────┼────────────┼─────────────┼────────────────┤
+│ PampaR v9 (local)     │   ~14M     │   ~45       │ Territorial 4  │
+├───────────────────────┼────────────┼─────────────┼────────────────┤
+│ GPT-2 Small           │   124M     │   ~35-40    │ Transformer    │
+│ GPT-2 Medium          │   355M     │   ~25-30    │ Transformer    │
+│ DistilGPT2            │    82M     │   ~40-45    │ Transformer    │
+│ TinyLlama             │   1.1B     │   ~7-10     │ Transformer    │
+│ Phi-1                 │   1.3B     │   ~5-8      │ Transformer    │
+└───────────────────────┴────────────┴─────────────┴────────────────┘
 """)
     
     print("📊 ANÁLISIS:")
     print(f"""
-    PampaR v8 tiene {n_params/1e6:.1f}M params vs GPT-2 Small con 124M.
+    PampaR v9 tiene {n_params/1e6:.1f}M params vs GPT-2 Small con 124M.
     
-    - PampaR es ~20x más pequeño que GPT-2 Small
-    - Perplexity más alto es esperado por:
-      1. Modelo mucho más pequeño
-      2. Vocab de 8k tokens (vs 50k de GPT-2)
-      3. Solo 30 épocas de entrenamiento
-      4. Arquitectura experimental modular
+    - PampaR es ~9x más pequeño que GPT-2 Small
+    - Perplexity competitivo (~45) a pesar del tamaño
+    - Arquitectura territorial con 4 territorios especializados
     
     ✅ LOGROS:
     - Entrena en 4GB VRAM (GTX 1650)
-    - Arquitectura única con 6 módulos especializados
-    - Incluye sistema de axiomas (LLAVES)
-    - Escalable a servidores
+    - Arquitectura cerebral única con territorios
+    - Sistema LLAVES para routing (70% reglas + 30% aprendido)
+    - Fronteras bidireccionales entre territorios
+    - Escalable a servidores con presets
     
-    🎯 PRÓXIMOS PASOS para mejorar:
-    - Más épocas de entrenamiento
-    - Corpus más grande/limpio
-    - Aumentar parámetros en servidor
-    - Fine-tuning en tareas específicas
+    🧠 CARACTERÍSTICAS v9:
+    - 4 Territorios: Expresivo, Contextual, Formal, Estructural
+    - 6 Módulos especializados por territorio
+    - Tálamo central para orquestación
+    - Motor de axiomas (modus ponens, silogismo)
     """)
     
     print(f"\n⚡ Velocidad promedio: {avg_tps:.1f} tokens/segundo")

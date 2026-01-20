@@ -1,7 +1,7 @@
 # PampaR: Una Arquitectura Territorial Inspirada en el Cerebro para Modelado de Lenguaje
 
 **Lucas Ricardo Mella Chillemi**  
-Segunda Cabeza  
+Investigador Independiente  
 Enero 2026
 
 ---
@@ -284,4 +284,4 @@ python scripts/train_fragmentado.py --max
 ---
 
 **Licencia**: AGPL-3.0-or-later  
-**Copyright**: © 2024-2026 Lucas Ricardo Mella Chillemi / Segunda Cabeza
+**Copyright**: © 2024-2026 Lucas Ricardo Mella Chillemi

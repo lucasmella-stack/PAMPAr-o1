@@ -380,7 +380,7 @@ AGPL-3.0-or-later — See [LICENSE](LICENSE) for details.
   title = {PampaR: Cerebral Language Model with Territorial Architecture},
   year = {2026},
   version = {9.0.0},
-  organization = {Segunda Cabeza},
+  organization = {Independent Researcher},
   url = {https://github.com/lucasmella-stack/PAMPAr-o1},
   note = {14M parameters, PPL ~45 on WikiText-103, trained on GTX 1650 4GB}
 }
@@ -388,10 +388,9 @@ AGPL-3.0-or-later — See [LICENSE](LICENSE) for details.
 
 ---
 
-## 👥 Authors
+## 👤 Author
 
-- **Lucas Ricardo Mella Chillemi** (Segunda Cabeza) — Architecture & Development
-- **Álvaro** (Segunda Cabeza) — Coordination
+- **Lucas Ricardo Mella Chillemi** — Architecture & Development
 
 ---
 

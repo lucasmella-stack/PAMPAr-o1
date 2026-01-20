@@ -1,7 +1,11 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
-# Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi / Segunda Cabeza
+# Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi
+#
+# ⚠️ LEGACY CODE - For historical reference only
+# Replaced by Fronteras (fronteras bidireccionales) in v9
+#
 """
-Sinapsis - Conexiones entre neuronas con reglas lógicas
+Sinapsis - Conexiones entre neuronas con reglas lógicas (LEGACY)
 
 Las sinapsis:
 - Conectan neuronas entre sí

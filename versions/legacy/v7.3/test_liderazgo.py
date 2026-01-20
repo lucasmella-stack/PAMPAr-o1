@@ -1,5 +1,10 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
-"""Test de liderazgo"""
+# Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi
+#
+# ⚠️ LEGACY CODE - For historical reference only
+# This test references modules that no longer exist
+#
+"""Test de liderazgo (LEGACY)"""
 import torch
 import sys
 from pathlib import Path

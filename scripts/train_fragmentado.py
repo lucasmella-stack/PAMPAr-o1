@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
-# Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi / Segunda Cabeza
+# Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi
 """
 Entrenamiento fragmentado de PampaR v9.
 Diseñado para entrenar en sesiones cortas con guardado frecuente.

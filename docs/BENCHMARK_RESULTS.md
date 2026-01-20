@@ -162,4 +162,4 @@ tokenizer = SentencePiece BPE (8000 tokens)
 ---
 
 **Licencia:** AGPL-3.0-or-later  
-**Copyright:** © 2024-2026 Lucas Ricardo Mella Chillemi / Segunda Cabeza
+**Copyright:** © 2024-2026 Lucas Ricardo Mella Chillemi

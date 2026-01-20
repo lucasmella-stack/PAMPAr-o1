@@ -355,8 +355,8 @@ Ver [LICENSE](LICENSE) para detalles.
 
 <div align="center">
 
-**Hecho con 💜 por Segunda Cabeza**
+**Hecho con ❤️ en Argentina 🇦🇷**
 
-*"Mezcla primero, procesa con cercanos — de menos a más"*
+*"Un cerebro artificial donde los territorios colaboran a través de fronteras"*
 
 </div>

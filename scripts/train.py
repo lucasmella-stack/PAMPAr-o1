@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: AGPL-3.0-or-later
-# Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi / Segunda Cabeza
+# Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi
 """
 PampaR - Script de Entrenamiento Unificado
 ==========================================
@@ -15,7 +15,7 @@ Uso:
     python scripts/train.py --tokens 10M        # Limitar tokens (10M, 50M, etc)
     python scripts/train.py --batch-size 32     # Batch size personalizado
 
-Autor: Lucas Ricardo Mella Chillemi (Segunda Cabeza)
+Autor: Lucas Ricardo Mella Chillemi
 """
 
 import os

@@ -1,5 +1,9 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
-# Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi / Segunda Cabeza
+# Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi
+#
+# ⚠️ LEGACY CODE - For historical reference only
+# Imports reference modules that no longer exist in this structure
+#
 """
 Entrenamiento LLARRI v7.4 con Tálamo Orquestador
 OPTIMIZADO PARA 4GB VRAM - GTX 1650

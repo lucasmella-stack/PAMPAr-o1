@@ -711,8 +711,8 @@ Cada técnica está implementada en el código fuente:
 
 <div align="center">
 
-**LLARRI-O1** — *Mezcla primero, procesa con cercanos, de menos a más*
+**PampaR v9** — *An artificial brain where territories collaborate through frontiers*
 
-**Segunda Cabeza** — Innovación en IA
+**Made with ❤️ in Argentina 🇦🇷**
 
 </div>

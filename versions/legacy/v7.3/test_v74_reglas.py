@@ -1,5 +1,10 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
-"""Test del Tálamo v7.4 con Reglas"""
+# Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi
+#
+# ⚠️ LEGACY CODE - For historical reference only
+# This test references modules that no longer exist
+#
+"""Test del Tálamo v7.4 con Reglas (LEGACY)"""
 import torch
 import sys
 from pathlib import Path
