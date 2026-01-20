@@ -1,11 +1,13 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
-# Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi 
-
+# Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi
 """
-Entrenamiento para PampaR.
+PampaR Training - Placeholder para compatibilidad.
+
+NOTA: El entrenamiento de PampaR v9 se realiza mediante:
+- scripts/train.py: Script principal de entrenamiento
+
+Los trainers legacy fueron movidos a versions/legacy/.
 """
 
-from pampar.training.trainer import Trainer
-from pampar.training.adaptive_trainer import AdaptiveTrainer
-
-__all__ = ["Trainer", "AdaptiveTrainer"]
+# El entrenamiento se maneja directamente en scripts/train.py
+# Este archivo se mantiene para evitar ImportError

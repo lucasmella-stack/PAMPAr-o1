@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pampar"
-version = "1.0.0"
-description = "PampaR — Cerebral Language Model with modular architecture"
+version = "9.0.0"
+description = "PampaR — Cerebral Language Model with Territorial Architecture"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "AGPL-3.0-or-later" }

@@ -1,55 +1,15 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
-# Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi 
-
+# Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi
 """
-Módulos componentes de PampaR v7.3 (Arquitectura Cerebral con Liderazgo).
+PampaR Modules - Placeholder para compatibilidad.
+
+NOTA: Los módulos de v7.3 fueron movidos a versions/legacy/v7.3/
+Para v9, usar directamente pampar.cerebro que contiene:
+- Territorios y Fronteras
+- Neuronas especializadas
+- Axiomas y Memoria
 """
 
-# Utilidades básicas
-from pampar.modules.cache import CacheBinario
-from pampar.modules.attention import (
-    AttentionFractalProgresivo,
-    AttentionConfig,
-)
-from pampar.modules.lm_head import (
-    LMHeadFractal,
-    LMHeadConfig
-)
-
-# Módulos cerebrales v7.3 con liderazgo
-from pampar.modules.cerebral import (
-    # Tálamo con liderazgo
-    TalamoConLiderazgo,
-    # Módulos acoplables
-    ModuloAcoplable,
-    ModuloLenguajeAcoplable,
-    ModuloLogicaAcoplable,
-    ModuloMatematicasAcoplable,
-    ModuloPatronesAcoplable,
-    ModuloContextoAcoplable,
-    ModuloCreatividadAcoplable,
-    # Integración
-    CoordinadorCerebral,
-    # Memoria
-    Hipocampo,
-)
-
-__all__ = [
-    # Utils
-    "CacheBinario",
-    "AttentionFractalProgresivo",
-    "AttentionConfig",
-    "LMHeadFractal",
-    "LMHeadConfig",
-    # v7.3 Cerebral con Liderazgo
-    "TalamoConLiderazgo",
-    "ModuloAcoplable",
-    "ModuloLenguajeAcoplable",
-    "ModuloLogicaAcoplable",
-    "ModuloMatematicasAcoplable",
-    "ModuloPatronesAcoplable",
-    "ModuloContextoAcoplable",
-    "ModuloCreatividadAcoplable",
-    "CoordinadorCerebral",
-    "Hipocampo",
-]
+# v9 usa pampar.cerebro, no pampar.modules
+# Este archivo se mantiene vacío para evitar ImportError si alguien
+# intenta importar desde aquí por error.
