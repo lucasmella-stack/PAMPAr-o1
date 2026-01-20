@@ -16,6 +16,8 @@ tags:
 
 <div align="center">
 
+<img src="PAMPAr-o1-imagen.png" alt="PampaR Logo" width="200"/>
+
 # 🦙 PampaR v9
 
 ### Cerebral Language Model with Territorial Architecture

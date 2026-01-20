@@ -25,7 +25,7 @@ pipeline_tag: text-generation
 [![Licencia](https://img.shields.io/badge/Licencia-AGPL--3.0-blue.svg)](LICENSE)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-orange.svg)](https://pytorch.org)
 
-**[English](MODEL_CARD.md)** | **[GitHub](https://github.com/lucasmella-stack/llarri-o1)** | **[Documentación](https://github.com/lucasmella-stack/llarri-o1/blob/main/docs/architecture/ARCHITECTURE.md)**
+**[English](MODEL_CARD.md)** | **[GitHub](https://github.com/lucasmella-stack/PAMPAr-o1)** | **[Documentación](https://github.com/lucasmella-stack/PAMPAr-o1/blob/main/docs/architecture/ARCHITECTURE.md)**
 
 </div>
 
@@ -38,7 +38,7 @@ pipeline_tag: text-generation
 <td width="50%" align="center">
 
 ### 🏗️ Arquitectura
-<a href="https://github.com/lucasmella-stack/llarri-o1/blob/main/diagrams/v9-territorial/PampaR_v9_Arquitectura_Territorial.pdf">
+<a href="https://github.com/lucasmella-stack/PAMPAr-o1/blob/main/diagrams/v9-territorial/PampaR_v9_Arquitectura_Territorial.pdf">
 <img src="https://img.shields.io/badge/PDF-Arquitectura-red?style=for-the-badge&logo=adobe" alt="PDF Arquitectura"/>
 </a>
 
@@ -46,7 +46,7 @@ pipeline_tag: text-generation
 <td width="50%" align="center">
 
 ### 📊 Benchmarks
-<a href="https://github.com/lucasmella-stack/llarri-o1/blob/main/diagrams/v9-territorial/PampaR_v9_Benchmarks_Comparacion.pdf">
+<a href="https://github.com/lucasmella-stack/PAMPAr-o1/blob/main/diagrams/v9-territorial/PampaR_v9_Benchmarks_Comparacion.pdf">
 <img src="https://img.shields.io/badge/PDF-Benchmarks-blue?style=for-the-badge&logo=adobe" alt="PDF Benchmarks"/>
 </a>
 

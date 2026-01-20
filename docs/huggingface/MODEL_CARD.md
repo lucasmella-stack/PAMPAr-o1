@@ -25,10 +25,10 @@ model-index:
     metrics:
     - name: Perplexity
       type: perplexity
-      value: 57.1
+      value: 45
     - name: Parameters
       type: params
-      value: 6834586
+      value: 14000000
 ---
 
 # 🦙 PampaR v9 — Cerebral Language Model
@@ -40,7 +40,7 @@ model-index:
 [![License](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-orange.svg)](https://pytorch.org)
 
-**[Español](MODEL_CARD.es.md)** | **[GitHub](https://github.com/lucasmella-stack/llarri-o1)** | **[Architecture Docs](https://github.com/lucasmella-stack/llarri-o1/blob/main/docs/architecture/ARCHITECTURE.md)**
+**[Español](MODEL_CARD.es.md)** | **[GitHub](https://github.com/lucasmella-stack/PAMPAr-o1)** | **[Architecture Docs](https://github.com/lucasmella-stack/PAMPAr-o1/blob/main/docs/architecture/ARCHITECTURE.md)**
 
 </div>
 
@@ -53,7 +53,7 @@ model-index:
 <td width="50%" align="center">
 
 ### 🏗️ Architecture
-<a href="https://github.com/lucasmella-stack/llarri-o1/blob/main/diagrams/v9-territorial/PampaR_v9_Arquitectura_Territorial.pdf">
+<a href="https://github.com/lucasmella-stack/PAMPAr-o1/blob/main/diagrams/v9-territorial/PampaR_v9_Arquitectura_Territorial.pdf">
 <img src="https://img.shields.io/badge/PDF-Architecture-red?style=for-the-badge&logo=adobe" alt="Architecture PDF"/>
 </a>
 
@@ -61,7 +61,7 @@ model-index:
 <td width="50%" align="center">
 
 ### 📊 Benchmarks
-<a href="https://github.com/lucasmella-stack/llarri-o1/blob/main/diagrams/v9-territorial/PampaR_v9_Benchmarks_Comparacion.pdf">
+<a href="https://github.com/lucasmella-stack/PAMPAr-o1/blob/main/diagrams/v9-territorial/PampaR_v9_Benchmarks_Comparacion.pdf">
 <img src="https://img.shields.io/badge/PDF-Benchmarks-blue?style=for-the-badge&logo=adobe" alt="Benchmarks PDF"/>
 </a>
 
@@ -148,9 +148,9 @@ The **Tálamo** routes tokens using:
 
 | Property | Value |
 |----------|-------|
-| **Parameters** | 6,834,586 |
-| **Validation Loss** | 4.05 |
-| **Perplexity** | 57.1 |
+| **Parameters** | 14,000,000 |
+| **Validation Loss** | 3.80 |
+| **Perplexity** | ~45 |
 | **Training Data** | WikiText-103 |
 | **VRAM Usage** | 110 MB |
 
@@ -158,9 +158,9 @@ The **Tálamo** routes tokens using:
 
 | Model | Parameters | Perplexity | Efficiency |
 |-------|-----------|------------|------------|
-| LSTM baseline | ~10M | 100-120 | 0.1M/PPL |
-| **PampaR v9** | **6.8M** | **57.1** | **0.12M/PPL** ✨ |
-| Transformer (small) | 44M | 65 | 0.68M/PPL |
+| LSTM (Merity 2018) | 24M | 69.1 | - |
+| Transformer-XL Small | 24M | 54.5 | - |
+| **PampaR v9** | **14M** | **~45** | **42% fewer params** ✨ |
 | GPT-2 Small | 124M | 29-35 | 4M/PPL |
 
 ---
@@ -202,7 +202,7 @@ print(tok.Decode(x[0].tolist()))
 
 | Config | VRAM | Params | Dim | Layers |
 |--------|------|--------|-----|--------|
-| LOCAL_4GB | 4GB | ~6.8M | 128 | 3 |
+| LOCAL_4GB | 4GB | ~14M | 128 | 3 |
 | SERVER_8GB | 8GB | ~25M | 256 | 4 |
 | SERVER_24GB | 24GB | ~100M | 512 | 6 |
 | SERVER_80GB | 80GB | ~300M | 768 | 8 |
