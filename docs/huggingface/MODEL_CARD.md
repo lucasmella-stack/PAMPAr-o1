@@ -243,8 +243,8 @@ print(tok.Decode(x[0].tolist()))
 
 ## Contact
 
-- **Lucas Ricardo Mella Chillemi** — lucas@segundacabeza.com
-- **Web:** [segundacabeza.com](https://segundacabeza.com)
+- **Lucas Ricardo Mella Chillemi** — lucas.mella@outlook.com
+- **GitHub:** [lucasmella-stack/PAMPAr-o1](https://github.com/lucasmella-stack/PAMPAr-o1)
 
 ---
 

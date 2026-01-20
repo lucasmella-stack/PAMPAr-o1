@@ -37,4 +37,4 @@ legacy/
 
 ---
 *Organizado: 8 Enero 2026*
-*Autores: Lucas Ricardo Mella Chillemi, Alvaro (Segunda Cabeza)*
+*Autor: Lucas Ricardo Mella Chillemi*

@@ -16,4 +16,4 @@ English version: [CONTRIBUTING.md](CONTRIBUTING.md)
 Al contribuir, aceptás que tus contribuciones se licencien bajo **AGPL-3.0-or-later**.
 
 ## Contacto
-Para coordinación: lucas@segundacabeza.com
+Para coordinación: lucas.mella@outlook.com

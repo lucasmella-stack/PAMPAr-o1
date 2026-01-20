@@ -16,4 +16,4 @@ Spanish version: [CONTRIBUTING.es.md](CONTRIBUTING.es.md)
 By contributing, you agree that your contributions will be licensed under **AGPL-3.0-or-later**.
 
 ## Contact
-For coordination: lucas@segundacabeza.com
+For coordination: lucas.mella@outlook.com

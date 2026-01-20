@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "AGPL-3.0-or-later" }
 authors = [
-  { name = "Lucas Ricardo Mella Chillemi", email = "lucas@segundacabeza.com" }
+  { name = "Lucas Ricardo Mella Chillemi", email = "lucas.mella@outlook.com" }
 ]
 keywords = ["pytorch", "neural-networks", "language-model", "cerebral", "modular"]
 classifiers = [

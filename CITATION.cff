@@ -6,8 +6,8 @@ type: software
 authors:
   - family-names: "Mella Chillemi"
     given-names: "Lucas Ricardo"
-    email: "lucas@segundacabeza.com"
-    affiliation: "Segunda Cabeza"
+    email: "lucas.mella@outlook.com"
+    affiliation: "Independent Researcher"
     orcid: ""
 repository-code: "https://github.com/lucasmella-stack/PAMPAr-o1"
 url: "https://github.com/lucasmella-stack/PAMPAr-o1"

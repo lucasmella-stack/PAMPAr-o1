@@ -22,8 +22,8 @@ Arquitectura v9:
 - AXIOMAS: Razonamiento deductivo (opcional)
 - MEMORIA: Experiencia acumulada (opcional)
 
-Autor: Lucas Ricardo Mella Chillemi (Segunda Cabeza)
-Coordinador: Alvaro (Segunda Cabeza)
+Autor: Lucas Ricardo Mella Chillemi
+Contacto: lucas.mella@outlook.com
 
 Uso rápido:
     from pampar import PampaR, ConfigPampaR, LOCAL_4GB

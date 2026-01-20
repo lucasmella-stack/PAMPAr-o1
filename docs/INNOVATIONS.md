@@ -1,7 +1,6 @@
 # LLARRI-O1: Innovaciones Técnicas
 
-**Autor:** Lucas Ricardo Mella Chillemi (Segunda Cabeza)  
-**Coordinador:** Alvaro (Segunda Cabeza)  
+**Autor:** Lucas Ricardo Mella Chillemi (Independent Researcher)  
 **Fecha:** 2026-01-07
 
 > **Nota:** Los nombres de las técnicas fueron propuestos por el fundador **Lucas Ricardo Mella Chillemi** para estandarizar la comunicación del diseño.

@@ -3,8 +3,7 @@
 English version: [ARCHITECTURE.md](ARCHITECTURE.md)
 
 ## Autoría
-- Autor: Lucas Ricardo Mella Chillemi (Segunda Cabeza)
-- Coordinador: Alvaro (Segunda Cabeza)
+- Autor: Lucas Ricardo Mella Chillemi (Independent Researcher)
 - Fecha: 2026-01-07
 
 ## Visión general

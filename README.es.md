@@ -330,20 +330,13 @@ llarri-o1/
 
 ---
 
-## 👥 Créditos
+## � Autor
 
 | Rol | Nombre | Contacto |
 |-----|--------|----------|
-| **Fundador y Creador** | Lucas Ricardo Mella Chillemi | lucas@segundacabeza.com |
-| **Coordinador** | Alvaro | alvaro@segundacabeza.com |
+| **Creador** | Lucas Ricardo Mella Chillemi | lucas.mella@outlook.com |
 
-### Organización
-
-**Segunda Cabeza** — Innovación en IA
-
-- 🌐 Web: [segundacabeza.com](https://segundacabeza.com)
-- 🤗 HuggingFace: [lucas-mella/PAMPAr-o1](https://huggingface.co/lucas-mella/PAMPAr-o1)
-- 📂 GitHub: [lucasmella-stack/llarri-o1](https://github.com/lucasmella-stack/llarri-o1)
+- 📂 GitHub: [lucasmella-stack/PAMPAr-o1](https://github.com/lucasmella-stack/PAMPAr-o1)
 
 ---
 

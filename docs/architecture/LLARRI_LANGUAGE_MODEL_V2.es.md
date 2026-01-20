@@ -1,8 +1,7 @@
 # LLARRI Language Model v2 — Técnicas e Innovaciones
 
 ## Autoría y nombres
-- Autor: Lucas Ricardo Mella Chillemi (Segunda Cabeza)
-- Coordinador: Alvaro (Segunda Cabeza)
+- Autor: Lucas Ricardo Mella Chillemi (Independent Researcher)
 - Fecha: 2026-01-07
 
 **Nota sobre nomenclatura**: los nombres marcados como **“nombre propuesto por el fundador”** fueron propuestos por **Lucas Ricardo Mella Chillemi (fundador)** para estandarizar y comunicar el diseño.
