@@ -27,7 +27,7 @@ tags:
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-orange.svg)](https://pytorch.org)
 [![DOI](https://zenodo.org/badge/1104543505.svg)](https://doi.org/10.5281/zenodo.18315642)
 
-**[Español](README.es.md)** | **[Technical Paper](docs/PAPER_TECNICO.md)** | **[Architecture](docs/architecture/ARCHITECTURE.md)** | **[Benchmarks](docs/BENCHMARK_RESULTS.md)**
+**[Español](README.es.md)** | **[Technical Paper](docs/PAPER_TECNICO.md)** | **[Architecture](docs/architecture/ARCHITECTURE.md)** | **[Benchmarks](docs/BENCHMARK_RESULTS.md)** | **[Academia.edu](https://www.academia.edu/146239609/PAMPAr_o1_v9_A_Brain_Inspired_Territorial_Architecture_for_Language_Modeling_with_Explicit_Rule_Based_Routing)**
 
 </div>
 
