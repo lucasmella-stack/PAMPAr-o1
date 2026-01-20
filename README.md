@@ -25,7 +25,7 @@ tags:
 [![License: AGPL-3.0-or-later](https://img.shields.io/badge/License-AGPLv3%2B-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://python.org)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-orange.svg)](https://pytorch.org)
-[![DOI](https://img.shields.io/badge/DOI-Pending-green.svg)](#)
+[![DOI](https://zenodo.org/badge/1104543505.svg)](https://doi.org/10.5281/zenodo.18315642)
 
 **[Español](README.es.md)** | **[Technical Paper](docs/PAPER_TECNICO.md)** | **[Architecture](docs/architecture/ARCHITECTURE.md)** | **[Benchmarks](docs/BENCHMARK_RESULTS.md)**
 
