@@ -66,6 +66,55 @@ tags:
 
 ---
 
+## 📄 Documentación
+
+<table>
+<tr>
+<td width="50%" align="center">
+
+### 🏗️ Arquitectura
+<a href="https://htmlpreview.github.io/?https://github.com/lucasmella-stack/PAMPAr-o1/blob/main/diagrams/PampaR_Arquitectura.html">
+<img src="https://img.shields.io/badge/Ver-Arquitectura_(ES)-1a1a1a?style=for-the-badge&logo=readme" alt="Arquitectura ES"/>
+</a>
+<br/><br/>
+<a href="https://htmlpreview.github.io/?https://github.com/lucasmella-stack/PAMPAr-o1/blob/main/diagrams/PampaR_Architecture.html">
+<img src="https://img.shields.io/badge/View-Architecture_(EN)-555555?style=for-the-badge&logo=readme" alt="Architecture EN"/>
+</a>
+
+*Arquitectura territorial con routing LLAVES*
+
+</td>
+<td width="50%" align="center">
+
+### 📊 Benchmarks
+<a href="https://htmlpreview.github.io/?https://github.com/lucasmella-stack/PAMPAr-o1/blob/main/diagrams/PampaR_Benchmark_ES.html">
+<img src="https://img.shields.io/badge/Ver-Benchmark_(ES)-1a1a1a?style=for-the-badge&logo=readme" alt="Benchmark ES"/>
+</a>
+<br/><br/>
+<a href="https://htmlpreview.github.io/?https://github.com/lucasmella-stack/PAMPAr-o1/blob/main/diagrams/PampaR_Benchmark.html">
+<img src="https://img.shields.io/badge/View-Benchmark_(EN)-555555?style=for-the-badge&logo=readme" alt="Benchmark EN"/>
+</a>
+
+*14M params vs LSTM, Transformer-XL, GPT-2*
+
+</td>
+</tr>
+<tr>
+<td colspan="2" align="center">
+
+### 📝 Paper de Investigación
+<a href="paper/pampar_v9_arxiv.tex">
+<img src="https://img.shields.io/badge/LaTeX-Preprint_arXiv-b31b1b?style=for-the-badge&logo=arxiv" alt="arXiv Paper"/>
+</a>
+
+*Arquitectura Territorial Inspirada en el Cerebro para Modelado de Lenguaje*
+
+</td>
+</tr>
+</table>
+
+---
+
 ## 🧠 Arquitectura: Inspirada en el Cerebro
 
 PampaR ("Procesamiento Adaptativo Modular de Patrones Articulados Recurrentes") organiza el procesamiento de lenguaje como regiones cerebrales:

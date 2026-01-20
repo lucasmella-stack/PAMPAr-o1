@@ -75,22 +75,42 @@ tags:
 <tr>
 <td width="50%" align="center">
 
-### 🏗️ Architecture Diagram
-<a href="diagrams/v9-territorial/PampaR_v9_Arquitectura_Territorial.pdf">
-<img src="https://img.shields.io/badge/PDF-Architecture-red?style=for-the-badge&logo=adobe" alt="Architecture PDF"/>
+### 🏗️ Architecture
+<a href="https://htmlpreview.github.io/?https://github.com/lucasmella-stack/PAMPAr-o1/blob/main/diagrams/PampaR_Architecture.html">
+<img src="https://img.shields.io/badge/View-Architecture_(EN)-1a1a1a?style=for-the-badge&logo=readme" alt="Architecture EN"/>
+</a>
+<br/><br/>
+<a href="https://htmlpreview.github.io/?https://github.com/lucasmella-stack/PAMPAr-o1/blob/main/diagrams/PampaR_Arquitectura.html">
+<img src="https://img.shields.io/badge/Ver-Arquitectura_(ES)-555555?style=for-the-badge&logo=readme" alt="Arquitectura ES"/>
 </a>
 
-*Complete territorial architecture with frontiers and tálamo routing*
+*Territorial architecture with LLAVES routing*
 
 </td>
 <td width="50%" align="center">
 
-### 📊 Benchmarks & Comparison
-<a href="diagrams/v9-territorial/PampaR_v9_Benchmarks_Comparacion.pdf">
-<img src="https://img.shields.io/badge/PDF-Benchmarks-blue?style=for-the-badge&logo=adobe" alt="Benchmarks PDF"/>
+### 📊 Benchmarks
+<a href="https://htmlpreview.github.io/?https://github.com/lucasmella-stack/PAMPAr-o1/blob/main/diagrams/PampaR_Benchmark.html">
+<img src="https://img.shields.io/badge/View-Benchmark_(EN)-1a1a1a?style=for-the-badge&logo=readme" alt="Benchmark EN"/>
+</a>
+<br/><br/>
+<a href="https://htmlpreview.github.io/?https://github.com/lucasmella-stack/PAMPAr-o1/blob/main/diagrams/PampaR_Benchmark_ES.html">
+<img src="https://img.shields.io/badge/Ver-Benchmark_(ES)-555555?style=for-the-badge&logo=readme" alt="Benchmark ES"/>
 </a>
 
-*Performance comparison vs GPT-2, LSTM, and other models*
+*14M params vs LSTM, Transformer-XL, GPT-2*
+
+</td>
+</tr>
+<tr>
+<td colspan="2" align="center">
+
+### 📝 Research Paper
+<a href="paper/pampar_v9_arxiv.tex">
+<img src="https://img.shields.io/badge/LaTeX-arXiv_Preprint-b31b1b?style=for-the-badge&logo=arxiv" alt="arXiv Paper"/>
+</a>
+
+*Brain-Inspired Territorial Architecture for Language Modeling*
 
 </td>
 </tr>
