@@ -44,6 +44,7 @@ data/processed/
 # Model checkpoints (muy grandes para git)
 checkpoints/*.pt
 models/checkpoints/
+versions/legacy/checkpoints/*.pt
 *.bin
 *.safetensors
 *.onnx
