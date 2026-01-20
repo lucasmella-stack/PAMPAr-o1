@@ -1,40 +1,38 @@
-# LLARRI-O1 Versiones Legacy
+# PampaR — Versiones Legacy
 
-Este directorio contiene versiones anteriores del modelo que ya no están en uso activo.
+Este directorio contiene versiones anteriores del modelo conservadas como referencia histórica.
 
 ## Estructura
 
 ```
 legacy/
-├── models/           # Modelos de lenguaje v1-v6
-│   ├── language_model.py      # v1 original
-│   ├── language_model_v3.py   # v3 con cajas fractales
-│   ├── language_model_v4.py   # v4 con compresión
-│   ├── language_model_v5.py   # v5 con mejoras
-│   └── language_model_v6.py   # v6 pre-bloque neural
-├── scripts/          # Scripts de entrenamiento legacy
-│   ├── train.py
-│   ├── train_language_model.py
-│   ├── train_v3.py - train_v6.py
-│   └── test_generation*.py
-└── modules/          # Módulos no usados en versiones actuales
-    ├── compositor.py / compositor_v2.py
-    ├── reflexion.py
-    ├── niveles.py
-    └── multiescala.py
+├── checkpoints/      # Best checkpoints de cada versión
+│   ├── llarri_v3_best.pt
+│   ├── llarri_v4_best.pt
+│   ├── llarri_v5_best.pt
+│   ├── llarri_v6_best.pt
+│   ├── llarri_v6b_best.pt
+│   ├── llarri_v7_best.pt
+│   └── llarri_v7_improved_best.pt
+├── v7.3/             # Arquitectura cerebral con tálamo
+└── v8/               # Arquitectura con sinapsis
 ```
 
-## Versiones Activas (en carpeta principal)
+## Evolución del Proyecto
 
-- **v6b**: Versión actual en entrenamiento con BloqueNeuralV6
-- **v7**: Nueva arquitectura cerebral con módulos especializados
+| Versión | Descripción | Año |
+|---------|-------------|-----|
+| v3-v6 | Arquitectura fractal con cajas | 2025 |
+| v7.x | Arquitectura cerebral con tálamo y módulos | 2025 |
+| v8 | Arquitectura con sinapsis entre neuronas | 2026 |
+| **v9** | **Arquitectura territorial (actual)** | **2026** |
 
 ## Notas
 
 - Estos archivos se conservan para referencia histórica
-- No se deben modificar a menos que sea para investigación
-- Los checkpoints correspondientes están en `checkpoints/`
+- La versión activa es **v9** en `pampar/cerebro/`
+- Solo se conservan los mejores checkpoints de cada versión
 
 ---
-*Organizado: 8 Enero 2026*
+*Actualizado: 20 Enero 2026*
 *Autor: Lucas Ricardo Mella Chillemi*
