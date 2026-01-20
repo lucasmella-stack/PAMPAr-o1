@@ -1,0 +1,165 @@
+# PampaR v9 - Territorial Architecture
+
+## One-Line Definition
+
+> **"PampaR is an artificial brain where the thalamus orchestrates tokens toward specialized territories (Expressive, Contextual, Formal, Structural) that collaborate via bidirectional frontiers, combining explicit rules (LLAVES 70%) with learned attention (30%) to generate language."**
+
+---
+
+## Main Diagram
+
+```
+                         ┌─────────────────────────┐
+                         │    INPUT: "2 + 2 = ?"   │
+                         └────────────┬────────────┘
+                                      │
+                                      ▼
+                         ┌─────────────────────────┐
+                         │    EMBEDDING LAYER      │
+                         │  Token Embed + Pos Embed│
+                         └────────────┬────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    TERRITORIAL BLOCK (×N layers)                │
+│                                                                 │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │                        TÁLAMO                             │  │
+│  │   ┌─────────────────┐    ┌─────────────────┐              │  │
+│  │   │  LLAVES (70%)   │ +  │  Attention (30%)│ → Weights    │  │
+│  │   │  Token → Module │    │  Learned query  │              │  │
+│  │   └─────────────────┘    └─────────────────┘              │  │
+│  └─────────────────────────────┬─────────────────────────────┘  │
+│                                │                                │
+│              ┌─────────────────┼─────────────────┐              │
+│              ▼                 ▼                 ▼              │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │                    4 TERRITORIES                          │  │
+│  │                                                           │  │
+│  │   ┌───────────────┐              ┌───────────────┐        │  │
+│  │   │   EXPRESIVO   │◄── Frontier ►│  CONTEXTUAL   │        │  │
+│  │   │ Lang + Creativ│              │    Context    │        │  │
+│  │   └───────┬───────┘              └───────┬───────┘        │  │
+│  │           │                              │                │  │
+│  │           │◄────── Frontiers ───────────►│                │  │
+│  │           │      Bidirectional           │                │  │
+│  │   ┌───────▼───────┐              ┌───────▼───────┐        │  │
+│  │   │    FORMAL     │◄── Frontier ►│  ESTRUCTURAL  │        │  │
+│  │   │    Logic      │              │ Pattern + Math│        │  │
+│  │   └───────────────┘              └───────────────┘        │  │
+│  │                                                           │  │
+│  └───────────────────────────────────────────────────────────┘  │
+│                                │                                │
+│                                ▼                                │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │              COMBINE (weighted by Tálamo)                 │  │
+│  │         output = Σ (territory_weight × territory_output)  │  │
+│  └───────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────┬───────────────────────────────┘
+                                  │
+                                  ▼
+                         ┌─────────────────────────┐
+                         │        LM HEAD          │
+                         │  LayerNorm → Linear     │
+                         └────────────┬────────────┘
+                                      │
+                                      ▼
+                         ┌─────────────────────────┐
+                         │   OUTPUT: Next Token    │
+                         └─────────────────────────┘
+```
+
+---
+
+## Territories & Frontiers
+
+```
+                    ┌─────────────────┐
+                    │    EXPRESIVO    │
+                    │   Lang + Creat  │
+                    └────────┬────────┘
+                           ╱│╲
+                         ╱  │  ╲
+                       ╱    │    ╲
+     ┌────────────────╱     │     ╲────────────────┐
+     │              ╱       │       ╲              │
+┌────▼────┐       ╱         │         ╲       ┌───▼────┐
+│CONTEXTUAL│◄────╱          │          ╲─────►│ FORMAL │
+│ Context  │               │                 │  Logic  │
+└────┬─────┘                │                 └───┬────┘
+     │                      │                     │
+     │                ┌─────▼─────┐               │
+     └───────────────►│ESTRUCTURAL│◄──────────────┘
+                      │Pattern+Mat│
+                      └───────────┘
+
+6 Bidirectional Frontiers:
+├── Expresivo ◄─► Contextual   (0.8) - Narrative + context
+├── Expresivo ◄─► Formal       (0.5) - Argumentation
+├── Expresivo ◄─► Estructural  (0.6) - Creative patterns
+├── Contextual ◄─► Formal      (0.5) - Logical coherence
+├── Contextual ◄─► Estructural (0.6) - Patterns in context
+└── Formal ◄─► Estructural     (0.7) - Mathematical logic
+```
+
+---
+
+## Tálamo Routing
+
+```
+              INPUT: x (embeddings), token_ids
+                          │
+                          ▼
+    ┌─────────────────────────────────────────┐
+    │                TÁLAMO                   │
+    │                                         │
+    │   LLAVES (70%)         ATTENTION (30%)  │
+    │   ────────────         ───────────────  │
+    │   "el" → lenguaje      Query(x) →       │
+    │   "2"  → matemat       Softmax →        │
+    │   "si" → lógica        learned weights  │
+    │                                         │
+    │            ↓ combine ↓                  │
+    │                                         │
+    │   Module weights @ aggregation matrix   │
+    │            = Territory weights          │
+    │                                         │
+    └─────────────────────────────────────────┘
+                          │
+                          ▼
+        {expresivo: 0.2, contextual: 0.1,
+         formal: 0.1, estructural: 0.6}
+```
+
+---
+
+## Processing Example
+
+```
+Token: "El resultado de 2+2 es cuatro"
+
+Tálamo activations:
+├── "El"       → Expresivo (0.8)
+├── "resultado"→ Expresivo + Contextual
+├── "2+2"      → Estructural (0.9) ⚡
+│               └── Frontier Expresivo↔Estructural ACTIVE
+├── "es"       → Expresivo
+└── "cuatro"   → Expresivo + Estructural
+                └── Frontier ACTIVE
+
+Active frontiers: 2/6 = 66% computation saved
+```
+
+---
+
+## Benchmarks (14M params)
+
+```
+┌────────────────────┬────────┬─────────┐
+│ Model              │ Params │ PPL ↓   │
+├────────────────────┼────────┼─────────┤
+│ LSTM Baseline      │ 24M    │ 69.1    │
+│ Transformer-XL Sm  │ 24M    │ 54.5    │
+│ PampaR v9          │ 14M    │ ~45     │ ← 42% fewer params
+└────────────────────┴────────┴─────────┘
+```
