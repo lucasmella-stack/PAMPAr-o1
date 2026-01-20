@@ -49,16 +49,20 @@ tags:
 
 ## 🏆 Highlights
 
+> ⚠️ **Experimental Research**: This is a work-in-progress exploring brain-inspired architectures. Results are preliminary and require further validation.
+
 <table>
 <tr>
 <td align="center"><b>14M</b><br/>Parameters</td>
-<td align="center"><b>~45</b><br/>Perplexity</td>
+<td align="center"><b>~45</b><br/>Perplexity*</td>
 <td align="center"><b>250M+</b><br/>Tokens trained</td>
 <td align="center"><b>4GB</b><br/>VRAM (GTX 1650)</td>
 </tr>
 </table>
 
-> **Novel architecture** that outperforms LSTM and Transformer-XL (24M params) with 42% fewer parameters.  
+*Single run on WikiText-103. See [limitations](#limitations) for caveats.
+
+> **Experimental architecture** that shows promising results compared to LSTM and Transformer-XL (24M params) with 42% fewer parameters.  
 > Trained entirely on **consumer hardware** — no cloud, no A100s.
 
 ---
@@ -173,13 +177,30 @@ Trained on WikiText-103 with **14M parameters** on a **GTX 1650 4GB**:
 |-------|-----------|------------|-------|
 | LSTM (Merity et al.) | 24M | 69.1 | AWD-LSTM, 2018 |
 | Transformer-XL (Small) | 24M | 54.5 | Recurrent memory, 2019 |
-| **PampaR v9** | **14M** | **~45** | **Territorial arch., 2026** ✨ |
+| **PampaR v9** | **14M** | **~45*** | **Territorial arch., 2026** |
 | GPT-2 Small | 125M | 35.1 | Standard Transformer, 2019 |
 
-**Key insights**:
-- ✅ **PampaR beats LSTM** with **42% fewer parameters** (14M vs 24M)
-- ✅ **PampaR beats Transformer-XL Small** with **42% fewer parameters**
+*Single training run. Comparison has limitations — see [Technical Paper](docs/PAPER_TECNICO.md#52-limitations).
+
+**Preliminary observations**:
+- ⚠️ PampaR shows promising efficiency with **42% fewer parameters** than comparable baselines
+- ⚠️ Results require validation with multiple runs and additional datasets
 - ✅ Trained entirely on **consumer hardware** (4GB VRAM)
+
+---
+
+## ⚠️ Limitations {#limitations}
+
+This is experimental research with important caveats:
+
+- **Single dataset**: Only evaluated on WikiText-103
+- **Single run**: No confidence intervals or statistical analysis
+- **Limited baselines**: Comparison with 2018-2019 models only
+- **No ablations**: Individual component contributions not isolated
+- **No downstream tasks**: Only perplexity evaluation, no GLUE/reasoning benchmarks
+- **Interpretability claims**: Qualitative only, not formally validated
+
+See the [full limitations section](docs/PAPER_TECNICO.md#52-limitations) in the technical paper.
 
 ---
 
