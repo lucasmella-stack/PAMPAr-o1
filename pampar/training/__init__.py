@@ -3,7 +3,7 @@
 """
 PampaR Training - Placeholder para compatibilidad.
 
-NOTA: El entrenamiento de PampaR v9 se realiza mediante:
+NOTA: El entrenamiento de PAMPAr-o1 v9 se realiza mediante:
 - scripts/train.py: Script principal de entrenamiento
 
 Los trainers legacy fueron movidos a versions/legacy/.

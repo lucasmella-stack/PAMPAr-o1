@@ -191,7 +191,7 @@ Debido a limitaciones de hardware, implementamos **entrenamiento fragmentado**:
 |--------|------------|-------------------|
 | LSTM (Merity et al.) | 24M | 69.1 |
 | Transformer-XL | 24M | 54.5 |
-| **PampaR v9** | **14M** | **~57** |
+| **PAMPAr-o1 v9** | **14M** | **~57** |
 | GPT-2 Small | 125M | 35.1 |
 
 PampaR logra perplejidad competitiva con **40% menos parámetros** que modelos LSTM comparables.

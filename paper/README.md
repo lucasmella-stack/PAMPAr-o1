@@ -1,8 +1,8 @@
-# PampaR v9 arXiv Paper
+# PAMPAr-o1 v9 arXiv Paper
 
 ## Purpose
 
-This directory contains the LaTeX source for the arXiv preprint documenting PampaR v9's architecture and preliminary experiments.
+This directory contains the LaTeX source for the arXiv preprint documenting PAMPAr-o1 v9's architecture and preliminary experiments.
 
 ## Files
 

@@ -489,7 +489,7 @@
 
 <div align="center">
 
-**PampaR v9** — *Un cerebro artificial donde los territorios colaboran a través de fronteras*
+**PAMPAr-o1 v9** — *Un cerebro artificial donde los territorios colaboran a través de fronteras*
 
 **Hecho con ❤️ en Argentina 🇦🇷**
 

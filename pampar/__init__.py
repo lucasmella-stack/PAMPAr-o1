@@ -2,7 +2,7 @@
 # Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi 
 
 """
-PampaR v9 — Modelo de Lenguaje Cerebral con Territorios
+PAMPAr-o1 v9 — Modelo de Lenguaje Cerebral con Territorios
 ========================================================
 
 Definición en una frase:

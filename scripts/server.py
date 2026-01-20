@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi
 """
-"""PampaR v9 - API Server
+"""PAMPAr-o1 v9 - API Server
 
-Servidor HTTP/WebSocket para inferencia con PampaR v9.
+Servidor HTTP/WebSocket para inferencia con PAMPAr-o1 v9.
 Diseñado para escalabilidad en servidores con diferentes capacidades.
 
 Uso local (desarrollo):
@@ -236,7 +236,7 @@ class ModelManager:
         params = self.model.contar_parametros() if self.model else {}
         
         return {
-            'name': 'PampaR v9',
+            'name': 'PAMPAr-o1 v9',
             'version': '9.0.0',
             'parameters': params.get('total', 0),
             'device': str(self.device),
@@ -257,8 +257,8 @@ class ModelManager:
 def create_app(model_manager: ModelManager) -> 'FastAPI':
     """Crea la aplicación FastAPI."""
     app = FastAPI(
-        title="PampaR v9 API",
-        description="API para generación de texto con PampaR v9",
+        title="PAMPAr-o1 v9 API",
+        description="API para generación de texto con PAMPAr-o1 v9",
         version="9.0.0",
     )
     
@@ -394,7 +394,7 @@ def run_simple_server(model_manager: ModelManager, host: str, port: int):
 # =============================================================================
 
 def main():
-    parser = argparse.ArgumentParser(description='PampaR v9 Server')
+    parser = argparse.ArgumentParser(description='PAMPAr-o1 v9 Server')
     parser.add_argument('--checkpoint', type=str,
                        default='checkpoints/pampar_v9_best.pt',
                        help='Path al checkpoint')
@@ -430,7 +430,7 @@ def main():
     )
     
     print("\n" + "=" * 60)
-    print("PampaR v9 - SERVER")
+    print("PAMPAr-o1 v9 - SERVER")
     print("=" * 60)
     
     if args.simple or not HAS_FASTAPI:

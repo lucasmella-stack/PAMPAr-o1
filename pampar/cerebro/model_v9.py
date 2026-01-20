@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi 
 """
-PampaR v9 - Modelo de Lenguaje Cerebral con Territorios
+PAMPAr-o1 v9 - Modelo de Lenguaje Cerebral con Territorios
 
 Arquitectura cerebral que procesa tokens usando:
 - TÁLAMO: Orquestador central con LLAVES (70% reglas + 30% aprendido)
@@ -158,7 +158,7 @@ class BloqueTerrritorial(nn.Module):
 
 class PampaR(nn.Module):
     """
-    PampaR v9 - Modelo de Lenguaje con Arquitectura Cerebral Territorial
+    PAMPAr-o1 v9 - Modelo de Lenguaje con Arquitectura Cerebral Territorial
     
     Innovaciones:
     - Territorios: Agrupaciones funcionales de módulos que comparten buffer

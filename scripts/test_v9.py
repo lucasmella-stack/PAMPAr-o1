@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi
 """
-Test básico de PampaR v9
+Test básico de PAMPAr-o1 v9
 """
 
 import sys
@@ -14,7 +14,7 @@ from pampar import PampaR, LOCAL_4GB
 
 def main():
     print("="*60)
-    print("PampaR v9 - Test de Arquitectura Territorial")
+    print("PAMPAr-o1 v9 - Test de Arquitectura Territorial")
     print("="*60)
     
     # Crear modelo

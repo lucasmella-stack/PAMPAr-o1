@@ -1,7 +1,7 @@
 % SPDX-License-Identifier: CC-BY-4.0
 % Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi
 %
-% PampaR v9: A Brain-Inspired Territorial Language Model
+% PAMPAr-o1 v9: A Brain-Inspired Territorial Language Model
 % Preprint for arXiv submission
 %
 \documentclass[11pt,a4paper]{article}
@@ -27,7 +27,7 @@
 % ============================================================================
 % METADATA
 % ============================================================================
-\title{PampaR v9: A Brain-Inspired Territorial Architecture for\\
+\title{PAMPAr-o1 v9: A Brain-Inspired Territorial Architecture for\\
 Language Modeling with Explicit Rule-Based Routing}
 
 \author{
@@ -52,7 +52,7 @@ Buenos Aires, Argentina\\
 % ABSTRACT
 % ============================================================================
 \begin{abstract}
-We introduce PampaR v9, a novel language model architecture inspired by the functional organization of the human brain. Unlike conventional transformer models that rely solely on learned attention mechanisms, PampaR employs a hybrid routing system combining explicit rule-based token classification (LLAVES, 70\%) with learned attention (30\%). The architecture organizes computation into four specialized \textit{territories}---Expressive, Contextual, Formal, and Structural---coordinated by a central \textit{Thalamus} module that routes tokens based on their linguistic properties. Territories communicate through six bidirectional \textit{frontiers} with learned gating mechanisms. Preliminary experiments on WikiText-103 demonstrate that PampaR v9 achieves a perplexity of approximately 45 with only 14M parameters, outperforming LSTM baselines (69.1 PPL, 24M params) and approaching Transformer-XL Small performance (54.5 PPL, 24M params) with 42\% fewer parameters. We release all code under AGPL-3.0-or-later license to encourage further research into biologically-inspired language architectures.
+We introduce PAMPAr-o1 v9, a novel language model architecture inspired by the functional organization of the human brain. Unlike conventional transformer models that rely solely on learned attention mechanisms, PAMPAr-o1 employs a hybrid routing system combining explicit rule-based token classification (LLAVES, 70\%) with learned attention (30\%). The architecture organizes computation into four specialized \textit{territories}---Expressive, Contextual, Formal, and Structural---coordinated by a central \textit{Thalamus} module that routes tokens based on their linguistic properties. Territories communicate through six bidirectional \textit{frontiers} with learned gating mechanisms. Preliminary experiments on WikiText-103 demonstrate that PAMPAr-o1 v9 achieves a perplexity of approximately 45 with only 14M parameters, outperforming LSTM baselines (69.1 PPL, 24M params) and approaching Transformer-XL Small performance (54.5 PPL, 24M params) with 42\% fewer parameters. We release all code under AGPL-3.0-or-later license to encourage further research into biologically-inspired language architectures.
 \end{abstract}
 
 \textbf{Keywords:} language modeling, brain-inspired architecture, territorial computing, hybrid attention, rule-based routing
@@ -67,7 +67,7 @@ Modern language models have achieved remarkable performance through increasingly
 
 The human brain processes language with remarkable efficiency using specialized regions that collaborate through well-defined pathways \citep{fedorenko2014reworking}. Broca's area handles syntax and production, Wernicke's area manages comprehension, and the thalamus serves as a central relay station routing information between cortical regions \citep{sherman2006thalamus}.
 
-Inspired by this biological organization, we propose PampaR v9, a language model architecture that:
+Inspired by this biological organization, we propose PAMPAr-o1 v9, a language model architecture that:
 
 \begin{enumerate}
     \item \textbf{Organizes computation into specialized territories} analogous to cortical functional areas
@@ -149,7 +149,7 @@ PampaR v9 consists of four main components: an embedding layer, the Thalamus rou
 \draw[arrow] (0,-3.8) -- (0,-4.2);
 
 \end{tikzpicture}
-\caption{PampaR v9 territorial architecture. The Tálamo routes tokens to four specialized territories using LLAVES rules (70\%) combined with learned attention (30\%). Territories communicate through six bidirectional frontiers (dashed lines).}
+\caption{PAMPAr-o1 v9 territorial architecture. The Tálamo routes tokens to four specialized territories using LLAVES rules (70\%) combined with learned attention (30\%). Territories communicate through six bidirectional frontiers (dashed lines).}
 \label{fig:architecture}
 \end{figure}
 
@@ -262,7 +262,7 @@ where $\sigma$ is the sigmoid function, $W_g$ and $W_v$ are learned parameters, 
 
 \subsection{Experimental Setup}
 
-We evaluate PampaR v9 on WikiText-103 \citep{merity2016pointer}, a standard benchmark for language modeling containing 103 million tokens from Wikipedia articles.
+We evaluate PAMPAr-o1 v9 on WikiText-103 \citep{merity2016pointer}, a standard benchmark for language modeling containing 103 million tokens from Wikipedia articles.
 
 \textbf{Model Configuration:}
 \begin{itemize}
@@ -295,14 +295,14 @@ We evaluate PampaR v9 on WikiText-103 \citep{merity2016pointer}, a standard benc
 LSTM Baseline & 24M & 69.1 & 0.35M \\
 Transformer-XL Small & 24M & 54.5 & 0.44M \\
 \midrule
-\textbf{PampaR v9} & \textbf{14M} & \textbf{$\sim$45} & \textbf{0.31M} \\
+\textbf{PAMPAr-o1 v9} & \textbf{14M} & \textbf{$\sim$45} & \textbf{0.31M} \\
 \bottomrule
 \end{tabular}
-\caption{Perplexity comparison on WikiText-103 test set. Lower perplexity is better. PampaR v9 achieves competitive performance with 42\% fewer parameters than baselines.}
+\caption{Perplexity comparison on WikiText-103 test set. Lower perplexity is better. PAMPAr-o1 v9 achieves competitive performance with 42\% fewer parameters than baselines.}
 \label{tab:results}
 \end{table}
 
-PampaR v9 achieves approximately 45 perplexity with only 14M parameters, demonstrating:
+PAMPAr-o1 v9 achieves approximately 45 perplexity with only 14M parameters, demonstrating:
 
 \begin{enumerate}
     \item \textbf{Parameter efficiency}: 42\% fewer parameters than comparable models
@@ -370,11 +370,11 @@ While PampaR does not claim biological accuracy, the territorial organization mi
 \section{Conclusion}
 \label{sec:conclusion}
 
-We presented PampaR v9, a brain-inspired language model architecture that organizes computation into specialized territories coordinated by a hybrid rule-attention routing mechanism. Preliminary results on WikiText-103 demonstrate competitive perplexity ($\sim$45) with significantly fewer parameters (14M) than comparable approaches.
+We presented PAMPAr-o1 v9, a brain-inspired language model architecture that organizes computation into specialized territories coordinated by a hybrid rule-attention routing mechanism. Preliminary results on WikiText-103 demonstrate competitive perplexity ($\sim$45) with significantly fewer parameters (14M) than comparable approaches.
 
 The LLAVES system offers a middle ground between fully learned and fully symbolic approaches, providing interpretability benefits while maintaining end-to-end trainability. The territorial architecture suggests that functional specialization, inspired by cortical organization, may offer efficiency advantages for language modeling.
 
-We release PampaR v9 as open-source software under AGPL-3.0-or-later license, along with trained checkpoints, to encourage further research into biologically-inspired language architectures.
+We release PAMPAr-o1 v9 as open-source software under AGPL-3.0-or-later license, along with trained checkpoints, to encourage further research into biologically-inspired language architectures.
 
 % ============================================================================
 % ACKNOWLEDGMENTS
@@ -405,7 +405,7 @@ Hardware requirements: NVIDIA GPU with 4GB+ VRAM. Training reproduces within $\p
 % ============================================================================
 \section*{Ethics Statement}
 
-PampaR v9 is a language model trained on publicly available Wikipedia text. While we have not specifically evaluated the model for biases, the relatively small scale (14M parameters) limits its capacity for generating harmful content compared to larger models. The AGPL-3.0-or-later license ensures that derivative works remain open source, promoting transparency in AI development.
+PAMPAr-o1 v9 is a language model trained on publicly available Wikipedia text. While we have not specifically evaluated the model for biases, the relatively small scale (14M parameters) limits its capacity for generating harmful content compared to larger models. The AGPL-3.0-or-later license ensures that derivative works remain open source, promoting transparency in AI development.
 
 % ============================================================================
 % REFERENCES

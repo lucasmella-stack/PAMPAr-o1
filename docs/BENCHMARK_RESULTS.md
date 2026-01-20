@@ -1,6 +1,6 @@
-# PampaR v9 - Resultados de Benchmark
+# PAMPAr-o1 v9 - Resultados de Benchmark
 **Fecha:** 13 de Enero de 2026  
-**Modelo:** PampaR v9 Territorial (14M parámetros)  
+**Modelo:** PAMPAr-o1 v9 Territorial (14M parámetros)  
 **Checkpoint:** `pampar_fragmentado_best.pt` (Fragmento 3, Epoch 9)  
 **Hardware:** NVIDIA GTX 1650 4GB VRAM  
 
@@ -24,7 +24,7 @@
 |--------|------------|-----|-----|-------|
 | LSTM (Merity et al.) | 24M | 69.1 | 2018 | AWD-LSTM |
 | Transformer-XL (Small) | 24M | 54.5 | 2019 | Memoria recurrente |
-| **PampaR v9** | **14M** | **50.7** | **2026** | **Arquitectura territorial** |
+| **PAMPAr-o1 v9** | **14M** | **50.7** | **2026** | **Arquitectura territorial** |
 | GPT-2 Small | 125M | 35.1 | 2019 | Transformer estándar |
 | GPT-2 Medium | 355M | 26.4 | 2019 | Transformer estándar |
 | Transformer-XL (Large) | 257M | 18.3 | 2019 | Memoria recurrente |
@@ -114,7 +114,7 @@ Interpretación:
 |--------|------------|-----|--------------|------------|
 | LSTM (Merity) | 24M | 69.1 | 2.88 | Base |
 | Transformer-XL | 24M | 54.5 | 2.27 | 1.27x |
-| **PampaR v9** | **14M** | **50.7** | **3.62** | **0.80x** |
+| **PAMPAr-o1 v9** | **14M** | **50.7** | **3.62** | **0.80x** |
 | GPT-2 Small | 125M | 35.1 | 0.28 | 10.3x |
 
 > **Nota:** Menor PPL/M Params = más eficiente. PampaR logra buen PPL con muy pocos parámetros, pero GPT-2 es más eficiente a escala.
@@ -146,7 +146,7 @@ Interpretación:
 
 ```python
 # Modelo
-model = PampaR v9 (14,069,410 parámetros)
+model = PAMPAr-o1 v9 (14,069,410 parámetros)
 checkpoint = "checkpoints/pampar_fragmentado_best.pt"
 device = cuda (GTX 1650)
 

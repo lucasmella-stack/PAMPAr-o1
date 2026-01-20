@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
-title: "PampaR: Cerebral Language Model with Territorial Architecture"
+title: "PAMPAr-o1: Cerebral Language Model with Territorial Architecture"
 version: "9.0.0"
 type: software
 authors:
@@ -38,7 +38,7 @@ preferred-citation:
     - family-names: "Mella Chillemi"
       given-names: "Lucas Ricardo"
       email: "lucas.mella@outlook.com"
-  title: "PampaR v9: A Brain-Inspired Territorial Architecture for Language Modeling with Explicit Rule-Based Routing"
+  title: "PAMPAr-o1 v9: A Brain-Inspired Territorial Architecture for Language Modeling with Explicit Rule-Based Routing"
   year: 2026
   # arxiv: "XXXX.XXXXX"  # TODO: Update after arXiv submission
   url: "https://github.com/lucasmella-stack/PAMPAr-o1/blob/main/paper/pampar_v9_arxiv.tex"

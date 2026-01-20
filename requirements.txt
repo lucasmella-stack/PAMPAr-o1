@@ -1,4 +1,4 @@
-# PampaR v9 - Cerebral Language Model with Territorial Architecture
+# PAMPAr-o1 v9 - Cerebral Language Model with Territorial Architecture
 # Dependencies
 # Author: Lucas Ricardo Mella Chillemi
 

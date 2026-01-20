@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi 
 """
-PampaR v9 - Modelo de Lenguaje Cerebral con Territorios
+PAMPAr-o1 v9 - Modelo de Lenguaje Cerebral con Territorios
 
 ============================================================
 DEFINICIÓN EN UNA FRASE:

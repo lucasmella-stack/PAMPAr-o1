@@ -16,7 +16,7 @@ tags:
 pipeline_tag: text-generation
 ---
 
-# 🦙 PampaR v9 — Modelo de Lenguaje Cerebral
+# 🦙 PAMPAr-o1 v9 — Modelo de Lenguaje Cerebral
 
 <div align="center">
 
@@ -56,11 +56,11 @@ pipeline_tag: text-generation
 
 ---
 
-## ¿Qué es PampaR v9?
+## ¿Qué es PAMPAr-o1 v9?
 
 > **"PampaR es un cerebro artificial donde el tálamo orquesta tokens hacia territorios especializados (Expresivo, Contextual, Formal, Estructural) que colaboran vía fronteras bidireccionales, combinando reglas explícitas (LLAVES 70%) con atención aprendida (30%) para generar lenguaje."**
 
-PampaR v9 es un **modelo de lenguaje inspirado en el cerebro** con una arquitectura **territorial** única:
+PAMPAr-o1 v9 es un **modelo de lenguaje inspirado en el cerebro** con una arquitectura **territorial** única:
 
 - **4 Territorios Especializados** (agrupaciones de módulos neuronales relacionados)
 - **6 Fronteras Bidireccionales** (conexiones aprendidas entre territorios)
@@ -144,7 +144,7 @@ El **Tálamo** rutea tokens usando:
 | Modelo | Parámetros | Perplejidad | Eficiencia |
 |--------|-----------|-------------|------------|
 | LSTM baseline | ~10M | 100-120 | 0.1M/PPL |
-| **PampaR v9** | **6.8M** | **57.1** | **0.12M/PPL** ✨ |
+| **PAMPAr-o1 v9** | **6.8M** | **57.1** | **0.12M/PPL** ✨ |
 | Transformer (small) | 44M | 65 | 0.68M/PPL |
 | GPT-2 Small | 124M | 29-35 | 4M/PPL |
 

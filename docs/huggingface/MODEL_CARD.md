@@ -31,7 +31,7 @@ model-index:
       value: 14000000
 ---
 
-# 🦙 PampaR v9 — Cerebral Language Model
+# 🦙 PAMPAr-o1 v9 — Cerebral Language Model
 
 <div align="center">
 
@@ -71,11 +71,11 @@ model-index:
 
 ---
 
-## What is PampaR v9?
+## What is PAMPAr-o1 v9?
 
 > **"PampaR is an artificial brain where the thalamus orchestrates tokens toward specialized territories (Expressive, Contextual, Formal, Structural) that collaborate via bidirectional frontiers, combining explicit rules (LLAVES 70%) with learned attention (30%) to generate language."**
 
-PampaR v9 is a **brain-inspired language model** with a unique **territorial architecture**:
+PAMPAr-o1 v9 is a **brain-inspired language model** with a unique **territorial architecture**:
 
 - **4 Specialized Territories** (groupings of related neural modules)
 - **6 Bidirectional Frontiers** (learned inter-territory connections)
@@ -160,7 +160,7 @@ The **Tálamo** routes tokens using:
 |-------|-----------|------------|------------|
 | LSTM (Merity 2018) | 24M | 69.1 | - |
 | Transformer-XL Small | 24M | 54.5 | - |
-| **PampaR v9** | **14M** | **~45** | **42% fewer params** ✨ |
+| **PAMPAr-o1 v9** | **14M** | **~45** | **42% fewer params** ✨ |
 | GPT-2 Small | 124M | 29-35 | 4M/PPL |
 
 ---

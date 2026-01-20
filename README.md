@@ -16,9 +16,9 @@ tags:
 
 <div align="center">
 
-<img src="PAMPAr-o1-imagen.png" alt="PampaR Logo" width="200"/>
+<img src="PAMPAr-o1-imagen.png" alt="PAMPAr-o1 Logo" width="200"/>
 
-# 🦙 PampaR v9
+# 🦙 PAMPAr-o1 v9
 
 ### Cerebral Language Model with Territorial Architecture
 
@@ -122,7 +122,7 @@ tags:
 
 > **"PampaR is an artificial brain where the thalamus orchestrates tokens toward specialized territories (Expressive, Contextual, Formal, Structural) that collaborate via bidirectional frontiers, combining explicit rules (LLAVES 70%) with learned attention (30%) to generate language."**
 
-PampaR v9 reimagines neural language models through a **brain-inspired territorial architecture**. Instead of uniform transformer layers, it uses **4 specialized territories** connected by **6 bidirectional frontiers**, coordinated by a central **tálamo** (thalamus) that routes tokens using hybrid rule-based + learned attention.
+PAMPAr-o1 v9 reimagines neural language models through a **brain-inspired territorial architecture**. Instead of uniform transformer layers, it uses **4 specialized territories** connected by **6 bidirectional frontiers**, coordinated by a central **tálamo** (thalamus) that routes tokens using hybrid rule-based + learned attention.
 
 ---
 
@@ -199,7 +199,7 @@ Trained on WikiText-103 with **14M parameters** on a **GTX 1650 4GB**:
 |-------|-----------|------------|-------|
 | LSTM (Merity et al.) | 24M | 69.1 | AWD-LSTM, 2018 |
 | Transformer-XL (Small) | 24M | 54.5 | Recurrent memory, 2019 |
-| **PampaR v9** | **14M** | **~45*** | **Territorial arch., 2026** |
+| **PAMPAr-o1 v9** | **14M** | **~45*** | **Territorial arch., 2026** |
 | GPT-2 Small | 125M | 35.1 | Standard Transformer, 2019 |
 
 *Single training run. Comparison has limitations — see [Technical Paper](docs/PAPER_TECNICO.md#52-limitations).

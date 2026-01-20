@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi
 """
-Test real del modelo PampaR v9 - Pruebas de generación y evaluación
+Test real del modelo PAMPAr-o1 v9 - Pruebas de generación y evaluación
 """
 
 import torch
@@ -278,7 +278,7 @@ def run_coherence_test(model, tokenizer, device):
 
 def main():
     print("="*70)
-    print("🧪 TEST REAL - PampaR v9 Territorial")
+    print("🧪 TEST REAL - PAMPAr-o1 v9 Territorial")
     print("="*70)
     
     # Cargar modelo

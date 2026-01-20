@@ -1,11 +1,11 @@
-# PampaR Copilot Instructions
+# PAMPAr-o1 Copilot Instructions
 
 ## Definición en Una Frase
 
-> **"PampaR es un cerebro artificial donde el tálamo orquesta tokens hacia territorios especializados (Expresivo, Contextual, Formal, Estructural) que colaboran via fronteras bidireccionales, combinando reglas explícitas (LLAVES 70%) con atención aprendida (30%) para generar lenguaje."**
+> **"PAMPAr-o1 es un cerebro artificial donde el tálamo orquesta tokens hacia territorios especializados (Expresivo, Contextual, Formal, Estructural) que colaboran via fronteras bidireccionales, combinando reglas explícitas (LLAVES 70%) con atención aprendida (30%) para generar lenguaje."**
 
 ## Project Overview
-PampaR v9 is a **cerebral language model** with brain-inspired territorial architecture. The model uses 4 specialized "territories" containing 6 "neurons", coordinated by a central "thalamus" (Tálamo) that routes tokens using explicit rules (LLAVES) + learned attention.
+PAMPAr-o1 v9 is a **cerebral language model** with brain-inspired territorial architecture. The model uses 4 specialized "territories" containing 6 "neurons", coordinated by a central "thalamus" (Tálamo) that routes tokens using explicit rules (LLAVES) + learned attention.
 
 ## Architecture v9 (Territorial)
 

@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi
 """
-Entrenamiento fragmentado de PampaR v9.
+Entrenamiento fragmentado de PAMPAr-o1 v9.
 Diseñado para entrenar en sesiones cortas con guardado frecuente.
 Puede resumirse en cualquier momento con --resume.
 
@@ -80,7 +80,7 @@ def entrenar_fragmento(fragmento_num: int, config: ConfigPampaR, resume: bool = 
     
     device = get_optimal_device()
     print(f"\n{'='*60}")
-    print(f"🧠 PampaR v9 - Entrenamiento Fragmentado")
+    print(f"🧠 PAMPAr-o1 v9 - Entrenamiento Fragmentado")
     print(f"{'='*60}")
     print(f"📊 Fragmento: {fragmento_num}")
     print(f"🖥️  Device: {device}")
@@ -330,7 +330,7 @@ def entrenar_fragmento(fragmento_num: int, config: ConfigPampaR, resume: bool = 
 # ============================================================================
 
 def main():
-    parser = argparse.ArgumentParser(description="Entrenamiento fragmentado de PampaR v9")
+    parser = argparse.ArgumentParser(description="Entrenamiento fragmentado de PAMPAr-o1 v9")
     parser.add_argument('--fragmento', type=int, choices=list(FRAGMENTOS.keys()),
                         help='Número de fragmento a entrenar (1-6)')
     parser.add_argument('--resume', action='store_true',
@@ -381,7 +381,7 @@ def main():
     
     else:
         # Mostrar ayuda
-        print("\n🧠 PampaR v9 - Entrenamiento Fragmentado")
+        print("\n🧠 PAMPAr-o1 v9 - Entrenamiento Fragmentado")
         print("="*50)
         print("\nFragmentos disponibles:")
         for num, info in FRAGMENTOS.items():

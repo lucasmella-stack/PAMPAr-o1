@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi
 """
-Test de generación de texto con PampaR v9.
+Test de generación de texto con PAMPAr-o1 v9.
 Compara con estadísticas de otros modelos.
 """
 
@@ -19,7 +19,7 @@ def main():
     # Cargar modelo
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print("="*60)
-    print("PampaR v9 - Test de Generación")
+    print("PAMPAr-o1 v9 - Test de Generación")
     print("="*60)
     
     ckpt = torch.load('checkpoints/pampar_v9_best.pt', map_location=device, weights_only=False)
@@ -46,7 +46,7 @@ def main():
     val_loss = ckpt.get('val_loss', None)
     perplexity = ckpt.get('perplexity', None)
     
-    print(f"\n📊 Modelo: PampaR v9 (Territorial)")
+    print(f"\n📊 Modelo: PAMPAr-o1 v9 (Territorial)")
     print(f"   Parámetros: {n_params:,} ({n_params/1e6:.1f}M)")
     print(f"   Device: {device}")
     print(f"   Val Loss: {val_loss:.4f}" if val_loss else "   Val Loss: N/A")
@@ -112,7 +112,7 @@ def main():
 ┌───────────────────────┬────────────┬─────────────┬────────────────┐
 │ Modelo                │ Parámetros │ Perplexity  │ Arquitectura   │
 ├───────────────────────┼────────────┼─────────────┼────────────────┤
-│ PampaR v9 (local)     │   ~14M     │   ~45       │ Territorial 4  │
+│ PAMPAr-o1 v9 (local)  │   ~14M     │   ~45       │ Territorial 4  │
 ├───────────────────────┼────────────┼─────────────┼────────────────┤
 │ GPT-2 Small           │   124M     │   ~35-40    │ Transformer    │
 │ GPT-2 Medium          │   355M     │   ~25-30    │ Transformer    │
@@ -124,9 +124,9 @@ def main():
     
     print("📊 ANÁLISIS:")
     print(f"""
-    PampaR v9 tiene {n_params/1e6:.1f}M params vs GPT-2 Small con 124M.
+    PAMPAr-o1 v9 tiene {n_params/1e6:.1f}M params vs GPT-2 Small con 124M.
     
-    - PampaR es ~9x más pequeño que GPT-2 Small
+    - PAMPAr-o1 es ~9x más pequeño que GPT-2 Small
     - Perplexity competitivo (~45) a pesar del tamaño
     - Arquitectura territorial con 4 territorios especializados
     

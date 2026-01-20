@@ -1,6 +1,6 @@
-# PampaR v9 - Documentation
+# PAMPAr-o1 v9 - Documentation
 
-Technical documentation for the PampaR v9 territorial language model.
+Technical documentation for the PAMPAr-o1 v9 territorial language model.
 
 ## Documents
 

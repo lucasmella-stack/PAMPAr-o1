@@ -16,9 +16,9 @@ tags:
 
 <div align="center">
 
-<img src="PAMPAr-o1-imagen.png" alt="PampaR Logo" width="200"/>
+<img src="PAMPAr-o1-imagen.png" alt="PAMPAr-o1 Logo" width="200"/>
 
-# 🦙 PampaR v9
+# 🦙 PAMPAr-o1 v9
 
 ### Modelo de Lenguaje Cerebral con Arquitectura Territorial
 
@@ -201,7 +201,7 @@ python scripts/train.py --tokens 50M --epochs 30
 |--------|------------|-------------|----------|
 | LSTM (Merity 2018) | 24M | 69.1 | - |
 | Transformer-XL Small | 24M | 54.5 | - |
-| **PampaR v9** | **14M** | **~45** | GTX 1650 4GB |
+| **PAMPAr-o1 v9** | **14M** | **~45** | GTX 1650 4GB |
 
 ### Por qué Importa
 

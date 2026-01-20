@@ -711,7 +711,7 @@ Cada técnica está implementada en el código fuente:
 
 <div align="center">
 
-**PampaR v9** — *An artificial brain where territories collaborate through frontiers*
+**PAMPAr-o1 v9** — *An artificial brain where territories collaborate through frontiers*
 
 **Made with ❤️ in Argentina 🇦🇷**
 

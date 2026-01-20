@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi
 """
-Utilidades para PampaR v9.
+Utilidades para PAMPAr-o1 v9.
 
 Módulos:
 - device.py: Detección de dispositivos (CPU/GPU)

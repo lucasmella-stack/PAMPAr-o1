@@ -1,4 +1,4 @@
-# PampaR v9 - Territorial Architecture
+# PAMPAr-o1 v9 - Territorial Architecture
 
 ## One-Line Definition
 
@@ -160,6 +160,6 @@ Active frontiers: 2/6 = 66% computation saved
 ├────────────────────┼────────┼─────────┤
 │ LSTM Baseline      │ 24M    │ 69.1    │
 │ Transformer-XL Sm  │ 24M    │ 54.5    │
-│ PampaR v9          │ 14M    │ ~45     │ ← 42% fewer params
+│ PAMPAr-o1 v9       │ 14M    │ ~45     │ ← 42% fewer params
 └────────────────────┴────────┴─────────┘
 ```

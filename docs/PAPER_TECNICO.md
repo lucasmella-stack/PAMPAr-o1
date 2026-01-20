@@ -204,7 +204,7 @@ Due to hardware constraints, I implement **fragmented training**:
 |-------|------------|-------------------|------|
 | LSTM (Merity et al.) | 24M | 69.1 | 2018 |
 | Transformer-XL Small | 24M | 54.5 | 2019 |
-| **PampaR v9** | **14M** | **~45** | **2026** |
+| **PAMPAr-o1 v9** | **14M** | **~45** | **2026** |
 | GPT-2 Small | 125M | 35.1 | 2019 |
 
 **Preliminary finding**: My results suggest PampaR may achieve **comparable or better perplexity than Transformer-XL Small** with **42% fewer parameters**, trained entirely on consumer hardware.

@@ -1,4 +1,4 @@
-# 📋 Checklist de Publicación - PampaR v9
+# 📋 Checklist de Publicación - PAMPAr-o1 v9
 
 Este documento te guía paso a paso para publicar PampaR de forma profesional.
 
@@ -70,10 +70,10 @@ git filter-branch --force --index-filter \
 ### 3.3 Crear Release en GitHub
 1. Ve a **Releases** → **Create a new release**
 2. Tag: `v9.0.0`
-3. Title: `PampaR v9.0.0 - Arquitectura Territorial`
+3. Title: `PAMPAr-o1 v9.0.0 - Arquitectura Territorial`
 4. Descripción:
 ```markdown
-## 🦙 PampaR v9.0.0 - Arquitectura Territorial
+## 🦙 PAMPAr-o1 v9.0.0 - Arquitectura Territorial
 
 ### Destacados
 • 14M parámetros, PPL ~45 en WikiText-103

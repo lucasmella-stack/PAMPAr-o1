@@ -2,7 +2,7 @@
 # Copyright (c) 2024-2026 Lucas Ricardo Mella Chillemi
 
 """
-Tests para PampaR v9 (Arquitectura Territorial).
+Tests para PAMPAr-o1 v9 (Arquitectura Territorial).
 """
 
 from __future__ import annotations
