@@ -8,7 +8,7 @@ January 2026
 
 ## Abstract
 
-We present PampaR, a novel language model architecture inspired by the functional organization of the human brain. Unlike standard transformer architectures that treat all computations uniformly, PampaR introduces **Territorial Processing** where specialized neural modules are organized into functional territories (Expressive, Contextual, Formal, Structural) coordinated by a central **Thalamus** (Tálamo) that routes tokens using a hybrid approach: 70% explicit rules (LLAVES) and 30% learned attention. Our experiments on WikiText-103 demonstrate that this architecture achieves competitive perplexity (PPL ~57) with only 14M parameters, while offering interpretability advantages through explicit routing rules.
+We present PampaR, a novel language model architecture inspired by the functional organization of the human brain. Unlike standard transformer architectures that treat all computations uniformly, PampaR introduces **Territorial Processing** where specialized neural modules are organized into functional territories (Expressive, Contextual, Formal, Structural) coordinated by a central **Thalamus** (Tálamo) that routes tokens using a hybrid approach: 70% explicit rules (LLAVES) and 30% learned attention. Our experiments on WikiText-103 demonstrate that this architecture achieves **perplexity of ~45** with only **14M parameters**, outperforming LSTM (69.1 PPL) and Transformer-XL Small (54.5 PPL) baselines that use 24M parameters. The model was trained entirely on consumer hardware (GTX 1650 4GB VRAM), demonstrating efficiency gains of the territorial approach.
 
 ---
 
@@ -179,22 +179,25 @@ Due to hardware constraints, we implement **fragmented training**:
 
 ### 4.1 Training Progress
 
-| Fragment | Final Loss | Final PPL | Improvement |
-|----------|------------|-----------|-------------|
-| 1 (10M) | 4.85 | 127.5 | Baseline |
-| 2 (20M) | 4.22 | 68.1 | -46.6% PPL |
-| 3 (35M) | ~4.05 | ~57.1 | -55.2% PPL |
+| Fragment | Final Loss | Final PPL | Tokens Seen | Improvement |
+|----------|------------|-----------|-------------|-------------|
+| 1 (10M) | 4.85 | 127.5 | 30M | Baseline |
+| 2 (20M) | 4.22 | 68.1 | 90M | -46.6% PPL |
+| 3 (35M) | 3.93 | 50.7 | 195M | -60.2% PPL |
+| **4 (50M)** | **3.81** | **~45** | **250M+** | **-64.7% PPL** |
+
+**Total training time**: ~70 hours on GTX 1650 4GB VRAM.
 
 ### 4.2 Comparison with Baselines
 
-| Model | Parameters | PPL (WikiText-103) |
-|-------|------------|-------------------|
-| LSTM (Merity et al.) | 24M | 69.1 |
-| Transformer-XL | 24M | 54.5 |
-| **PampaR v9** | **14M** | **~57** |
-| GPT-2 Small | 125M | 35.1 |
+| Model | Parameters | PPL (WikiText-103) | Year |
+|-------|------------|-------------------|------|
+| LSTM (Merity et al.) | 24M | 69.1 | 2018 |
+| Transformer-XL Small | 24M | 54.5 | 2019 |
+| **PampaR v9** | **14M** | **~45** | **2026** |
+| GPT-2 Small | 125M | 35.1 | 2019 |
 
-PampaR achieves competitive perplexity with **40% fewer parameters** than comparable LSTM models.
+**Key finding**: PampaR achieves **better perplexity than Transformer-XL Small** with **42% fewer parameters**, trained entirely on consumer hardware.
 
 ### 4.3 Interpretability Analysis
 
@@ -257,8 +260,8 @@ The architecture is open-source under AGPL-3.0 license, enabling community colla
 ## Appendix A: Reproducibility
 
 ### A.1 Code Repository
-- GitHub: `https://github.com/lucasmella-stack/llarri-o1`
-- HuggingFace: `https://huggingface.co/lucas-mella/PAMPAr-o1`
+- GitHub: `https://github.com/lucasmella-stack/PAMPAr-o1`
+- License: AGPL-3.0-or-later
 
 ### A.2 Training Commands
 

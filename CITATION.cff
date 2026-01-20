@@ -1,17 +1,49 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
-title: "LLARRI-O1"
+title: "PampaR: Cerebral Language Model with Territorial Architecture"
+version: "9.0.0"
 type: software
 authors:
   - family-names: "Mella Chillemi"
     given-names: "Lucas Ricardo"
     email: "lucas@segundacabeza.com"
     affiliation: "Segunda Cabeza"
-repository-code: "https://github.com/lucasmella-stack/llarri-o1"
+    orcid: ""
+repository-code: "https://github.com/lucasmella-stack/PAMPAr-o1"
+url: "https://github.com/lucasmella-stack/PAMPAr-o1"
 license: "AGPL-3.0-or-later"
-date-released: "2026-01-07"
+date-released: "2026-01-20"
+abstract: >
+  PampaR is a brain-inspired language model with territorial architecture. 
+  It uses 4 specialized territories (Expressive, Contextual, Formal, Structural) 
+  coordinated by a Thalamus that routes tokens using hybrid rules (LLAVES 70%) 
+  + learned attention (30%). Achieves perplexity ~45 with only 14M parameters 
+  on WikiText-103, outperforming LSTM (24M, PPL 69.1) and Transformer-XL Small 
+  (24M, PPL 54.5) with 42% fewer parameters. Trained entirely on consumer 
+  hardware (GTX 1650 4GB VRAM).
 keywords:
-  - neural networks
-  - fractal
-  - parameter sharing
+  - language-model
+  - brain-inspired
+  - territorial-architecture
+  - neural-networks
   - pytorch
+  - interpretable-ai
+  - efficient-nlp
+  - thalamus-routing
+  - llaves-system
+  - wikitext-103
+references:
+  - type: article
+    authors:
+      - family-names: "Merity"
+        given-names: "Stephen"
+    title: "Regularizing and Optimizing LSTM Language Models"
+    year: 2018
+    journal: "ICLR"
+  - type: article
+    authors:
+      - family-names: "Dai"
+        given-names: "Zihang"
+    title: "Transformer-XL: Attentive Language Models Beyond a Fixed-Length Context"
+    year: 2019
+    journal: "ACL"

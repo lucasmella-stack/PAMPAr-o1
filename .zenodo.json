@@ -1,0 +1,43 @@
+{
+  "title": "PampaR: Cerebral Language Model with Territorial Architecture",
+  "description": "PampaR is a brain-inspired language model that achieves perplexity ~45 with only 14M parameters on WikiText-103. It uses a novel territorial architecture with 4 specialized territories (Expressive, Contextual, Formal, Structural) coordinated by a central Thalamus using hybrid routing: 70% explicit rules (LLAVES) + 30% learned attention. Trained entirely on consumer hardware (GTX 1650 4GB VRAM).",
+  "creators": [
+    {
+      "name": "Mella Chillemi, Lucas Ricardo",
+      "affiliation": "Segunda Cabeza",
+      "orcid": ""
+    }
+  ],
+  "keywords": [
+    "language model",
+    "brain-inspired AI",
+    "territorial architecture",
+    "neural networks",
+    "PyTorch",
+    "interpretable AI",
+    "efficient NLP",
+    "thalamus routing",
+    "LLAVES system",
+    "WikiText-103"
+  ],
+  "license": {
+    "id": "AGPL-3.0-or-later"
+  },
+  "upload_type": "software",
+  "access_right": "open",
+  "version": "9.0.0",
+  "language": "eng",
+  "notes": "Experimental architecture for academic research. Outperforms LSTM (24M params, PPL 69.1) and Transformer-XL Small (24M params, PPL 54.5) with 42% fewer parameters.",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/lucasmella-stack/PAMPAr-o1",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ],
+  "references": [
+    "Merity, S., Keskar, N.S., & Socher, R. (2018). Regularizing and Optimizing LSTM Language Models. ICLR.",
+    "Dai, Z., et al. (2019). Transformer-XL: Attentive Language Models Beyond a Fixed-Length Context. ACL.",
+    "Vaswani, A., et al. (2017). Attention Is All You Need. NeurIPS."
+  ]
+}

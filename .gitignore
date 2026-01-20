@@ -1,18 +1,76 @@
+# Python
 __pycache__/
 *.pyc
-.DS_Store
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+.eggs/
+*.manifest
+*.spec
+
+# Environment
 .env
+.env.local
+.venv/
 venv/
+ENV/
+env/
+
+# IDE
 .idea/
 .vscode/
-data/external/
-data/processed/
-models/checkpoints/
-outputs/
-llarri-o1-model/*.bin
-*.bin
+*.swp
+*.swo
+*~
 
+# OS
+.DS_Store
+Thumbs.db
+*.log
+
+# Data (se descarga con scripts/)
 data/wikitext-103/
 data/MNIST/
+data/external/
+data/processed/
 *.raw
+
+# Model checkpoints (muy grandes para git)
 checkpoints/*.pt
+models/checkpoints/
+*.bin
+*.safetensors
+*.onnx
+
+# Outputs
+outputs/
+*.ckpt
+wandb/
+runs/
+tensorboard/
+
+# Tests
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Build
+*.egg-info/
+.installed.cfg
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Secrets (NUNCA subir)
+*.pem
+*.key
+secrets/
+credentials/
