@@ -1,0 +1,280 @@
+PAMPAR-O1 V9: A BRAIN-INSPIRED TERRITORIAL ARCHITECTURE 
+FOR LANGUAGE MODELING WITH HYBRID NEURO-SYMBOLIC ROUTING
+
+Lucas Ricardo Mella Chillemi
+
+Independent Researcher, Buenos Aires, Argentina
+lucas.mella.chillemi@gmail.com
+
+ABSTRACT
+
+We introduce PAMPAr-o1 v9, a novel language model architecture inspired by the functional organization of the human brain. Unlike conventional transformer models relying solely on learned attention, PAMPAr-o1 employs a hybrid neuro-symbolic routing system combining explicit rule-based token classification (LLAVES, 70%) with learned attention (30%). The architecture organizes computation into four specialized territories coordinated by a central Thalamus module. Experiments on WikiText-103 demonstrate competitive perplexity (~45) with only 14M parameters, outperforming LSTM baselines (69.1 PPL, 24M params) with 42% fewer parameters. The explicit routing provides inherent interpretability absent in pure neural approaches.
+
+KEYWORDS
+
+Language Modeling,      Neuro-Symbolic AI,      Brain-Inspired Architecture,      Interpretable NLP,      Efficient LLMs
+
+1.	INTRODUCTION
+
+Modern language models have achieved remarkable performance through increasingly large transformer architectures with billions of parameters [1, 2]. However, this scaling approach presents several challenges: high computational costs, lack of interpretability, and departure from the efficiency principles observed in biological neural systems.
+
+The human brain processes language with remarkable efficiency using specialized regions that collaborate through well-defined pathways [3]. Broca's area handles syntax and production, Wernicke's area manages comprehension, and the thalamus serves as a central relay station routing information between cortical regions [4].
+
+Inspired by this biological organization, we propose PAMPAr-o1 v9, a language model architecture that: (1) organizes computation into specialized territories analogous to cortical functional areas; (2) uses explicit rule-based routing (LLAVES system) combined with learned attention for token classification; (3) implements bidirectional frontiers between territories for inter-regional communication; and (4) achieves competitive performance with significantly fewer parameters than conventional approaches.
+
+Our contributions include: a novel territorial architecture for language modeling, the LLAVES hybrid routing mechanism combining rules and attention, experimental results demonstrating parameter efficiency, and open-source implementation available at https://github.com/lucasmella-stack/PAMPAr-o1.
+
+2.	RELATED WORK
+
+2.1.	Brain-Inspired Neural Architectures
+
+Several works have explored biologically-inspired modifications to neural networks. Hassabis et al. [5] argue for deeper integration of neuroscience insights into AI. Memory-augmented networks [6] incorporate external memory inspired by hippocampal function. Sparse mixture-of-experts models [7] implement a form of specialized routing, though without explicit linguistic rules.
+
+2.2.	Efficient Language Models
+
+Research on parameter-efficient language modeling includes knowledge distillation [8], pruning [9], and architectural innovations. ALBERT [10] shares parameters across layers. Transformer-XL [11] extends context through recurrence. Our work differs by introducing functional specialization rather than parameter sharing.
+
+2.3.	Hybrid Symbolic-Neural Systems
+
+Neuro-symbolic AI combines neural learning with symbolic reasoning [12]. Our LLAVES system represents a lightweight form of this integration, using linguistic rules for token routing while maintaining end-to-end differentiability.
+
+3.	ARCHITECTURE
+
+PAMPAr-o1 v9 consists of four main components: an embedding layer, the Thalamus router, four specialized territories, and bidirectional frontiers connecting them. Figure 1 illustrates the overall structure.
+
+                    ┌────────────────────────────────────┐
+                    │           Input Tokens              │
+                    └───────────────┬────────────────────┘
+                                    ▼
+                    ┌────────────────────────────────────┐
+                    │             Tálamo                  │
+                    │     LLAVES 70% + Attention 30%     │
+                    └───────────────┬────────────────────┘
+                ┌───────────┬───────┴───────┬───────────┐
+                ▼           ▼               ▼           ▼
+        ┌───────────┐ ┌───────────┐ ┌───────────┐ ┌───────────┐
+        │ EXPRESIVO │ │CONTEXTUAL │ │  FORMAL   │ │ESTRUCTURAL│
+        │ Lang+Creat│ │  Context  │ │  Logic    │ │Pattn+Math │
+        └─────┬─────┘ └─────┬─────┘ └─────┬─────┘ └─────┬─────┘
+              │             │             │             │
+              └─────────────┴──────┬──────┴─────────────┘
+                   Bidirectional Frontiers (6 connections)
+                                   ▼
+                    ┌────────────────────────────────────┐
+                    │              Output                 │
+                    └────────────────────────────────────┘
+
+Figure 1. PAMPAr-o1 v9 territorial architecture.
+
+3.1.	Territories
+
+Each territory contains specialized neural modules optimized for specific linguistic functions:
+
+Expressive Territory: Contains the Language Neuron for fluent text generation and the Creativity Neuron for novel combinations. Processes tokens related to natural language expression.
+
+Contextual Territory: Houses the Context Neuron implementing working memory mechanisms. Maintains coherence across the generated sequence through attention over recent context.
+
+Formal Territory: Contains the Logic Neuron for rule-based reasoning. Optionally integrates with an Axiom Engine supporting modus ponens and syllogistic inference.
+
+Structural Territory: Includes the Pattern Neuron for sequence detection and the Mathematics Neuron for numerical processing.
+
+Each territory processes its assigned tokens through:
+
+    h_t = Territory_t(tokens_t, context)
+
+where t ∈ {expressive, contextual, formal, structural}.
+
+4.	THALAMUS AND LLAVES ROUTING
+
+The Thalamus (Tálamo) serves as the central orchestrator, routing tokens to appropriate territories based on their linguistic properties.
+
+4.1.	LLAVES: Linguistic Keys for Token Classification
+
+LLAVES (Spanish for "keys") is a rule-based classification system that assigns tokens to territories based on predefined linguistic patterns:
+
+- Language keys: Common words, articles, prepositions ("el", "la", "de", "the", "of")
+- Mathematics keys: Digits, operators, mathematical symbols ("0-9", "+", "=")
+- Logic keys: Logical connectives ("if", "then", "therefore", "because")
+- Pattern keys: Repetition markers, sequence indicators
+
+4.2.	Hybrid Routing
+
+The final routing decision combines LLAVES rules with learned attention:
+
+    α_t = λ · LLAVES(x) + (1-λ) · Softmax(W_q x · W_k^T / √d)
+
+where λ = 0.7 balances explicit rules with learned patterns. This hybrid approach provides: (1) Interpretability—token routing can be traced to explicit rules; (2) Efficiency—reduces computational cost compared to pure attention; and (3) Flexibility—learned component adapts to corpus-specific patterns.
+
+4.3.	Territory Aggregation
+
+Modules within territories share information through a learned aggregation:
+
+    h_territory = Σ (g_m · h_m)  for m ∈ modules
+
+where g_m are gating weights learned during training.
+
+5.	BIDIRECTIONAL FRONTIERS
+
+Territories communicate through six bidirectional frontiers, each with learned gating mechanisms controlling information flow:
+
+Table 1. Bidirectional frontier connections with base strength values.
+
+Frontier                              Connection      Base Strength
+─────────────────────────────────────────────────────────────────────
+Expressive ↔ Contextual               High (0.8)     Narrative coherence
+Expressive ↔ Formal                   Medium (0.5)   Argumentation
+Formal ↔ Structural                   High (0.7)     Mathematical logic
+Contextual ↔ Structural               Medium (0.6)   Pattern in context
+Expressive ↔ Structural               Low (0.4)      Creative patterns
+Contextual ↔ Formal                   Medium (0.5)   Logical coherence
+
+The frontier gating mechanism is defined as:
+
+    h_{A→B} = σ(W_g [h_A; h_B]) ⊙ W_v h_A
+
+where σ is the sigmoid function, W_g and W_v are learned parameters, and ⊙ denotes element-wise multiplication.
+
+6.	EXPERIMENTS
+
+6.1.	Experimental Setup
+
+We evaluate PAMPAr-o1 v9 on WikiText-103 [13], a standard benchmark for language modeling containing 103 million tokens from Wikipedia articles.
+
+Model Configuration:
+- Parameters: 14M
+- Embedding dimension: 256
+- Hidden dimension: 512
+- Territorial blocks: 6
+- Context length: 512 tokens
+- Tokenizer: SentencePiece BPE (32K vocabulary)
+
+Training:
+- Hardware: NVIDIA GTX 1650 (4GB VRAM)
+- Optimizer: AdamW (β₁=0.9, β₂=0.999)
+- Learning rate: 3×10⁻⁴ with cosine decay
+- Batch size: 32 (with gradient accumulation)
+- Mixed precision: FP16
+- Training time: ~8 hours
+
+6.2.	Results
+
+Table 2. Perplexity comparison on WikiText-103 test set.
+
+Model                   Parameters      PPL ↓       Params/PPL
+─────────────────────────────────────────────────────────────────
+LSTM Baseline           24M             69.1        0.35M
+Transformer-XL Small    24M             54.5        0.44M
+PAMPAr-o1 v9            14M             ~45         0.31M
+
+PAMPAr-o1 v9 achieves approximately 45 perplexity with only 14M parameters, demonstrating: (1) Parameter efficiency—42% fewer parameters than comparable models; (2) Competitive quality—outperforms LSTM, approaches Transformer-XL; and (3) Resource accessibility—trainable on consumer GPU (4GB VRAM).
+
+6.3.	Ablation Studies
+
+Table 3. Ablation study results (preliminary).
+
+Configuration                   PPL
+───────────────────────────────────
+Full model (LLAVES 70%)         ~45
+LLAVES only (100%)              ~52
+Attention only (0% LLAVES)      ~48
+Without frontiers               ~55
+Single territory                ~62
+
+The hybrid LLAVES-attention routing and multi-territory architecture both contribute to performance.
+
+7.	DISCUSSION
+
+7.1.	Interpretability Benefits
+
+The LLAVES routing system provides inherent interpretability absent in pure attention models. Token routing decisions can be traced to explicit linguistic rules, facilitating debugging and understanding of model behavior.
+
+7.2.	Biological Plausibility
+
+While PAMPAr does not claim biological accuracy, the territorial organization mirrors functional specialization observed in cortical language areas. The thalamic routing mechanism parallels the brain's relay function in directing information to appropriate cortical regions.
+
+7.3.	Limitations
+
+- Scale: Current experiments limited to 14M parameters; larger-scale validation needed
+- Tasks: Evaluated only on language modeling; downstream task performance untested
+- Languages: Primary testing on English WikiText; multilingual evaluation pending
+- LLAVES coverage: Hand-crafted rules may miss corpus-specific patterns
+
+7.4.	Future Work
+
+Future directions include: scaling experiments to 100M+ parameters, downstream evaluation on classification, QA, and summarization tasks, multilingual LLAVES rules, automated LLAVES rule discovery from data, and integration with retrieval-augmented generation.
+
+CONCLUSIONS
+
+We presented PAMPAr-o1 v9, a brain-inspired language model architecture that organizes computation into specialized territories coordinated by a hybrid rule-attention routing mechanism. Results on WikiText-103 demonstrate competitive perplexity (~45) with significantly fewer parameters (14M) than comparable approaches.
+
+The LLAVES system offers a middle ground between fully learned and fully symbolic approaches, providing interpretability benefits while maintaining end-to-end trainability. The territorial architecture suggests that functional specialization, inspired by cortical organization, may offer efficiency advantages for language modeling.
+
+We release PAMPAr-o1 v9 as open-source software under AGPL-3.0-or-later license, along with trained checkpoints, to encourage further research into biologically-inspired language architectures.
+
+ACKNOWLEDGEMENTS
+
+This work was conducted independently without institutional funding. The author thanks the open-source community for the tools and datasets that made this research possible. Code available at: https://github.com/lucasmella-stack/PAMPAr-o1
+
+REFERENCES
+
+[1]	Brown, T., Mann, B., Ryder, N., et al. (2020) "Language models are few-shot learners", NeurIPS 2020.
+
+[2]	Touvron, H., Lavril, T., Izacard, G., et al. (2023) "LLaMA: Open and efficient foundation language models", arXiv:2302.13971.
+
+[3]	Fedorenko, E. & Thompson-Schill, S. L. (2014) "Reworking the language network", Trends in Cognitive Sciences, Vol. 18, No. 3, pp120-126.
+
+[4]	Sherman, S. M. & Guillery, R. W. (2006) Exploring the Thalamus and Its Role in Cortical Function, MIT Press.
+
+[5]	Hassabis, D., Kumaran, D., Summerfield, C., & Botvinick, M. (2017) "Neuroscience-inspired artificial intelligence", Neuron, Vol. 95, No. 2, pp245-258.
+
+[6]	Graves, A., Wayne, G., Reynolds, M., et al. (2016) "Hybrid computing using a neural network with dynamic external memory", Nature, Vol. 538, pp471-476.
+
+[7]	Shazeer, N., Mirhoseini, A., Maziarz, K., et al. (2017) "Outrageously large neural networks: The sparsely-gated mixture-of-experts layer", ICLR 2017.
+
+[8]	Hinton, G., Vinyals, O., & Dean, J. (2015) "Distilling the knowledge in a neural network", arXiv:1503.02531.
+
+[9]	Han, S., Pool, J., Tran, J., & Dally, W. (2015) "Learning both weights and connections for efficient neural networks", NeurIPS 2015.
+
+[10]	Lan, Z., Chen, M., Goodman, S., et al. (2019) "ALBERT: A lite BERT for self-supervised learning of language representations", ICLR 2020.
+
+[11]	Dai, Z., Yang, Z., Yang, Y., et al. (2019) "Transformer-XL: Attentive language models beyond a fixed-length context", ACL 2019.
+
+[12]	Garcez, A., Gori, M., Lamb, L. C., et al. (2019) "Neural-symbolic computing: An effective methodology for principled integration of machine learning and reasoning", Journal of Applied Logics, Vol. 6, No. 4, pp611-632.
+
+[13]	Merity, S., Xiong, C., Bradbury, J., & Socher, R. (2016) "Pointer sentinel mixture models", ICLR 2017.
+
+APPENDIX A: LLAVES TOKEN CATEGORIES
+
+Table A1. Example LLAVES token categories for routing decisions.
+
+Category        Example Patterns
+────────────────────────────────────────────────────────────────────
+Language        el, la, los, las, de, que, en, the, a, of, to, and
+Mathematics     0-9, +, -, *, /, =, %, ^, (, )
+Logic           if, then, therefore, because, implies, not, and, or
+Pattern         ..., ---, ===, repetitions, sequences
+Creativity      !, ?, metaphor markers, unusual combinations
+Context         pronouns, references, temporal markers
+
+APPENDIX B: HYPERPARAMETER DETAILS
+
+Table B1. Model and training hyperparameters.
+
+Hyperparameter                  Value
+────────────────────────────────────────
+Embedding dimension             256
+Hidden dimension                512
+Number of territorial blocks    6
+Attention heads                 8
+Dropout                         0.1
+LLAVES weight (λ)               0.7
+Learning rate                   3×10⁻⁴
+Batch size                      32
+Gradient accumulation steps     4
+Warmup steps                    1000
+Max sequence length             512
+Vocabulary size                 32,000
+
+AUTHORS
+
+Lucas Ricardo Mella Chillemi is an independent researcher based in Buenos Aires, Argentina. His research interests include brain-inspired artificial intelligence, efficient language modeling, and neuro-symbolic computing. He developed the PAMPAr-o1 architecture to explore biologically-plausible approaches to natural language processing with emphasis on interpretability and parameter efficiency.
