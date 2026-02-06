@@ -31,7 +31,7 @@ model-index:
       value: 14000000
 ---
 
-# 🦙 PAMPAr-o1 v9 — Cerebral Language Model
+# 🐰 PAMPAr-o1 v9 — Cerebral Language Model
 
 <div align="center">
 

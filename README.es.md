@@ -16,9 +16,9 @@ tags:
 
 <div align="center">
 
-<img src="PAMPAr-o1-imagen.png" alt="PAMPAr-o1 Logo" width="200"/>
+<img src="PAMPAR-coder.png" alt="PAMPAr-o1 Logo" width="200"/>
 
-# 🦙 PAMPAr-o1 v9
+# 🐰 PAMPAr-o1 v9
 
 ### Modelo de Lenguaje Cerebral con Arquitectura Territorial
 

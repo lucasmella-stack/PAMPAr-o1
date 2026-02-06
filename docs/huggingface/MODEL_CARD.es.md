@@ -16,7 +16,7 @@ tags:
 pipeline_tag: text-generation
 ---
 
-# 🦙 PAMPAr-o1 v9 — Modelo de Lenguaje Cerebral
+# 🐰 PAMPAr-o1 v9 — Modelo de Lenguaje Cerebral
 
 <div align="center">
 
